@@ -47,8 +47,12 @@ Public Class WinMain
             ProcessIgnoreList = My.Settings.IgnoreProcessList
         End If
 
-        NsOnOffBox1.Checked = My.Settings.AutoFreeRAM
-        NsOnOffBox2.Checked = My.Settings.AutoStartOnBoot
+        If NsListView1.Columns.Length = 0 Then
+            NsListView1.AddColumn("Filename", 120)
+            NsListView1.AddColumn("Size", 60)
+            NsListView1.AddColumn("Type", 100)
+            NsListView1.AddColumn("Path", 300)
+        End If
 
         init = False
     End Sub
@@ -116,55 +120,157 @@ Public Class WinMain
         cycles += 1
     End Sub
 
+    Private ScannedCleanItems As New List(Of cleaner.CleanItem)()
+    Private IsScanning As Boolean = False
+    Private CancelScanRequested As Boolean = False
+
     ''' <summary>
-    ''' Helper function safely scanning files in a directory matching search pattern and populating listbox.
+    ''' Opens Options window allowing user to toggle and save 13 target clean categories in clean_state.config.
     ''' </summary>
-    ''' <param name="dirPath">Target directory path.</param>
-    ''' <param name="searchPattern">File search pattern (e.g. *.tmp).</param>
-    Private Sub ScanDirFiles(dirPath As String, searchPattern As String)
-        Try
-            If IO.Directory.Exists(dirPath) Then
-                For Each filePath As String In IO.Directory.GetFiles(dirPath, searchPattern)
-                    ListBox1.Items.Add(filePath)
-                Next
-            End If
-        Catch ex As Exception
-            ' Ignore access denied or locked directory errors for individual scan paths
-        End Try
+    Private Sub NsButton6_Click(sender As Object, e As EventArgs) Handles NsButton6.Click
+        Using dlg As New WinOptions()
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
     ''' <summary>
-    ''' Click event handler scanning system locations for temporary and log files.
+    ''' Click event handler toggling Scan / Cancel. Opens Disk Selector window to choose drives,
+    ''' then scans configured categories from clean_state.config across selected drives.
     ''' </summary>
     Private Sub NsButton4_Click(sender As System.Object, e As System.EventArgs) Handles NsButton4.Click
+        If IsScanning Then
+            CancelScanRequested = True
+            NsButton4.Text = "Scan"
+            ShowNotification("~X:", "Cancelling scan...")
+            Return
+        End If
+
+        Dim targetDrives As List(Of String) = Nothing
+        Using selector As New WinDiskSelector()
+            If selector.ShowDialog(Me) <> DialogResult.OK Then
+                Return
+            End If
+            targetDrives = selector.SelectedDrives
+        End Using
+
+        If targetDrives Is Nothing OrElse targetDrives.Count = 0 Then Return
+
+        Dim enabledCategories As Dictionary(Of String, Boolean) = cleaner.LoadConfig()
+
+        IsScanning = True
+        CancelScanRequested = False
+
+        NsButton4.Text = "Cancel"
+        NsButton4.Enabled = True
+
+        NsButton5.Visible = False
+        CleanerProgressBar.Value = 0
+        CleanerProgressBar.Visible = True
+
         Label1.Visible = False
-        ListBox1.Visible = True
-        ListBox1.Items.Clear()
+        NsLabel8.Visible = True
+        NsLabel8.Value1 = "Scanning:"
+        NsLabel8.Value2 = " Starting..."
+        NsListView1.Visible = True
+        NsListView1.Clear()
 
-        ScanDirFiles("C:\Windows", "*.log")
-        ScanDirFiles(IO.Path.GetTempPath(), "*.tmp")
-        ScanDirFiles("C:\Windows\Prefetch", "*.pf")
-        ScanDirFiles("C:\Windows\Prefetch", "*.log")
-        ScanDirFiles("C:\Windows\Installer\$PatchCache$\Managed", "*.*")
-        ScanDirFiles("C:\$Recycle.Bin", "*.*")
+        Application.DoEvents()
 
-        NsButton5.Enabled = (ListBox1.Items.Count > 0)
+        Dim accumulatedBytes As Long = 0
+        Dim scannedFilesCount As Integer = 0
+        Dim realtimeBatch As New List(Of NSListView.NSListViewItem)()
+
+        ScannedCleanItems = cleaner.ScanDetailedFiles(targetDrives, enabledCategories,
+                                                       Sub(current, total, status)
+                                                           Dim pct As Integer = CInt((current / CDbl(total)) * 100)
+                                                           CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
+                                                           NsLabel8.Value1 = "Scanning:"
+                                                           NsLabel8.Value2 = " " & status
+                                                           ShowNotification("~X:", "Scanned " & scannedFilesCount & " files (" & cleaner.FormatBytes(accumulatedBytes) & ")")
+                                                           Application.DoEvents()
+                                                       End Sub,
+                                                       Sub(item)
+                                                           accumulatedBytes += item.ByteSize
+                                                           scannedFilesCount += 1
+
+                                                           Dim subItemsList As New List(Of NSListView.NSListViewSubItem)()
+                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.FormattedSize})
+                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.CategoryName})
+                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.FilePath})
+
+                                                           Dim nsItem As New NSListView.NSListViewItem With {
+                                                               .Text = item.FileName,
+                                                               .SubItems = subItemsList
+                                                           }
+
+                                                           realtimeBatch.Add(nsItem)
+
+                                                           If realtimeBatch.Count >= 25 Then
+                                                               NsListView1.AddItems(realtimeBatch)
+                                                               realtimeBatch.Clear()
+                                                               ShowNotification("~X:", "Scanned " & scannedFilesCount & " files (" & cleaner.FormatBytes(accumulatedBytes) & ")")
+                                                               Application.DoEvents()
+                                                           End If
+                                                       End Sub,
+                                                       Function() CancelScanRequested)
+
+        If realtimeBatch.Count > 0 Then
+            NsListView1.AddItems(realtimeBatch)
+            realtimeBatch.Clear()
+        End If
+
+        IsScanning = False
+        NsButton4.Text = "Scan"
+        CleanerProgressBar.Visible = False
+
+        Dim finalFormattedSize As String = cleaner.FormatBytes(accumulatedBytes)
+        If CancelScanRequested Then
+            NsLabel8.Value1 = "Status:"
+            NsLabel8.Value2 = " Scan cancelled"
+            ShowNotification("~X:", "Scan cancelled: Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")")
+            NsButton5.Visible = False
+        Else
+            CleanerProgressBar.Value = 100
+            NsLabel8.Value1 = "Status:"
+            NsLabel8.Value2 = " Scan complete"
+            NsButton5.Visible = (NsListView1.Items.Length > 0)
+            NsButton5.Enabled = (NsListView1.Items.Length > 0)
+            ShowNotification("~X:", "Scan complete: Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")")
+        End If
     End Sub
 
     ''' <summary>
-    ''' Click event handler deleting scanned temporary and log files.
+    ''' Click event handler removing all scanned detailed items across 9 categories and emptying Windows Recycle Bin.
+    ''' Updates progress bar and clears NSListView upon completion.
     ''' </summary>
     Private Sub NsButton5_Click(sender As System.Object, e As System.EventArgs) Handles NsButton5.Click
-        For Each item As String In ListBox1.Items
-            Try
-                If IO.File.Exists(item) Then
-                    IO.File.Delete(item)
-                End If
-            Catch ex As Exception
-                ' Ignore locked or protected files
-            End Try
-        Next
-        NsButton4_Click(sender, e)
+        If ScannedCleanItems.Count = 0 Then Return
+
+        NsButton4.Enabled = False
+        NsButton5.Enabled = False
+        CleanerProgressBar.Value = 0
+        CleanerProgressBar.Visible = True
+
+        Application.DoEvents()
+
+        Dim cleanedCount As Integer = cleaner.CleanDetailedFiles(ScannedCleanItems, Sub(current, total, status)
+                                                                                          Dim pct As Integer = CInt((current / CDbl(total)) * 100)
+                                                                                          CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
+                                                                                          ShowNotification("~X:", status)
+                                                                                          Application.DoEvents()
+                                                                                      End Sub)
+
+        NsListView1.Clear()
+        ScannedCleanItems.Clear()
+
+        CleanerProgressBar.Value = 100
+        CleanerProgressBar.Visible = False
+
+        ShowNotification("~X:", "Cleaned " & cleanedCount & " items & emptied Recycle Bin")
+
+        NsButton4.Enabled = True
+        NsButton5.Visible = False
+        NsButton5.Enabled = False
     End Sub
 
     ''' <summary>

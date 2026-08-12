@@ -1,4 +1,4 @@
-﻿Imports System
+Imports System
 Imports System.Windows.Forms
 Imports System.Drawing
 Imports System.Drawing.Drawing2D
@@ -2214,7 +2214,7 @@ Class NSButton
         G.DrawPath(P2, GP2)
 
         SZ1 = G.MeasureString(Text, Font)
-        PT1 = New PointF(5, Height \ 2 - SZ1.Height / 2)
+        PT1 = New PointF((Width / 2.0F) - (SZ1.Width / 2.0F), (Height / 2.0F) - (SZ1.Height / 2.0F))
 
         If IsMouseDown Then
             PT1.X += 1.0F
@@ -2223,6 +2223,11 @@ Class NSButton
 
         G.DrawString(Text, Font, Brushes.Black, PT1.X + 1, PT1.Y + 1)
         G.DrawString(Text, Font, Brushes.WhiteSmoke, PT1)
+    End Sub
+
+    Protected Overrides Sub OnTextChanged(ByVal e As EventArgs)
+        Invalidate()
+        MyBase.OnTextChanged(e)
     End Sub
 
     Protected Overrides Sub OnMouseDown(ByVal e As MouseEventArgs)
@@ -2474,7 +2479,7 @@ Class KachClazz
 End Class
 
 
-<DefaultEvent("TextChanged")> _
+<DefaultEvent("TextChanged")>
 Class NSTextBox
     Inherits Control
 
@@ -2686,7 +2691,7 @@ Class NSTextBox
 
 End Class
 
-<DefaultEvent("CheckedChanged")> _
+<DefaultEvent("CheckedChanged")>
 Class NSCheckBox
     Inherits Control
 
@@ -2764,7 +2769,7 @@ Class NSCheckBox
 
 End Class
 
-<DefaultEvent("CheckedChanged")> _
+<DefaultEvent("CheckedChanged")>
 Class NSRadioButton
     Inherits Control
 
@@ -3066,7 +3071,7 @@ Class NSTabControl
 
 End Class
 
-<DefaultEvent("CheckedChanged")> _
+<DefaultEvent("CheckedChanged")>
 Class NSOnOffBox
     Inherits Control
 
@@ -3435,7 +3440,7 @@ Class NSSeperator
 
 End Class
 
-<DefaultEvent("Scroll")> _
+<DefaultEvent("Scroll")>
 Class NSTrackBar
     Inherits Control
 
@@ -3585,7 +3590,7 @@ Class NSTrackBar
 
 End Class
 
-<DefaultEvent("ValueChanged")> _
+<DefaultEvent("ValueChanged")>
 Class NSRandomPool
     Inherits Control
 
@@ -3990,7 +3995,7 @@ Class NSKeyboard
 
 End Class
 
-<DefaultEvent("SelectedIndexChanged")> _
+<DefaultEvent("SelectedIndexChanged")>
 Class NSPaginator
     Inherits Control
 
@@ -4172,7 +4177,7 @@ Class NSPaginator
 
 End Class
 
-<DefaultEvent("Scroll")> _
+<DefaultEvent("Scroll")>
 Class NSVScrollBar
     Inherits Control
 
@@ -4376,9 +4381,17 @@ Class NSVScrollBar
     End Sub
 
     Private Sub InvalidatePosition()
-        Thumb.Y = CInt(GetProgress() * (Shaft.Height - ThumbSize)) + TSA.Height
+        Dim range As Double = Shaft.Height - ThumbSize
+        If range < 0 Then range = 0
+        Thumb.Y = CInt(GetProgress() * range) + TSA.Height
         Invalidate()
     End Sub
+
+    Private Function GetProgress() As Double
+        Dim range As Double = _Maximum - _Minimum
+        If range <= 0.0 Then Return 0.0
+        Return (_Value - _Minimum) / range
+    End Function
 
     Protected Overrides Sub OnMouseDown(ByVal e As MouseEventArgs)
         If e.Button = Windows.Forms.MouseButtons.Left AndAlso ShowThumb Then
@@ -4426,13 +4439,9 @@ Class NSVScrollBar
         MyBase.OnMouseUp(e)
     End Sub
 
-    Private Function GetProgress() As Double
-        Return (_Value - _Minimum) / (_Maximum - _Minimum)
-    End Function
-
 End Class
 
-<DefaultEvent("Scroll")> _
+<DefaultEvent("Scroll")>
 Class NSHScrollBar
     Inherits Control
 
@@ -4618,7 +4627,7 @@ Class NSHScrollBar
         RSA = New Rectangle(Width - ButtonSize, 0, ButtonSize, Height)
         Shaft = New Rectangle(LSA.Right + 1, 0, Width - (ButtonSize * 2) - 1, Height)
 
-        ShowThumb = ((_Maximum - _Minimum) > Shaft.Width)
+        ShowThumb = (_Maximum > _Minimum)
 
         If ShowThumb Then
             'ThumbSize = Math.Max(0, 14) 'TODO: Implement this.
@@ -4630,7 +4639,9 @@ Class NSHScrollBar
     End Sub
 
     Private Sub InvalidatePosition()
-        Thumb.X = CInt(GetProgress() * (Shaft.Width - ThumbSize)) + LSA.Width
+        Dim range As Double = Shaft.Width - ThumbSize
+        If range < 0 Then range = 0
+        Thumb.X = CInt(GetProgress() * range) + LSA.Width
         Invalidate()
     End Sub
 
@@ -4664,11 +4675,12 @@ Class NSHScrollBar
     Protected Overrides Sub OnMouseMove(ByVal e As MouseEventArgs)
         If ThumbDown AndAlso ShowThumb Then
             Dim ThumbPosition As Integer = e.X - LSA.Width - (ThumbSize \ 2)
-            Dim ThumbBounds As Integer = Shaft.Width - ThumbSize
+            Dim ThumbBounds As Double = Shaft.Width - ThumbSize
 
-            I1 = CInt((ThumbPosition / ThumbBounds) * (_Maximum - _Minimum)) + _Minimum
-
-            Value = Math.Min(Math.Max(I1, _Minimum), _Maximum)
+            If ThumbBounds > 0 Then
+                I1 = CInt((ThumbPosition / ThumbBounds) * (_Maximum - _Minimum)) + _Minimum
+                Value = Math.Min(Math.Max(I1, _Minimum), _Maximum)
+            End If
             InvalidatePosition()
         End If
 
@@ -4681,7 +4693,9 @@ Class NSHScrollBar
     End Sub
 
     Private Function GetProgress() As Double
-        Return (_Value - _Minimum) / (_Maximum - _Minimum)
+        Dim range As Double = _Maximum - _Minimum
+        If range <= 0.0 Then Return 0.0
+        Return (_Value - _Minimum) / range
     End Function
 
 End Class
@@ -4787,6 +4801,8 @@ Class NSListView
 
     Class NSListViewItem
         Property Text As String
+        Property Tag As Object
+        Property Checked As Boolean = False
         <DesignerSerializationVisibility(DesignerSerializationVisibility.Content)> _
         Property SubItems As New List(Of NSListViewSubItem)
 
@@ -4874,6 +4890,23 @@ Class NSListView
         End Set
     End Property
 
+    Private _CheckBoxes As Boolean = False
+    Public Property CheckBoxes() As Boolean
+        Get
+            Return _CheckBoxes
+        End Get
+        Set(ByVal value As Boolean)
+            _CheckBoxes = value
+            Invalidate()
+        End Set
+    End Property
+
+    Public ReadOnly Property CheckedItems() As NSListViewItem()
+        Get
+            Return _Items.Where(Function(i) i.Checked).ToArray()
+        End Get
+    End Property
+
     Private ItemHeight As Integer = 24
     Public Overrides Property Font As Font
         Get
@@ -4930,9 +4963,29 @@ Class NSListView
         InvalidateScroll()
     End Sub
 
+    Public Sub AddColumn(ByVal text As String, ByVal width As Integer)
+        Dim column As New NSListViewColumnHeader()
+        column.Text = text
+        column.Width = width
+        _Columns.Add(column)
+        InvalidateColumns()
+    End Sub
+
+    Public Sub Clear()
+        _Items.Clear()
+        _SelectedItems.Clear()
+        InvalidateScroll()
+    End Sub
+
+    Public Sub AddItems(ByVal items As IEnumerable(Of NSListViewItem))
+        _Items.AddRange(items)
+        InvalidateScroll()
+    End Sub
+
 #End Region
 
     Private VS As NSVScrollBar
+    Private HS As NSHScrollBar
 
     Sub New()
         SetStyle(DirectCast(139286, ControlStyles), True)
@@ -4955,6 +5008,11 @@ Class NSListView
         AddHandler VS.MouseDown, AddressOf VS_MouseDown
         Controls.Add(VS)
 
+        HS = New NSHScrollBar
+        AddHandler HS.Scroll, AddressOf HandleScroll
+        AddHandler HS.MouseDown, AddressOf VS_MouseDown
+        Controls.Add(HS)
+
         InvalidateLayout()
     End Sub
 
@@ -4973,54 +5031,168 @@ Class NSListView
     End Sub
 
     Private Sub InvalidateLayout()
-        VS.Location = New Point(Width - VS.Width - 1, 1)
-        VS.Size = New Size(18, Height - 2)
+        If VS IsNot Nothing AndAlso HS IsNot Nothing Then
+            Dim hsHeight As Integer = If(HS.Visible, 18, 0)
+            VS.Location = New Point(Width - VS.Width - 1, 1)
+            VS.Size = New Size(18, Height - hsHeight - 2)
+
+            HS.Location = New Point(1, Height - HS.Height - 1)
+            HS.Size = New Size(Width - 20, 18)
+        End If
 
         Invalidate()
     End Sub
 
+    Public Event ColumnClick(ByVal sender As Object, ByVal columnIndex As Integer)
+
+    Private SortedColumn As Integer = -1
+    Private SortAscending As Boolean = True
+    Private ResizingColumn As Integer = -1
+    Private DragStartX As Integer = 0
+    Private DragStartWidth As Integer = 0
+
+    Public Sub SortByColumn(ByVal columnIndex As Integer)
+        If columnIndex < 0 OrElse columnIndex >= _Columns.Count Then Return
+
+        If SortedColumn = columnIndex Then
+            SortAscending = Not SortAscending
+        Else
+            SortedColumn = columnIndex
+            SortAscending = True
+        End If
+
+        _Items.Sort(Function(a, b)
+                        Dim strA As String = GetItemColumnText(a, columnIndex)
+                        Dim strB As String = GetItemColumnText(b, columnIndex)
+
+                        Dim dblA, dblB As Double
+                        If Double.TryParse(strA, dblA) AndAlso Double.TryParse(strB, dblB) Then
+                            Return If(SortAscending, dblA.CompareTo(dblB), dblB.CompareTo(dblA))
+                        End If
+
+                        Return If(SortAscending, String.Compare(strA, strB, StringComparison.OrdinalIgnoreCase), String.Compare(strB, strA, StringComparison.OrdinalIgnoreCase))
+                    End Function)
+
+        InvalidateScroll()
+    End Sub
+
+    Private Function GetItemColumnText(ByVal item As NSListViewItem, ByVal colIndex As Integer) As String
+        If colIndex = 0 Then Return If(item.Text, String.Empty)
+        If item.SubItems IsNot Nothing AndAlso colIndex - 1 < item.SubItems.Count Then
+            Return If(item.SubItems(colIndex - 1).Text, String.Empty)
+        End If
+        Return String.Empty
+    End Function
+
     Private ColumnOffsets As Integer()
+    Private TotalColumnWidth As Integer = 0
     Private Sub InvalidateColumns()
-        Dim Width As Integer = 3
+        Dim WidthSum As Integer = 3
         ColumnOffsets = New Integer(_Columns.Count - 1) {}
 
         For I As Integer = 0 To _Columns.Count - 1
-            ColumnOffsets(I) = Width
-            Width += Columns(I).Width
+            ColumnOffsets(I) = WidthSum
+            WidthSum += Columns(I).Width
         Next
+        TotalColumnWidth = WidthSum
 
-        Invalidate()
+        If HS IsNot Nothing Then
+            Dim maxScroll As Integer = Math.Max(0, TotalColumnWidth - (Width - 20))
+            HS.Maximum = maxScroll
+            HS.Visible = (maxScroll > 0)
+        End If
+
+        InvalidateLayout()
     End Sub
 
     Private Sub VS_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs)
         Focus()
     End Sub
 
+    Protected Overrides Sub OnMouseMove(ByVal e As MouseEventArgs)
+        Dim HOffset As Integer = If(HS IsNot Nothing AndAlso HS.Visible, CInt(HS.Value), 0)
+
+        If ResizingColumn <> -1 Then
+            Dim newWidth As Integer = Math.Max(20, DragStartWidth + (e.X - DragStartX))
+            _Columns(ResizingColumn).Width = newWidth
+            InvalidateColumns()
+            Return
+        End If
+
+        If e.Y <= ItemHeight AndAlso ColumnOffsets IsNot Nothing Then
+            For I As Integer = 0 To _Columns.Count - 1
+                Dim rightX As Integer = ColumnOffsets(I) + _Columns(I).Width - HOffset
+                If Math.Abs(e.X - rightX) <= 4 Then
+                    Cursor = Cursors.VSplit
+                    MyBase.OnMouseMove(e)
+                    Return
+                End If
+            Next
+        End If
+
+        Cursor = Cursors.Default
+        MyBase.OnMouseMove(e)
+    End Sub
+
+    Protected Overrides Sub OnMouseUp(ByVal e As MouseEventArgs)
+        If ResizingColumn <> -1 Then
+            ResizingColumn = -1
+            Cursor = Cursors.Default
+        End If
+        MyBase.OnMouseUp(e)
+    End Sub
+
     Protected Overrides Sub OnMouseDown(ByVal e As MouseEventArgs)
         Focus()
 
+        Dim HOffset As Integer = If(HS IsNot Nothing AndAlso HS.Visible, CInt(HS.Value), 0)
+
         If e.Button = Windows.Forms.MouseButtons.Left Then
-            Dim Offset As Integer = CInt(VS.Percent * (VS.Maximum - (Height - (ItemHeight * 2))))
-            Dim Index As Integer = ((e.Y + Offset - ItemHeight) \ ItemHeight)
+            If e.Y <= ItemHeight AndAlso ColumnOffsets IsNot Nothing Then
+                For I As Integer = 0 To _Columns.Count - 1
+                    Dim rightX As Integer = ColumnOffsets(I) + _Columns(I).Width - HOffset
+                    If Math.Abs(e.X - rightX) <= 4 Then
+                        ResizingColumn = I
+                        DragStartX = e.X
+                        DragStartWidth = _Columns(I).Width
+                        Return
+                    End If
+                Next
 
-            If Index > _Items.Count - 1 Then Index = -1
+                For I As Integer = 0 To _Columns.Count - 1
+                    Dim startX As Integer = ColumnOffsets(I) - HOffset
+                    Dim endX As Integer = startX + _Columns(I).Width
+                    If e.X >= startX AndAlso e.X < endX Then
+                        SortByColumn(I)
+                        RaiseEvent ColumnClick(Me, I)
+                        Return
+                    End If
+                Next
+            Else
+                Dim Offset As Integer = CInt(VS.Percent * (VS.Maximum - (Height - (ItemHeight * 2))))
+                Dim Index As Integer = ((e.Y + Offset - ItemHeight) \ ItemHeight)
 
-            If Not Index = -1 Then
-                'TODO: Handle Shift key
+                If Index > _Items.Count - 1 Then Index = -1
 
-                If ModifierKeys = Keys.Control AndAlso _MultiSelect Then
-                    If _SelectedItems.Contains(_Items(Index)) Then
-                        _SelectedItems.Remove(_Items(Index))
+                If Not Index = -1 Then
+                    If _CheckBoxes Then
+                        _Items(Index).Checked = Not _Items(Index).Checked
+                    End If
+
+                    If ModifierKeys = Keys.Control AndAlso _MultiSelect Then
+                        If _SelectedItems.Contains(_Items(Index)) Then
+                            _SelectedItems.Remove(_Items(Index))
+                        Else
+                            _SelectedItems.Add(_Items(Index))
+                        End If
                     Else
+                        _SelectedItems.Clear()
                         _SelectedItems.Add(_Items(Index))
                     End If
-                Else
-                    _SelectedItems.Clear()
-                    _SelectedItems.Add(_Items(Index))
                 End If
-            End If
 
-            Invalidate()
+                Invalidate()
+            End If
         End If
 
         MyBase.OnMouseDown(e)
@@ -5030,8 +5202,6 @@ Class NSListView
     Private B1, B2, B3, B4 As SolidBrush
     Private GB1 As LinearGradientBrush
 
-    'I am so sorry you have to witness this. I tried warning you. ;.;
-
     Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
         G = e.Graphics
         G.TextRenderingHint = TextRenderingHint.ClearTypeGridFit
@@ -5040,6 +5210,7 @@ Class NSListView
 
         Dim X, Y As Integer
         Dim H As Single
+        Dim HOffset As Integer = If(HS IsNot Nothing AndAlso HS.Visible, CInt(HS.Value), 0)
 
         G.DrawRectangle(P1, 1, 1, Width - 3, Height - 3)
 
@@ -5078,20 +5249,31 @@ Class NSListView
             G.DrawLine(P2, 0, R1.Bottom, Width, R1.Bottom)
 
             If Columns.Length > 0 Then
+                R1.X = ColumnOffsets(0) - HOffset
                 R1.Width = Columns(0).Width
                 G.SetClip(R1)
             End If
 
-            'TODO: Ellipse text that overhangs seperators.
-            G.DrawString(CI.Text, Font, Brushes.Black, 10, Y + 1)
-            G.DrawString(CI.Text, Font, Brushes.WhiteSmoke, 9, Y)
+            If _CheckBoxes Then
+                Dim chkX As Integer = ColumnOffsets(0) - HOffset + 4
+                Dim chkY As Integer = R1.Y + (ItemHeight \ 2) - 6
+                G.FillRectangle(B4, chkX, chkY, 13, 13)
+                G.DrawRectangle(P1, chkX, chkY, 13, 13)
+                If CI.Checked Then
+                    G.DrawString("✓", Font, Brushes.WhiteSmoke, chkX - 2, chkY - 3)
+                End If
+            End If
+
+            X = ColumnOffsets(0) - HOffset + If(_CheckBoxes, 22, 4)
+            G.DrawString(CI.Text, Font, Brushes.Black, X + 1, Y + 1)
+            G.DrawString(CI.Text, Font, Brushes.WhiteSmoke, X, Y)
 
             If CI.SubItems IsNot Nothing Then
-                For I2 As Integer = 0 To Math.Min(CI.SubItems.Count, _Columns.Count) - 1
-                    X = ColumnOffsets(I2 + 1) + 4
+                For I2 As Integer = 0 To Math.Min(CI.SubItems.Count, _Columns.Count - 1) - 1
+                    X = ColumnOffsets(I2 + 1) - HOffset + 4
 
-                    R1.X = X
-                    R1.Width = Columns(I2).Width
+                    R1.X = ColumnOffsets(I2 + 1) - HOffset
+                    R1.Width = Columns(I2 + 1).Width
                     G.SetClip(R1)
 
                     G.DrawString(CI.SubItems(I2).Text, Font, Brushes.Black, X + 1, Y + 1)
@@ -5116,12 +5298,27 @@ Class NSListView
 
             H = G.MeasureString(CC.Text, Font).Height
             Y = CInt((ItemHeight / 2) - (H / 2))
-            X = ColumnOffsets(I)
-            G.DrawString(CC.Text, Font, Brushes.Black, X + 1, Y + 1)
-            G.DrawString(CC.Text, Font, Brushes.WhiteSmoke, X, Y)
+            X = ColumnOffsets(I) - HOffset
 
-            G.DrawLine(P2, X - 3, 0, X - 3, LH)
-            G.DrawLine(P3, X - 2, 0, X - 2, ItemHeight)
+            R1.X = X
+            R1.Y = 0
+            R1.Width = CC.Width
+            R1.Height = ItemHeight
+            G.SetClip(R1)
+
+            If SortedColumn = I Then
+                Dim arrow As String = If(SortAscending, " ▲", " ▼")
+                G.DrawString(CC.Text & arrow, Font, Brushes.Black, X + 5, Y + 1)
+                G.DrawString(CC.Text & arrow, Font, Brushes.WhiteSmoke, X + 4, Y)
+            Else
+                G.DrawString(CC.Text, Font, Brushes.Black, X + 5, Y + 1)
+                G.DrawString(CC.Text, Font, Brushes.WhiteSmoke, X + 4, Y)
+            End If
+
+            G.ResetClip()
+
+            G.DrawLine(P2, X + CC.Width - 1, 0, X + CC.Width - 1, LH)
+            G.DrawLine(P3, X + CC.Width, 0, X + CC.Width, ItemHeight)
         Next
 
         G.DrawRectangle(P2, 0, 0, Width - 1, Height - 1)

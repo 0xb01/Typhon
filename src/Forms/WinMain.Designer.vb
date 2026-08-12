@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class WinMain
     Inherits System.Windows.Forms.Form
 
@@ -39,12 +39,15 @@ Partial Class WinMain
         Me.NsLabel1 = New Typhon.NSLabel()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.NsLabel7 = New Typhon.NSLabel()
+        Me.NsLabel8 = New Typhon.NSLabel()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.NsListView1 = New Typhon.NSListView()
         Me.NsButton5 = New Typhon.NSButton()
         Me.NsButton4 = New Typhon.NSButton()
+        Me.NsButton6 = New Typhon.NSButton()
+        Me.CleanerProgressBar = New Typhon.NSProgressBar()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.NsLabel6 = New Typhon.NSLabel()
         Me.NsOnOffBox2 = New Typhon.NSOnOffBox()
@@ -110,7 +113,7 @@ Partial Class WinMain
         Me.NsTheme1.Name = "NsTheme1"
         Me.NsTheme1.NoRounding = False
         Me.NsTheme1.Sizable = False
-        Me.NsTheme1.Size = New System.Drawing.Size(489, 255)
+        Me.NsTheme1.Size = New System.Drawing.Size(500, 300)
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.NsTheme1.TabIndex = 0
@@ -135,7 +138,7 @@ Partial Class WinMain
         Me.NsTabControl1.Multiline = True
         Me.NsTabControl1.Name = "NsTabControl1"
         Me.NsTabControl1.SelectedIndex = 0
-        Me.NsTabControl1.Size = New System.Drawing.Size(465, 173)
+        Me.NsTabControl1.Size = New System.Drawing.Size(476, 219)
         Me.NsTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
         Me.NsTabControl1.TabIndex = 6
         '
@@ -146,7 +149,7 @@ Partial Class WinMain
         Me.TabPage1.Location = New System.Drawing.Point(119, 4)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage1.Size = New System.Drawing.Size(353, 211)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Boost"
         '
@@ -161,7 +164,7 @@ Partial Class WinMain
         Me.NsGroupBox1.DrawSeperator = False
         Me.NsGroupBox1.Location = New System.Drawing.Point(6, 6)
         Me.NsGroupBox1.Name = "NsGroupBox1"
-        Me.NsGroupBox1.Size = New System.Drawing.Size(330, 153)
+        Me.NsGroupBox1.Size = New System.Drawing.Size(341, 199)
         Me.NsGroupBox1.SubTitle = "-"
         Me.NsGroupBox1.TabIndex = 2
         Me.NsGroupBox1.Text = "NsGroupBox1"
@@ -171,11 +174,11 @@ Partial Class WinMain
         '
         Me.NsProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsProgressBar1.Location = New System.Drawing.Point(3, 137)
+        Me.NsProgressBar1.Location = New System.Drawing.Point(3, 183)
         Me.NsProgressBar1.Maximum = 100
         Me.NsProgressBar1.Minimum = 0
         Me.NsProgressBar1.Name = "NsProgressBar1"
-        Me.NsProgressBar1.Size = New System.Drawing.Size(324, 10)
+        Me.NsProgressBar1.Size = New System.Drawing.Size(335, 10)
         Me.NsProgressBar1.TabIndex = 3
         Me.NsProgressBar1.Text = "NsProgressBar1"
         Me.NsProgressBar1.Value = 0
@@ -184,7 +187,7 @@ Partial Class WinMain
         '
         Me.PictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.PictureBox1.Image = Global.Typhon.My.Resources.Resources.typhon
-        Me.PictureBox1.Location = New System.Drawing.Point(188, 45)
+        Me.PictureBox1.Location = New System.Drawing.Point(199, 49)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(139, 70)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
@@ -196,9 +199,9 @@ Partial Class WinMain
         Me.NsLabel2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsLabel2.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel2.Location = New System.Drawing.Point(3, 111)
+        Me.NsLabel2.Location = New System.Drawing.Point(3, 157)
         Me.NsLabel2.Name = "NsLabel2"
-        Me.NsLabel2.Size = New System.Drawing.Size(324, 23)
+        Me.NsLabel2.Size = New System.Drawing.Size(335, 23)
         Me.NsLabel2.TabIndex = 4
         Me.NsLabel2.Text = "NsLabel2"
         Me.NsLabel2.Value1 = "Memory Usage:"
@@ -209,9 +212,9 @@ Partial Class WinMain
         Me.NsLabel1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsLabel1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel1.Location = New System.Drawing.Point(3, 92)
+        Me.NsLabel1.Location = New System.Drawing.Point(3, 138)
         Me.NsLabel1.Name = "NsLabel1"
-        Me.NsLabel1.Size = New System.Drawing.Size(179, 23)
+        Me.NsLabel1.Size = New System.Drawing.Size(190, 23)
         Me.NsLabel1.TabIndex = 3
         Me.NsLabel1.Text = "NsLabel1"
         Me.NsLabel1.Value1 = "Processes:"
@@ -225,7 +228,7 @@ Partial Class WinMain
         Me.TabPage4.Location = New System.Drawing.Point(119, 4)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage4.Size = New System.Drawing.Size(353, 211)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "Graph"
         '
@@ -236,7 +239,7 @@ Partial Class WinMain
         Me.NsLabel7.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NsLabel7.Location = New System.Drawing.Point(6, 6)
         Me.NsLabel7.Name = "NsLabel7"
-        Me.NsLabel7.Size = New System.Drawing.Size(330, 23)
+        Me.NsLabel7.Size = New System.Drawing.Size(341, 23)
         Me.NsLabel7.TabIndex = 5
         Me.NsLabel7.Text = "NsLabel7"
         Me.NsLabel7.Value1 = "Memory Usage:"
@@ -269,7 +272,7 @@ Partial Class WinMain
         Series1.YValuesPerPoint = 2
         Series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
         Me.Chart1.Series.Add(Series1)
-        Me.Chart1.Size = New System.Drawing.Size(330, 125)
+        Me.Chart1.Size = New System.Drawing.Size(339, 171)
         Me.Chart1.TabIndex = 2
         Me.Chart1.Text = "Chart1"
         '
@@ -277,55 +280,88 @@ Partial Class WinMain
         '
         Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         Me.TabPage3.Controls.Add(Me.Label1)
-        Me.TabPage3.Controls.Add(Me.ListBox1)
+        Me.TabPage3.Controls.Add(Me.NsLabel8)
+        Me.TabPage3.Controls.Add(Me.NsListView1)
         Me.TabPage3.Controls.Add(Me.NsButton5)
         Me.TabPage3.Controls.Add(Me.NsButton4)
+        Me.TabPage3.Controls.Add(Me.NsButton6)
+        Me.TabPage3.Controls.Add(Me.CleanerProgressBar)
         Me.TabPage3.Location = New System.Drawing.Point(119, 4)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage3.Size = New System.Drawing.Size(353, 211)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Cleaner"
+        '
+        'NsLabel8
+        '
+        Me.NsLabel8.Font = New System.Drawing.Font("Verdana", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel8.Location = New System.Drawing.Point(6, 6)
+        Me.NsLabel8.Name = "NsLabel8"
+        Me.NsLabel8.Size = New System.Drawing.Size(339, 18)
+        Me.NsLabel8.TabIndex = 13
+        Me.NsLabel8.Value1 = "Scanning:"
+        Me.NsLabel8.Value2 = ""
+        Me.NsLabel8.Visible = False
         '
         'Label1
         '
         Me.Label1.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.ForeColor = System.Drawing.Color.White
-        Me.Label1.Location = New System.Drawing.Point(27, 33)
+        Me.Label1.Location = New System.Drawing.Point(34, 55)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(286, 82)
         Me.Label1.TabIndex = 7
-        Me.Label1.Text = "Recommended to run app as administrator" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "if you intend to use the cleaner."
+        Me.Label1.Text = "Recommended to run app as administrator if you intend to use the cleaner."
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'ListBox1
+        'NsListView1
         '
-        Me.ListBox1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.ListBox1.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.ListBox1.ForeColor = System.Drawing.Color.White
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(6, 9)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(328, 117)
-        Me.ListBox1.TabIndex = 10
-        Me.ListBox1.Visible = False
+        Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
+        Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
+        Me.NsListView1.Location = New System.Drawing.Point(6, 26)
+        Me.NsListView1.MultiSelect = True
+        Me.NsListView1.Name = "NsListView1"
+        Me.NsListView1.Size = New System.Drawing.Size(339, 150)
+        Me.NsListView1.TabIndex = 10
+        Me.NsListView1.Visible = False
         '
         'NsButton5
         '
         Me.NsButton5.Enabled = False
-        Me.NsButton5.Location = New System.Drawing.Point(264, 136)
+        Me.NsButton5.Location = New System.Drawing.Point(270, 182)
         Me.NsButton5.Name = "NsButton5"
         Me.NsButton5.Size = New System.Drawing.Size(75, 23)
         Me.NsButton5.TabIndex = 9
-        Me.NsButton5.Text = "    Clean"
+        Me.NsButton5.Text = "Clean"
+        Me.NsButton5.Visible = False
         '
         'NsButton4
         '
-        Me.NsButton4.Location = New System.Drawing.Point(6, 136)
+        Me.NsButton4.Location = New System.Drawing.Point(6, 182)
         Me.NsButton4.Name = "NsButton4"
         Me.NsButton4.Size = New System.Drawing.Size(75, 23)
         Me.NsButton4.TabIndex = 8
-        Me.NsButton4.Text = "    Scan"
+        Me.NsButton4.Text = "Scan"
+        '
+        'NsButton6
+        '
+        Me.NsButton6.Location = New System.Drawing.Point(87, 182)
+        Me.NsButton6.Name = "NsButton6"
+        Me.NsButton6.Size = New System.Drawing.Size(75, 23)
+        Me.NsButton6.TabIndex = 12
+        Me.NsButton6.Text = "Options"
+        '
+        'CleanerProgressBar
+        '
+        Me.CleanerProgressBar.Location = New System.Drawing.Point(168, 182)
+        Me.CleanerProgressBar.Maximum = 100
+        Me.CleanerProgressBar.Minimum = 0
+        Me.CleanerProgressBar.Name = "CleanerProgressBar"
+        Me.CleanerProgressBar.Size = New System.Drawing.Size(177, 23)
+        Me.CleanerProgressBar.TabIndex = 11
+        Me.CleanerProgressBar.Value = 0
+        Me.CleanerProgressBar.Visible = False
         '
         'TabPage2
         '
@@ -339,7 +375,7 @@ Partial Class WinMain
         Me.TabPage2.Location = New System.Drawing.Point(119, 4)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage2.Size = New System.Drawing.Size(353, 211)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Settings"
         '
@@ -357,7 +393,7 @@ Partial Class WinMain
         'NsOnOffBox2
         '
         Me.NsOnOffBox2.Checked = False
-        Me.NsOnOffBox2.Location = New System.Drawing.Point(269, 36)
+        Me.NsOnOffBox2.Location = New System.Drawing.Point(288, 37)
         Me.NsOnOffBox2.MaximumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox2.MinimumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox2.Name = "NsOnOffBox2"
@@ -368,7 +404,7 @@ Partial Class WinMain
         'NsLabel5
         '
         Me.NsLabel5.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel5.Location = New System.Drawing.Point(6, 136)
+        Me.NsLabel5.Location = New System.Drawing.Point(4, 182)
         Me.NsLabel5.Name = "NsLabel5"
         Me.NsLabel5.Size = New System.Drawing.Size(198, 23)
         Me.NsLabel5.TabIndex = 8
@@ -378,7 +414,7 @@ Partial Class WinMain
         '
         'NsButton3
         '
-        Me.NsButton3.Location = New System.Drawing.Point(259, 136)
+        Me.NsButton3.Location = New System.Drawing.Point(269, 182)
         Me.NsButton3.Name = "NsButton3"
         Me.NsButton3.Size = New System.Drawing.Size(75, 23)
         Me.NsButton3.TabIndex = 7
@@ -398,7 +434,7 @@ Partial Class WinMain
         'NsOnOffBox1
         '
         Me.NsOnOffBox1.Checked = False
-        Me.NsOnOffBox1.Location = New System.Drawing.Point(269, 7)
+        Me.NsOnOffBox1.Location = New System.Drawing.Point(288, 7)
         Me.NsOnOffBox1.MaximumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox1.MinimumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox1.Name = "NsOnOffBox1"
@@ -413,7 +449,7 @@ Partial Class WinMain
         Me.TabPage6.Location = New System.Drawing.Point(119, 4)
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage6.Size = New System.Drawing.Size(353, 211)
         Me.TabPage6.TabIndex = 5
         Me.TabPage6.Text = "PC Specs"
         '
@@ -425,7 +461,7 @@ Partial Class WinMain
         Me.RichTextBox1.Location = New System.Drawing.Point(6, 6)
         Me.RichTextBox1.Name = "RichTextBox1"
         Me.RichTextBox1.ReadOnly = True
-        Me.RichTextBox1.Size = New System.Drawing.Size(328, 153)
+        Me.RichTextBox1.Size = New System.Drawing.Size(339, 199)
         Me.RichTextBox1.TabIndex = 0
         Me.RichTextBox1.Text = ""
         '
@@ -435,14 +471,14 @@ Partial Class WinMain
         Me.TabPage5.Location = New System.Drawing.Point(119, 4)
         Me.TabPage5.Name = "TabPage5"
         Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage5.Size = New System.Drawing.Size(342, 165)
+        Me.TabPage5.Size = New System.Drawing.Size(353, 211)
         Me.TabPage5.TabIndex = 4
         Me.TabPage5.Text = "About"
         '
         'NsButton2
         '
         Me.NsButton2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton2.Location = New System.Drawing.Point(377, 220)
+        Me.NsButton2.Location = New System.Drawing.Point(388, 265)
         Me.NsButton2.Name = "NsButton2"
         Me.NsButton2.Size = New System.Drawing.Size(100, 23)
         Me.NsButton2.TabIndex = 5
@@ -453,9 +489,9 @@ Partial Class WinMain
         Me.NsLabel3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsLabel3.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel3.Location = New System.Drawing.Point(4, 220)
+        Me.NsLabel3.Location = New System.Drawing.Point(4, 265)
         Me.NsLabel3.Name = "NsLabel3"
-        Me.NsLabel3.Size = New System.Drawing.Size(261, 23)
+        Me.NsLabel3.Size = New System.Drawing.Size(272, 23)
         Me.NsLabel3.TabIndex = 4
         Me.NsLabel3.Text = "NsLabel3"
         Me.NsLabel3.Value1 = ""
@@ -464,7 +500,7 @@ Partial Class WinMain
         'NsButton1
         '
         Me.NsButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton1.Location = New System.Drawing.Point(271, 220)
+        Me.NsButton1.Location = New System.Drawing.Point(282, 265)
         Me.NsButton1.Name = "NsButton1"
         Me.NsButton1.Size = New System.Drawing.Size(100, 23)
         Me.NsButton1.TabIndex = 3
@@ -474,7 +510,7 @@ Partial Class WinMain
         '
         Me.NsControlButton2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton2.ControlButton = Typhon.NSControlButton.Button.Minimize
-        Me.NsControlButton2.Location = New System.Drawing.Point(447, 5)
+        Me.NsControlButton2.Location = New System.Drawing.Point(458, 5)
         Me.NsControlButton2.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton2.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton2.MinimumSize = New System.Drawing.Size(18, 20)
@@ -487,7 +523,7 @@ Partial Class WinMain
         '
         Me.NsControlButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton1.ControlButton = Typhon.NSControlButton.Button.Close
-        Me.NsControlButton1.Location = New System.Drawing.Point(465, 5)
+        Me.NsControlButton1.Location = New System.Drawing.Point(476, 5)
         Me.NsControlButton1.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton1.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton1.MinimumSize = New System.Drawing.Size(18, 20)
@@ -507,27 +543,27 @@ Partial Class WinMain
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenTyphonToolStripMenuItem, Me.ExitToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(146, 48)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(147, 48)
         '
         'OpenTyphonToolStripMenuItem
         '
         Me.OpenTyphonToolStripMenuItem.Image = Global.Typhon.My.Resources.Resources.typhon_ico
         Me.OpenTyphonToolStripMenuItem.Name = "OpenTyphonToolStripMenuItem"
-        Me.OpenTyphonToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.OpenTyphonToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
         Me.OpenTyphonToolStripMenuItem.Text = "Open Typhon"
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Image = Global.Typhon.My.Resources.Resources.icons8_poison_18
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'WinMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(489, 255)
+        Me.ClientSize = New System.Drawing.Size(500, 300)
         Me.ControlBox = False
         Me.Controls.Add(Me.NsTheme1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
@@ -585,7 +621,10 @@ Partial Class WinMain
     Friend WithEvents RichTextBox1 As System.Windows.Forms.RichTextBox
     Friend WithEvents NsButton5 As Typhon.NSButton
     Friend WithEvents NsButton4 As Typhon.NSButton
-    Friend WithEvents ListBox1 As System.Windows.Forms.ListBox
+    Friend WithEvents NsListView1 As Typhon.NSListView
     Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents CleanerProgressBar As Typhon.NSProgressBar
+    Friend WithEvents NsButton6 As Typhon.NSButton
+    Friend WithEvents NsLabel8 As Typhon.NSLabel
 
 End Class

@@ -105,6 +105,7 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -144,6 +145,20 @@
       <DependentUpon>WinMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\WinOptions.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinOptions.Designer.vb">
+      <DependentUpon>WinOptions.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinDiskSelector.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinDiskSelector.Designer.vb">
+      <DependentUpon>WinDiskSelector.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -161,12 +176,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Helpers\proc.vb" />
+    <Compile Include="Helpers\cleaner.vb" />
     <Compile Include="Controls\theme.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Helpers\func.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\WinDiskSelector.resx">
+      <DependentUpon>WinDiskSelector.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinKill.resx">
       <DependentUpon>WinKill.vb</DependentUpon>
     </EmbeddedResource>

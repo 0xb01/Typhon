@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class WinKill
     Inherits System.Windows.Forms.Form
 
@@ -71,9 +71,7 @@ Partial Class WinKill
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(260, 86)
         Me.Label1.TabIndex = 4
-        Me.Label1.Text = "Killable parent and child processes have been listed, these processes will be kil" & _
-    "led to improve performance." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Please save any important documents before procee" & _
-    "ding!"
+        Me.Label1.Text = "Killable parent and child processes have been listed, these processes will be killed to improve performance." & vbCrLf & vbCrLf & "Please save any important documents before proceeding!"
         '
         'NsLabel1
         '
