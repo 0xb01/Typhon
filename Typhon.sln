@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Basic Express 2010
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Typhon", "src\Typhon.vbproj", "{85BDA6BE-7794-4391-91D9-C71461330A91}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85BDA6BE-7794-4391-91D9-C71461330A91}.Debug|x86.ActiveCfg = Debug|x86
+		{85BDA6BE-7794-4391-91D9-C71461330A91}.Debug|x86.Build.0 = Debug|x86
+		{85BDA6BE-7794-4391-91D9-C71461330A91}.Release|x86.ActiveCfg = Release|x86
+		{85BDA6BE-7794-4391-91D9-C71461330A91}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
