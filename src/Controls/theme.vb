@@ -3299,19 +3299,20 @@ Class NSControlButton
         If e.Button = Windows.Forms.MouseButtons.Left Then
 
             Dim F As Form = FindForm()
-
-            Select Case _ControlButton
-                Case Button.Minimize
-                    F.WindowState = FormWindowState.Minimized
-                Case Button.MaximizeRestore
-                    If F.WindowState = FormWindowState.Normal Then
-                        F.WindowState = FormWindowState.Maximized
-                    Else
-                        F.WindowState = FormWindowState.Normal
-                    End If
-                Case Button.Close
-                    F.Close()
-            End Select
+            If F IsNot Nothing Then
+                Select Case _ControlButton
+                    Case Button.Minimize
+                        F.WindowState = FormWindowState.Minimized
+                    Case Button.MaximizeRestore
+                        If F.WindowState = FormWindowState.Normal Then
+                            F.WindowState = FormWindowState.Maximized
+                        Else
+                            F.WindowState = FormWindowState.Normal
+                        End If
+                    Case Button.Close
+                        F.Close()
+                End Select
+            End If
 
         End If
 
@@ -4803,6 +4804,7 @@ Class NSListView
         Property Text As String
         Property Tag As Object
         Property Checked As Boolean = False
+        Property Icon As Image = Nothing
         <DesignerSerializationVisibility(DesignerSerializationVisibility.Content)> _
         Property SubItems As New List(Of NSListViewSubItem)
 
@@ -5175,7 +5177,8 @@ Class NSListView
                 If Index > _Items.Count - 1 Then Index = -1
 
                 If Not Index = -1 Then
-                    If _CheckBoxes Then
+                    Dim col0Offset As Integer = If(ColumnOffsets IsNot Nothing AndAlso ColumnOffsets.Length > 0, ColumnOffsets(0), 3)
+                    If _CheckBoxes AndAlso e.X <= (col0Offset - HOffset + 24) Then
                         _Items(Index).Checked = Not _Items(Index).Checked
                     End If
 
@@ -5265,6 +5268,13 @@ Class NSListView
             End If
 
             X = ColumnOffsets(0) - HOffset + If(_CheckBoxes, 22, 4)
+
+            If CI.Icon IsNot Nothing Then
+                Dim iconY As Integer = R1.Y + (ItemHeight \ 2) - 8
+                G.DrawImage(CI.Icon, X, iconY, 16, 16)
+                X += 18
+            End If
+
             G.DrawString(CI.Text, Font, Brushes.Black, X + 1, Y + 1)
             G.DrawString(CI.Text, Font, Brushes.WhiteSmoke, X, Y)
 

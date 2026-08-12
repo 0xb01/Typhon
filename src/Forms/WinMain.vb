@@ -86,8 +86,12 @@ Public Class WinMain
     ''' Click event handler triggering memory working set release for all processes.
     ''' </summary>
     Private Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
-        Dim freed As Integer = _proc.FreeProcesses()
-        ShowNotification("~X:", "Memory released from " & freed & " processes")
+        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
+        If res.ReleasedBytes > 0 Then
+            ShowNotification("~X:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes) & " from " & res.ProcessCount & " processes")
+        Else
+            ShowNotification("~X:", "Memory released from " & res.ProcessCount & " processes")
+        End If
     End Sub
 
     ''' <summary>

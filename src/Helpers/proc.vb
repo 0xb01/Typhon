@@ -269,17 +269,24 @@ Public Class proc
         Return ramPercent.ToString("N0")
     End Function
 
+    Public Class FreeMemoryResult
+        Property ProcessCount As Integer = 0
+        Property ReleasedBytes As Long = 0L
+    End Class
+
     ''' <summary>
-    ''' Forces memory working set trimming on all accessible processes to release unallocated RAM.
+    ''' Forces memory working set trimming on all accessible processes to release unallocated RAM and measure released bytes.
     ''' </summary>
-    Function FreeProcesses() As Integer
-        Dim processSize As Integer = 0
+    Function FreeProcesses() As FreeMemoryResult
+        Dim res As New FreeMemoryResult()
+        Dim beforeAvailable As ULong = My.Computer.Info.AvailablePhysicalMemory
+
         Dim minusOne As New IntPtr(-1)
         Dim procs() As Process = Process.GetProcesses()
         For Each procItem As Process In procs
             Try
                 If SetWorkingSet(procItem.Handle, minusOne, minusOne) Then
-                    processSize += 1
+                    res.ProcessCount += 1
                 End If
             Catch ex As Exception
                 ' Protected or system process handle access error
@@ -287,7 +294,13 @@ Public Class proc
                 procItem.Dispose()
             End Try
         Next
-        Return processSize
+
+        Dim afterAvailable As ULong = My.Computer.Info.AvailablePhysicalMemory
+        If afterAvailable > beforeAvailable Then
+            res.ReleasedBytes = CLng(afterAvailable - beforeAvailable)
+        End If
+
+        Return res
     End Function
 
     ''' <summary>
@@ -322,6 +335,167 @@ Public Class proc
         Next
 
         Return result
+    End Function
+
+    Public Class ProcessInstanceItem
+        Property ProcessId As Integer = 0
+        Property ProcessName As String = ""
+        Property MemoryBytes As Long = 0L
+        Property FullPath As String = ""
+        Property Checked As Boolean = True
+    End Class
+
+    Public Class ProcessGroupItem
+        Property ProcessName As String = ""
+        Property Instances As New List(Of ProcessInstanceItem)()
+        Property IsExpanded As Boolean = False
+        Property Checked As Boolean = True
+
+        Public ReadOnly Property TotalBytes As Long
+            Get
+                Dim sum As Long = 0L
+                For Each inst In Instances
+                    sum += inst.MemoryBytes
+                Next
+                Return sum
+            End Get
+        End Property
+
+        Public ReadOnly Property InstanceCount As Integer
+            Get
+                Return Instances.Count
+            End Get
+        End Property
+    End Class
+
+    ''' <summary>
+    ''' Scans active background processes grouped into process families with aggregated memory statistics.
+    ''' </summary>
+    Function GetKillableProcessGroups(Optional ignoreList As StringCollection = Nothing) As List(Of ProcessGroupItem)
+        Dim groups As New Dictionary(Of String, ProcessGroupItem)(StringComparer.OrdinalIgnoreCase)
+        Dim currentProcess As Process = Process.GetCurrentProcess()
+        Dim selfPath As String = ProcessHandle(currentProcess)
+        currentProcess.Dispose()
+
+        Dim procs() As Process = Process.GetProcesses()
+        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
+
+        For Each procItem As Process In procs
+            Try
+                Dim targetPath As String = ProcessHandle(procItem)
+                If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
+                    Dim dirName As String = Path.GetDirectoryName(targetPath)
+                    If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
+                        Dim fileName As String = Path.GetFileName(targetPath)
+                        If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
+                            Dim memBytes As Long = 0L
+                            Try
+                                memBytes = procItem.WorkingSet64
+                            Catch ex As Exception
+                            End Try
+
+                            Dim grp As ProcessGroupItem = Nothing
+                            If Not groups.TryGetValue(fileName, grp) Then
+                                grp = New ProcessGroupItem() With {.ProcessName = fileName}
+                                groups(fileName) = grp
+                            End If
+
+                            grp.Instances.Add(New ProcessInstanceItem() With {
+                                .ProcessId = procItem.Id,
+                                .ProcessName = fileName,
+                                .MemoryBytes = memBytes,
+                                .FullPath = targetPath,
+                                .Checked = True
+                            })
+                        End If
+                    End If
+                End If
+            Catch ex As Exception
+            Finally
+                procItem.Dispose()
+            End Try
+        Next
+
+        Dim resultList As List(Of ProcessGroupItem) = groups.Values.ToList()
+        resultList.Sort(Function(a, b) b.TotalBytes.CompareTo(a.TotalBytes))
+        Return resultList
+    End Function
+
+    Public Class ProcessInfoItem
+        Property ProcessName As String = ""
+        Property MemoryBytes As Long = 0L
+        Property FullPath As String = ""
+        Public ReadOnly Property MemoryMB As Double
+            Get
+                Return MemoryBytes / (1024.0 * 1024.0)
+            End Get
+        End Property
+    End Class
+
+    ''' <summary>
+    ''' Scans active processes and returns process info objects including memory usage.
+    ''' </summary>
+    Function GetKillableProcessInfoList(Optional ignoreList As StringCollection = Nothing) As List(Of ProcessInfoItem)
+        Dim list As New List(Of ProcessInfoItem)()
+        Dim items As List(Of Process) = GetKillableProcessItems(ignoreList)
+
+        For Each p As Process In items
+            Try
+                Dim targetPath As String = ProcessHandle(p)
+                Dim fileName As String = Path.GetFileName(targetPath)
+                If Not String.IsNullOrEmpty(fileName) Then
+                    Dim memBytes As Long = 0L
+                    Try
+                        memBytes = p.WorkingSet64
+                    Catch ex As Exception
+                    End Try
+
+                    Dim existing As ProcessInfoItem = list.Find(Function(x) x.ProcessName.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+                    If existing IsNot Nothing Then
+                        existing.MemoryBytes += memBytes
+                    Else
+                        list.Add(New ProcessInfoItem() With {
+                            .ProcessName = fileName,
+                            .MemoryBytes = memBytes,
+                            .FullPath = targetPath
+                        })
+                    End If
+                End If
+            Catch ex As Exception
+            Finally
+                p.Dispose()
+            End Try
+        Next
+
+        Return list
+    End Function
+
+    ''' <summary>
+    ''' Terminates specifically targetted background process executables by name.
+    ''' </summary>
+    Function KillProcessesByNames(selectedNames As List(Of String)) As Integer
+        Dim killedCount As Integer = 0
+        If selectedNames Is Nothing OrElse selectedNames.Count = 0 Then Return 0
+
+        Dim procs() As Process = Process.GetProcesses()
+        For Each procItem As Process In procs
+            Try
+                Dim targetPath As String = ProcessHandle(procItem)
+                If Not String.IsNullOrEmpty(targetPath) Then
+                    Dim fileName As String = Path.GetFileName(targetPath)
+                    Dim targetName As String = fileName
+                    If selectedNames.Exists(Function(x) x.Equals(targetName, StringComparison.OrdinalIgnoreCase)) Then
+                        procItem.Kill()
+                        killedCount += 1
+                    End If
+                End If
+            Catch ex As Exception
+            Finally
+                procItem.Dispose()
+            End Try
+        Next
+
+        Return killedCount
     End Function
 
     ''' <summary>
@@ -361,5 +535,34 @@ Public Class proc
             End Try
         Next
         Return killedCount
+    End Function
+
+    Private Shared _iconCache As New Dictionary(Of String, Image)(StringComparer.OrdinalIgnoreCase)
+
+    ''' <summary>
+    ''' Extracts executable file icon with internal dictionary caching.
+    ''' </summary>
+    Public Shared Function GetProcessIcon(fullPath As String) As Image
+        If String.IsNullOrEmpty(fullPath) Then Return Nothing
+
+        If _iconCache.ContainsKey(fullPath) Then
+            Return _iconCache(fullPath)
+        End If
+
+        Try
+            If File.Exists(fullPath) Then
+                Using ico As Icon = Icon.ExtractAssociatedIcon(fullPath)
+                    If ico IsNot Nothing Then
+                        Dim bmp As Bitmap = ico.ToBitmap()
+                        _iconCache(fullPath) = bmp
+                        Return bmp
+                    End If
+                End Using
+            End If
+        Catch ex As Exception
+        End Try
+
+        _iconCache(fullPath) = Nothing
+        Return Nothing
     End Function
 End Class
