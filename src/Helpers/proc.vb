@@ -49,11 +49,13 @@ Public Class proc
     Private Function ProcessHandle(ByVal handle As IntPtr) As String
         Dim rawName As New StringBuilder(512)
         If ProcessFileName(handle, rawName, 512) > 0 Then
-            Dim procStr As String = rawName.ToString
-            For Each drv As String In Environment.GetLogicalDrives
-                If DosDevice(drv.Substring(0, 2), rawName, 512) > 0 Then
-                    If procStr.StartsWith(rawName.ToString, StringComparison.OrdinalIgnoreCase) Then
-                        Return Path.GetFullPath(drv & procStr.Remove(0, rawName.Length)).ToLower
+            Dim procStr As String = rawName.ToString()
+            For Each drv As String In Environment.GetLogicalDrives()
+                Dim dosDeviceBuf As New StringBuilder(512)
+                If DosDevice(drv.Substring(0, 2), dosDeviceBuf, 512) > 0 Then
+                    Dim devicePath As String = dosDeviceBuf.ToString()
+                    If procStr.StartsWith(devicePath, StringComparison.OrdinalIgnoreCase) Then
+                        Return Path.GetFullPath(drv & procStr.Remove(0, devicePath.Length)).ToLower()
                     End If
                 End If
             Next
@@ -66,8 +68,12 @@ Public Class proc
     ''' </summary>
     ''' <returns>Process count as an Integer.</returns>
     Function GetTotalProcesses() As Integer
-        Dim processes() As Process = Process.GetProcesses
-        Return processes.Length
+        Dim procs() As Process = Process.GetProcesses()
+        Dim count As Integer = procs.Length
+        For Each p As Process In procs
+            p.Dispose()
+        Next
+        Return count
     End Function
 
     ''' <summary>
@@ -98,13 +104,16 @@ Public Class proc
     Function FreeProcesses() As Integer
         Dim processSize As Integer = 0
         Dim minusOne As New IntPtr(-1)
-        For Each procItem As Process In Process.GetProcesses
+        Dim procs() As Process = Process.GetProcesses()
+        For Each procItem As Process In procs
             Try
                 If SetWorkingSet(procItem.Handle, minusOne, minusOne) Then
                     processSize += 1
                 End If
             Catch ex As Exception
                 ' Protected or system process handle access error
+            Finally
+                procItem.Dispose()
             End Try
         Next
         Return processSize
@@ -117,9 +126,13 @@ Public Class proc
     ''' <returns>Array of killable process executable names.</returns>
     Function GetKillableProcesses(Optional ignoreList As StringCollection = Nothing) As String()
         Dim processes As New List(Of String)()
-        Dim exclusions As String() = {Environment.SystemDirectory.ToLower, Path.GetDirectoryName(Environment.SystemDirectory).ToLower}
-        Dim mutex As String = ProcessHandle(Process.GetCurrentProcess.Handle)
-        For Each procItem As Process In Process.GetProcesses
+        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
+        Dim currentProcess As Process = Process.GetCurrentProcess()
+        Dim mutex As String = ProcessHandle(currentProcess.Handle)
+        currentProcess.Dispose()
+
+        Dim procs() As Process = Process.GetProcesses()
+        For Each procItem As Process In procs
             Try
                 Dim handle As String = ProcessHandle(procItem.Handle)
                 If Not String.IsNullOrEmpty(handle) AndAlso Not handle.Equals(mutex, StringComparison.OrdinalIgnoreCase) Then
@@ -133,9 +146,11 @@ Public Class proc
                 End If
             Catch ex As Exception
                 ' Protected or system process handle access error
+            Finally
+                procItem.Dispose()
             End Try
         Next
-        Return processes.ToArray
+        Return processes.ToArray()
     End Function
 
     ''' <summary>
@@ -145,9 +160,13 @@ Public Class proc
     ''' <returns>Count of processes successfully terminated.</returns>
     Function KillProcesses(Optional ignoreList As StringCollection = Nothing) As Integer
         Dim processSize As Integer = 0
-        Dim exclusions As String() = {Environment.SystemDirectory.ToLower, Path.GetDirectoryName(Environment.SystemDirectory).ToLower}
-        Dim mutex As String = ProcessHandle(Process.GetCurrentProcess.Handle)
-        For Each procItem As Process In Process.GetProcesses
+        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
+        Dim currentProcess As Process = Process.GetCurrentProcess()
+        Dim mutex As String = ProcessHandle(currentProcess.Handle)
+        currentProcess.Dispose()
+
+        Dim procs() As Process = Process.GetProcesses()
+        For Each procItem As Process In procs
             Try
                 Dim handle As String = ProcessHandle(procItem.Handle)
                 If Not String.IsNullOrEmpty(handle) AndAlso Not handle.Equals(mutex, StringComparison.OrdinalIgnoreCase) Then
@@ -162,6 +181,8 @@ Public Class proc
                 End If
             Catch ex As Exception
                 ' Protected or system process handle access error
+            Finally
+                procItem.Dispose()
             End Try
         Next
 

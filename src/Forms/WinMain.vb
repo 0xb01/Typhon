@@ -1,4 +1,5 @@
 Imports System.Collections.Specialized
+Imports Microsoft.Win32
 
 ''' <summary>
 ''' Main application window handling system monitoring, RAM optimization, junk file cleaning, and settings.
@@ -10,11 +11,23 @@ Public Class WinMain
 
     Dim cycles As Integer = 300
     Dim init As Boolean = True
+    Dim autoFreeCounter As Integer = 0
 
     ''' <summary>
     ''' Collection of process executable names excluded from process termination operations.
     ''' </summary>
     Public ProcessIgnoreList As New StringCollection()
+
+    ''' <summary>
+    ''' Displays a status notification message on the UI with automatic cooldown timer.
+    ''' </summary>
+    ''' <param name="title">Prefix title tag.</param>
+    ''' <param name="message">Notification description text.</param>
+    Public Sub ShowNotification(title As String, message As String)
+        NsLabel3.Value1 = title
+        NsLabel3.Value2 = Space(1) & message
+        cooldownTimer.Start()
+    End Sub
 
     ''' <summary>
     ''' Initializes application controls, queries system hardware specs, and loads user settings.
@@ -49,21 +62,29 @@ Public Class WinMain
 
     ''' <summary>
     ''' Timer tick event handler updating active process counts and RAM usage indicators in real-time.
+    ''' Triggers automatic memory optimization if AutoFreeRAM is enabled.
     ''' </summary>
     Private Sub realTimer_Tick(sender As System.Object, e As System.EventArgs) Handles realTimer.Tick
         NsLabel1.Value2 = Space(1) & _proc.GetTotalProcesses
         NsLabel2.Value2 = Space(1) & _proc.GetRAMUsage
         NsLabel7.Value2 = Space(1) & _proc.GetRAMUsage
         NsProgressBar1.Value = _proc.GetRAMPercentage
+
+        If My.Settings.AutoFreeRAM Then
+            autoFreeCounter += 1
+            If autoFreeCounter >= 60 Then
+                _proc.FreeProcesses()
+                autoFreeCounter = 0
+            End If
+        End If
     End Sub
 
     ''' <summary>
     ''' Click event handler triggering memory working set release for all processes.
     ''' </summary>
     Private Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
-        NsLabel3.Value1 = "~X:"
-        NsLabel3.Value2 = Space(1) & "Memory released from " & _proc.FreeProcesses & " processes"
-        cooldownTimer.Start()
+        Dim freed As Integer = _proc.FreeProcesses()
+        ShowNotification("~X:", "Memory released from " & freed & " processes")
     End Sub
 
     ''' <summary>
@@ -80,10 +101,7 @@ Public Class WinMain
     ''' </summary>
     Private Sub NsButton2_Click(sender As System.Object, e As System.EventArgs) Handles NsButton2.Click
         WinKill.Show()
-
-        NsLabel3.Value1 = "~X:"
-        NsLabel3.Value2 = Space(1) & "Scanned for killable processes"
-        cooldownTimer.Start()
+        ShowNotification("~X:", "Scanned for killable processes")
     End Sub
 
     ''' <summary>
@@ -160,10 +178,33 @@ Public Class WinMain
     End Sub
 
     ''' <summary>
-    ''' Toggle switch event handler saving Auto-Start on Boot user setting.
+    ''' Configures or removes Windows CurrentUser Run registry key for application boot autostart.
+    ''' </summary>
+    ''' <param name="enable">True to add autostart key; False to remove it.</param>
+    Private Sub SetBootAutostart(enable As Boolean)
+        Try
+            Using runKey As RegistryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
+                If runKey IsNot Nothing Then
+                    If enable Then
+                        runKey.SetValue("Typhon", Application.ExecutablePath)
+                    Else
+                        If runKey.GetValue("Typhon") IsNot Nothing Then
+                            runKey.DeleteValue("Typhon", False)
+                        End If
+                    End If
+                End If
+            End Using
+        Catch ex As Exception
+            ' Ignore registry write permissions error
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Toggle switch event handler saving Auto-Start on Boot user setting and updating Windows startup registry.
     ''' </summary>
     Private Sub NsOnOffBox2_CheckedChanged(sender As System.Object) Handles NsOnOffBox2.CheckedChanged
         My.Settings.AutoStartOnBoot = NsOnOffBox2.Checked
+        SetBootAutostart(NsOnOffBox2.Checked)
         If init = False Then
             My.Settings.Save()
         End If

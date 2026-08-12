@@ -20,10 +20,8 @@ Public Class WinKill
     ''' Click event handler terminating displayed killable background processes.
     ''' </summary>
     Private Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
-        WinMain.NsLabel3.Value1 = "~X:"
-        WinMain.NsLabel3.Value2 = Space(1) & "Killed " & _proc.KillProcesses(WinMain.ProcessIgnoreList) & " processes"
-        WinMain.cooldownTimer.Start()
-
+        Dim killedCount As Integer = _proc.KillProcesses(WinMain.ProcessIgnoreList)
+        WinMain.ShowNotification("~X:", "Killed " & killedCount & " processes")
         Me.Close()
     End Sub
 

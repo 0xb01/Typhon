@@ -2,9 +2,11 @@ Imports System.Management
 Imports System.Runtime.Serialization
 
 ''' <summary>
-''' Provides system information and hardware hardware specification helper functions using WMI.
+''' Provides system information and hardware specification helper functions using WMI.
 ''' </summary>
 Public Class func
+
+    Private Shared _cachedSpecs As String = String.Empty
 
     ''' <summary>
     ''' Retrieves the name of the currently logged-in Windows user.
@@ -24,63 +26,73 @@ Public Class func
 
     ''' <summary>
     ''' Queries Windows Management Instrumentation (WMI) to aggregate system specifications 
-    ''' including OS, CPU, GPU, RAM, and attached storage drives.
+    ''' including OS, CPU, GPU, RAM, and attached storage drives. Caches results to prevent UI freezing.
     ''' </summary>
     ''' <returns>A formatted multi-line String containing system specifications.</returns>
     Function GetSpecs() As String
+        If Not String.IsNullOrEmpty(_cachedSpecs) Then
+            Return _cachedSpecs
+        End If
+
         Dim systemInfo As New System.Text.StringBuilder()
 
         systemInfo.AppendLine("===== SPECS =====" & vbNewLine)
 
         Dim scope As New ManagementScope("\\.\root\cimv2")
 
-        Dim osQuery As New ObjectQuery("SELECT * FROM Win32_OperatingSystem")
-        Dim osSearcher As New ManagementObjectSearcher(scope, osQuery)
-        Dim osCollection As ManagementObjectCollection = osSearcher.Get()
+        Using osSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption FROM Win32_OperatingSystem"))
+            Using osCollection As ManagementObjectCollection = osSearcher.Get()
+                For Each os As ManagementObject In osCollection
+                    systemInfo.AppendLine("Operating System: " & os("Caption"))
+                Next
+            End Using
+        End Using
 
-        For Each os As ManagementObject In osCollection
-            systemInfo.AppendLine("Operating System: " & os("Caption"))
-        Next
+        Using cpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name FROM Win32_Processor"))
+            Using cpuCollection As ManagementObjectCollection = cpuSearcher.Get()
+                For Each cpu As ManagementObject In cpuCollection
+                    systemInfo.AppendLine("Processor: " & cpu("Name"))
+                Next
+            End Using
+        End Using
 
-        Dim cpuQuery As New ObjectQuery("SELECT * FROM Win32_Processor")
-        Dim cpuSearcher As New ManagementObjectSearcher(scope, cpuQuery)
-        Dim cpuCollection As ManagementObjectCollection = cpuSearcher.Get()
+        Using gpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name FROM Win32_VideoController"))
+            Using gpuCollection As ManagementObjectCollection = gpuSearcher.Get()
+                For Each gpu As ManagementObject In gpuCollection
+                    systemInfo.AppendLine("Graphics Card: " & gpu("Name"))
+                Next
+            End Using
+        End Using
 
-        For Each cpu As ManagementObject In cpuCollection
-            systemInfo.AppendLine("Processor: " & cpu("Name"))
-        Next
-
-        Dim gpuQuery As New ObjectQuery("SELECT * FROM Win32_VideoController")
-        Dim gpuSearcher As New ManagementObjectSearcher(scope, gpuQuery)
-        Dim gpuCollection As ManagementObjectCollection = gpuSearcher.Get()
-
-        For Each gpu As ManagementObject In gpuCollection
-            systemInfo.AppendLine("Graphics Card: " & gpu("Name"))
-        Next
-
-        Dim query As New ObjectQuery("SELECT * FROM Win32_ComputerSystem")
-        Dim searcher As New ManagementObjectSearcher(scope, query)
-
-        Dim queryCollection As ManagementObjectCollection = searcher.Get()
-
-        For Each m As ManagementObject In queryCollection
-            systemInfo.AppendLine("User Name: " & m("UserName"))
-            systemInfo.AppendLine("Total Physical Memory (RAM): " & FormatBytes(CLng(m("TotalPhysicalMemory"))))
-        Next
+        Using searcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT UserName, TotalPhysicalMemory FROM Win32_ComputerSystem"))
+            Using queryCollection As ManagementObjectCollection = searcher.Get()
+                For Each m As ManagementObject In queryCollection
+                    systemInfo.AppendLine("User Name: " & m("UserName"))
+                    If m("TotalPhysicalMemory") IsNot Nothing Then
+                        systemInfo.AppendLine("Total Physical Memory (RAM): " & FormatBytes(CLng(m("TotalPhysicalMemory"))))
+                    End If
+                Next
+            End Using
+        End Using
 
         systemInfo.AppendLine(vbNewLine & "===== STORAGE =====" & vbNewLine)
 
-        Dim driveQuery As New ObjectQuery("SELECT * FROM Win32_DiskDrive")
-        Dim driveSearcher As New ManagementObjectSearcher(scope, driveQuery)
-        Dim driveCollection As ManagementObjectCollection = driveSearcher.Get()
+        Using driveSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption, Size FROM Win32_DiskDrive"))
+            Using driveCollection As ManagementObjectCollection = driveSearcher.Get()
+                Dim drives As Integer = 1
+                For Each drive As ManagementObject In driveCollection
+                    Dim sizeStr As String = "Unknown"
+                    If drive("Size") IsNot Nothing Then
+                        sizeStr = FormatBytes(CLng(drive("Size")))
+                    End If
+                    systemInfo.AppendLine("Drive #" & drives & ": " & drive("Caption") & Space(1) & "(" & sizeStr & ")")
+                    drives += 1
+                Next
+            End Using
+        End Using
 
-        Dim drives As Integer = 1
-        For Each drive As ManagementObject In driveCollection
-            systemInfo.AppendLine("Drive #" & drives & ": " & drive("Caption") & Space(1) & "(" & FormatBytes(CLng(drive("Size"))) & ")")
-            drives += 1
-        Next
-
-        Return systemInfo.ToString()
+        _cachedSpecs = systemInfo.ToString()
+        Return _cachedSpecs
     End Function
 
     ''' <summary>
