@@ -24,7 +24,10 @@ Partial Class WinMain
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
         Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(WinMain))
         Me.realTimer = New System.Windows.Forms.Timer(Me.components)
         Me.cooldownTimer = New System.Windows.Forms.Timer(Me.components)
@@ -250,11 +253,15 @@ Partial Class WinMain
         Me.Chart1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.AxisX.IsMarginVisible = False
         ChartArea1.AxisX.LabelStyle.Enabled = False
+        ChartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer))
         ChartArea1.AxisY.IsLabelAutoFit = False
+        ChartArea1.AxisY.Minimum = 0
+        ChartArea1.AxisY.Maximum = 100
+        ChartArea1.AxisY.Interval = 25
         ChartArea1.AxisY.LabelStyle.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         ChartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.White
         ChartArea1.AxisY.LabelStyle.Format = "{0}%"
-        ChartArea1.AxisY.LabelStyle.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.[Auto]
+        ChartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer))
         ChartArea1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.BorderColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.Name = "ChartArea1"
@@ -262,16 +269,45 @@ Partial Class WinMain
         Me.Chart1.Location = New System.Drawing.Point(6, 34)
         Me.Chart1.Name = "Chart1"
         Me.Chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent
+        Legend1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Legend1.ForeColor = System.Drawing.Color.White
+        Legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top
+        Legend1.Alignment = System.Drawing.StringAlignment.Far
+        Legend1.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend1)
         Series1.ChartArea = "ChartArea1"
         Series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
-        Series1.IsVisibleInLegend = False
+        Series1.Color = System.Drawing.Color.FromArgb(51, 181, 229)
+        Series1.IsVisibleInLegend = True
+        Series1.LegendText = "RAM"
         Series1.MarkerBorderColor = System.Drawing.Color.Transparent
         Series1.MarkerColor = System.Drawing.Color.White
         Series1.Name = "Series1"
         Series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
-        Series1.YValuesPerPoint = 2
         Series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
+        Series2.ChartArea = "ChartArea1"
+        Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
+        Series2.Color = System.Drawing.Color.FromArgb(153, 204, 0)
+        Series2.IsVisibleInLegend = True
+        Series2.LegendText = "CPU"
+        Series2.MarkerBorderColor = System.Drawing.Color.Transparent
+        Series2.MarkerColor = System.Drawing.Color.White
+        Series2.Name = "Series2"
+        Series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
+        Series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
+        Series3.ChartArea = "ChartArea1"
+        Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
+        Series3.Color = System.Drawing.Color.FromArgb(255, 187, 51)
+        Series3.IsVisibleInLegend = True
+        Series3.LegendText = "GPU"
+        Series3.MarkerBorderColor = System.Drawing.Color.Transparent
+        Series3.MarkerColor = System.Drawing.Color.White
+        Series3.Name = "Series3"
+        Series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
+        Series3.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
         Me.Chart1.Series.Add(Series1)
+        Me.Chart1.Series.Add(Series2)
+        Me.Chart1.Series.Add(Series3)
         Me.Chart1.Size = New System.Drawing.Size(339, 171)
         Me.Chart1.TabIndex = 2
         Me.Chart1.Text = "Chart1"

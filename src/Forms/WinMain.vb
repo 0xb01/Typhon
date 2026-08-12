@@ -71,7 +71,6 @@ Public Class WinMain
     Private Sub realTimer_Tick(sender As System.Object, e As System.EventArgs) Handles realTimer.Tick
         NsLabel1.Value2 = Space(1) & _proc.GetTotalProcesses
         NsLabel2.Value2 = Space(1) & _proc.GetRAMUsage
-        NsLabel7.Value2 = Space(1) & _proc.GetRAMUsage
         NsProgressBar1.Value = _proc.GetRAMPercentage
 
         If My.Settings.AutoFreeRAM Then
@@ -108,16 +107,40 @@ Public Class WinMain
         ShowNotification("~X:", "Scanned for killable processes")
     End Sub
 
+    Private peakRAMPct As Integer = 0
+
     ''' <summary>
-    ''' Timer tick event handler updating the memory usage chart visualization.
+    ''' Timer tick event handler updating the multi-series memory, CPU, and GPU usage chart visualization with smooth 60-point rolling window.
     ''' </summary>
     Private Sub Timer1_Tick(sender As System.Object, e As System.EventArgs) Handles graphTimer.Tick
-        If cycles = 300 Then
-            Chart1.Series("Series1").Points.Clear()
-            cycles = 0
-        End If
-        Chart1.Series("Series1").Points.Add(_proc.GetRAMPercentage)
-        cycles += 1
+        Dim ramPct As Integer = CInt(Val(_proc.GetRAMPercentage()))
+        Dim cpuPct As Integer = _proc.GetCPUPercentage()
+        Dim gpuPct As Integer = _proc.GetGPUPercentage()
+
+        If ramPct > peakRAMPct Then peakRAMPct = ramPct
+
+        Dim s1 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series1")
+        Dim s2 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series2")
+        Dim s3 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series3")
+
+        s1.Points.Add(ramPct)
+        s2.Points.Add(cpuPct)
+        s3.Points.Add(gpuPct)
+
+        While s1.Points.Count > 60
+            s1.Points.RemoveAt(0)
+        End While
+
+        While s2.Points.Count > 60
+            s2.Points.RemoveAt(0)
+        End While
+
+        While s3.Points.Count > 60
+            s3.Points.RemoveAt(0)
+        End While
+
+        NsLabel7.Value1 = "RAM:"
+        NsLabel7.Value2 = Space(1) & ramPct & "% | CPU: " & cpuPct & "% | GPU: " & gpuPct & "% | Peak RAM: " & peakRAMPct & "%"
     End Sub
 
     Private ScannedCleanItems As New List(Of cleaner.CleanItem)()
