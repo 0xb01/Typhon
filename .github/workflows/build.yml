@@ -1,0 +1,29 @@
+name: Build & Verify Solution
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Build with dotnet CLI
+      run: dotnet build Typhon.sln --configuration Release
+
+    - name: Build with MSBuild
+      run: msbuild Typhon.sln /t:Rebuild /p:Configuration=Release
