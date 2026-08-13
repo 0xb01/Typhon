@@ -23,7 +23,7 @@ jobs:
     - name: Rebuild Solution (Release)
       run: msbuild Typhon.sln /t:Rebuild /p:Configuration=Release /p:Platform="x86"
 
-    - name: Package Executable into Zip
+    - name: Prepare Binaries
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Path ./publish -Force
@@ -31,20 +31,17 @@ jobs:
         if (Test-Path ./src/bin/Release/Typhon.exe.config) {
           Copy-Item ./src/bin/Release/Typhon.exe.config ./publish/Typhon.exe.config
         }
-        Compress-Archive -Path ./publish/* -DestinationPath ./Typhon-Release.zip -Force
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Typhon-Release
-        path: Typhon-Release.zip
+        name: Typhon-Executable
+        path: ./publish/
 
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
       with:
-        files: |
-          Typhon-Release.zip
-          ./publish/Typhon.exe
+        files: ./publish/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
