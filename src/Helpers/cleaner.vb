@@ -509,17 +509,17 @@ Public Class cleaner
 
             Dim wasCleaned As Boolean = False
             Try
-                If File.Exists(item.FilePath) Then
-                    File.Delete(item.FilePath)
+                If Not File.Exists(item.FilePath) Then
+                    ' File was emptied via SHEmptyRecycleBin API or already removed
                     cleanedCount += 1
                     wasCleaned = True
                 Else
-                    ' File was emptied via SHEmptyRecycleBin API or previously removed
+                    File.Delete(item.FilePath)
                     cleanedCount += 1
                     wasCleaned = True
                 End If
             Catch ex As Exception
-                ' File is locked or access denied
+                ' File is currently locked by active process or access restricted
                 wasCleaned = False
             End Try
 

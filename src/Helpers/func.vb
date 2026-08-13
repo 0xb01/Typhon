@@ -25,6 +25,40 @@ Public Class func
     End Function
 
     ''' <summary>
+    ''' Queries WMI to retrieve primary Graphics Card name string.
+    ''' </summary>
+    Function GetGPUName() As String
+        Try
+            Dim scope As New ManagementScope("\\.\root\cimv2")
+            Using gpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name FROM Win32_VideoController"))
+                Using gpuCol As ManagementObjectCollection = gpuSearcher.Get()
+                    For Each gpu As ManagementObject In gpuCol
+                        If gpu("Name") IsNot Nothing Then
+                            Dim nameStr As String = gpu("Name").ToString().Trim()
+                            If Not String.IsNullOrEmpty(nameStr) Then Return nameStr
+                        End If
+                    Next
+                End Using
+            End Using
+        Catch ex As Exception
+        End Try
+        Return String.Empty
+    End Function
+
+    ''' <summary>
+    ''' Formats total physical installed system RAM into human-readable string (e.g. 32 GB).
+    ''' </summary>
+    Function GetTotalRAM() As String
+        Try
+            Dim totalBytes As Long = CLng(My.Computer.Info.TotalPhysicalMemory)
+            Dim gb As Double = totalBytes / (1024.0 * 1024.0 * 1024.0)
+            Return Math.Round(gb).ToString() & " GB"
+        Catch ex As Exception
+            Return String.Empty
+        End Try
+    End Function
+
+    ''' <summary>
     ''' Queries Windows Management Instrumentation (WMI) to aggregate comprehensive system hardware specifications
     ''' including OS architecture, motherboard model, CPU cores/threads, memory module speeds, GPU VRAM, and storage drives.
     ''' </summary>

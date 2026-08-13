@@ -40,9 +40,23 @@ Public Class WinMain
         ShowNotification("~X:", "Loading system information...")
 
         Dim infoProcessor As String = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\SYSTEM\CentralProcessor\0", "ProcessorNameString", Nothing)
+        If infoProcessor IsNot Nothing Then infoProcessor = infoProcessor.Trim()
 
-        NsGroupBox1.Title = "[" & _func.GetPCName & "]"
-        NsGroupBox1.SubTitle = _func.GetOS & vbNewLine & infoProcessor
+        Dim osName As String = _func.GetOS()
+        Dim gpuName As String = _func.GetGPUName()
+        Dim ramSize As String = _func.GetTotalRAM()
+
+        ' Uppercase computer name in brackets
+        NsGroupBox1.Title = "[" & Environment.MachineName.ToUpper() & "]"
+
+        ' Subtitle: OS, CPU, GPU (if any), RAM without indicators
+        Dim subTitleParts As New List(Of String)()
+        If Not String.IsNullOrEmpty(osName) Then subTitleParts.Add(osName)
+        If Not String.IsNullOrEmpty(infoProcessor) Then subTitleParts.Add(infoProcessor)
+        If Not String.IsNullOrEmpty(gpuName) Then subTitleParts.Add(gpuName)
+        If Not String.IsNullOrEmpty(ramSize) Then subTitleParts.Add(ramSize)
+
+        NsGroupBox1.SubTitle = String.Join(vbNewLine, subTitleParts.ToArray())
         RichTextBox1.Text = _func.GetSpecs
 
         realTimer.Enabled = True

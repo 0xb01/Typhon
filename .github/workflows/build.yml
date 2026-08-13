@@ -35,7 +35,7 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Typhon-Executable
+        name: Typhon
         path: ./publish/
 
     - name: Create GitHub Release

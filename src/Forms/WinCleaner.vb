@@ -274,10 +274,10 @@ Public Class WinCleaner
                 Application.DoEvents()
             End Sub,
             Sub(item, wasCleaned)
-                If itemMap.ContainsKey(item.FilePath) Then
+                If wasCleaned AndAlso itemMap.ContainsKey(item.FilePath) Then
                     Dim nsItem As NSListViewItem = itemMap(item.FilePath)
                     removeBatch.Add(nsItem)
-                    If removeBatch.Count >= 5 OrElse wasCleaned Then
+                    If removeBatch.Count >= 5 Then
                         NsListView1.RemoveItems(removeBatch.ToArray())
                         removeBatch.Clear()
                         Application.DoEvents()
@@ -290,17 +290,21 @@ Public Class WinCleaner
             removeBatch.Clear()
         End If
 
-        NsListView1.Clear()
-        ScannedCleanItems.Clear()
-
         CleanerProgressBar.Value = 100
         CleanerProgressBar.Visible = False
 
+        Dim totalCount As Integer = ScannedCleanItems.Count
         NsLabelStatus.Value1 = "Clean Complete:"
-        NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " files & emptied Recycle Bin"
+        If cleanedCount >= totalCount Then
+            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " files"
+            NsListView1.Clear()
+            ScannedCleanItems.Clear()
+        Else
+            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " locked/in-use)"
+        End If
 
         btnScan.Enabled = True
-        btnClean.Enabled = False
+        btnClean.Enabled = (NsListView1.Items.Length > 0)
     End Sub
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
@@ -309,5 +313,54 @@ Public Class WinCleaner
 
     Private Sub NsControlButton1_Click(sender As Object, e As EventArgs) Handles NsControlButton1.Click
         Me.Close()
+    End Sub
+
+    Private Sub ctxListView_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ctxListView.Opening
+        If NsListView1.SelectedItems.Length = 0 Then
+            e.Cancel = True
+            Return
+        End If
+
+        If NsListView1.SelectedItems.Length = 1 Then
+            Dim fileName As String = NsListView1.SelectedItems(0).Text
+            tsSearchGoogle.Text = "Search '" & fileName & "' in Google"
+        Else
+            tsSearchGoogle.Text = "Search selected files in Google"
+        End If
+    End Sub
+
+    Private Sub tsCopyPath_Click(sender As Object, e As EventArgs) Handles tsCopyPath.Click
+        If NsListView1.SelectedItems.Length = 0 Then Return
+        Dim paths As New List(Of String)()
+        For Each item As NSListViewItem In NsListView1.SelectedItems
+            Dim filePath As String = If(item.SubItems.Count >= 3, item.SubItems(2).Text, item.Text)
+            If Not String.IsNullOrEmpty(filePath) Then paths.Add(filePath)
+        Next
+        If paths.Count > 0 Then
+            Clipboard.SetText(String.Join(vbNewLine, paths.ToArray()))
+        End If
+    End Sub
+
+    Private Sub tsOpenFileLocation_Click(sender As Object, e As EventArgs) Handles tsOpenFileLocation.Click
+        If NsListView1.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In NsListView1.SelectedItems
+            Dim filePath As String = If(item.SubItems.Count >= 3, item.SubItems(2).Text, item.Text)
+            If File.Exists(filePath) Then
+                Process.Start("explorer.exe", "/select,""" & filePath & """")
+            ElseIf Directory.Exists(Path.GetDirectoryName(filePath)) Then
+                Process.Start("explorer.exe", """" & Path.GetDirectoryName(filePath) & """")
+            End If
+        Next
+    End Sub
+
+    Private Sub tsSearchGoogle_Click(sender As Object, e As EventArgs) Handles tsSearchGoogle.Click
+        If NsListView1.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In NsListView1.SelectedItems
+            Dim fileName As String = item.Text
+            If Not String.IsNullOrEmpty(fileName) Then
+                Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(fileName)
+                Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+            End If
+        Next
     End Sub
 End Class

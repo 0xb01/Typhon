@@ -5232,7 +5232,19 @@ Class NSListView
                     End If
                 End If
 
-                Invalidate()
+            End If
+        ElseIf e.Button = Windows.Forms.MouseButtons.Right Then
+            If e.Y > ItemHeight Then
+                Dim Offset As Integer = CInt(VS.Percent * (VS.Maximum - (Height - (ItemHeight * 2))))
+                Dim Index As Integer = ((e.Y + Offset - ItemHeight) \ ItemHeight)
+
+                If Index >= 0 AndAlso Index < _Items.Count Then
+                    If Not _SelectedItems.Contains(_Items(Index)) Then
+                        _SelectedItems.Clear()
+                        _SelectedItems.Add(_Items(Index))
+                        Invalidate()
+                    End If
+                End If
             End If
         End If
 

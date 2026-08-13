@@ -17,11 +17,16 @@ Partial Class WinCleaner
 
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.NsTheme1 = New Typhon.NSTheme()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsLabelStatus = New Typhon.NSLabel()
         Me.CleanerProgressBar = New Typhon.NSProgressBar()
         Me.NsListView1 = New Typhon.NSListView()
+        Me.ctxListView = New Typhon.NSContextMenu()
+        Me.tsCopyPath = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsOpenFileLocation = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsSearchGoogle = New System.Windows.Forms.ToolStripMenuItem()
         Me.NsGroupBoxOptions = New Typhon.NSGroupBox()
         Me.pnlOptions = New System.Windows.Forms.Panel()
         Me.chkTemp = New Typhon.NSCheckBox()
@@ -44,6 +49,7 @@ Partial Class WinCleaner
         Me.btnClean = New Typhon.NSButton()
         Me.btnClose = New Typhon.NSButton()
         Me.NsTheme1.SuspendLayout()
+        Me.ctxListView.SuspendLayout()
         Me.NsGroupBoxOptions.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.SuspendLayout()
@@ -117,6 +123,30 @@ Partial Class WinCleaner
         Me.CleanerProgressBar.Value = 0
         Me.CleanerProgressBar.Visible = False
         '
+        'ctxListView
+        '
+        Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle})
+        Me.ctxListView.Name = "ctxListView"
+        Me.ctxListView.Size = New System.Drawing.Size(181, 70)
+        '
+        'tsCopyPath
+        '
+        Me.tsCopyPath.Name = "tsCopyPath"
+        Me.tsCopyPath.Size = New System.Drawing.Size(180, 22)
+        Me.tsCopyPath.Text = "Copy Path"
+        '
+        'tsOpenFileLocation
+        '
+        Me.tsOpenFileLocation.Name = "tsOpenFileLocation"
+        Me.tsOpenFileLocation.Size = New System.Drawing.Size(180, 22)
+        Me.tsOpenFileLocation.Text = "Open File Location"
+        '
+        'tsSearchGoogle
+        '
+        Me.tsSearchGoogle.Name = "tsSearchGoogle"
+        Me.tsSearchGoogle.Size = New System.Drawing.Size(180, 22)
+        Me.tsSearchGoogle.Text = "Search in Google"
+        '
         'NsListView1
         '
         Me.NsListView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -124,6 +154,7 @@ Partial Class WinCleaner
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsListView1.CheckBoxes = False
         Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
+        Me.NsListView1.ContextMenuStrip = Me.ctxListView
         Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
         Me.NsListView1.Location = New System.Drawing.Point(15, 67)
         Me.NsListView1.MultiSelect = True
@@ -372,6 +403,7 @@ Partial Class WinCleaner
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Typhon - System Cleaner"
         Me.NsTheme1.ResumeLayout(False)
+        Me.ctxListView.ResumeLayout(False)
         Me.NsGroupBoxOptions.ResumeLayout(False)
         Me.pnlOptions.ResumeLayout(False)
         Me.ResumeLayout(False)
@@ -383,6 +415,10 @@ Partial Class WinCleaner
     Friend WithEvents NsLabelStatus As Typhon.NSLabel
     Friend WithEvents CleanerProgressBar As Typhon.NSProgressBar
     Friend WithEvents NsListView1 As Typhon.NSListView
+    Friend WithEvents ctxListView As Typhon.NSContextMenu
+    Friend WithEvents tsCopyPath As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsOpenFileLocation As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsSearchGoogle As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents NsGroupBoxOptions As Typhon.NSGroupBox
     Friend WithEvents pnlOptions As System.Windows.Forms.Panel
     Friend WithEvents chkTemp As Typhon.NSCheckBox
