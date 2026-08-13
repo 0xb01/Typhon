@@ -145,7 +145,7 @@ Partial Class WinKill
         '
         Me.AddToIgnoreListToolStripMenuItem.Name = "AddToIgnoreListToolStripMenuItem"
         Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
-        Me.AddToIgnoreListToolStripMenuItem.Text = "Add to Ignore List"
+        Me.AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
         '
         'NsControlButton1
         '

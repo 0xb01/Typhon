@@ -159,6 +159,13 @@
       <DependentUpon>WinDiskSelector.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\WinExceptions.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinExceptions.Designer.vb">
+      <DependentUpon>WinExceptions.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

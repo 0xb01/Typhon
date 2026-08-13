@@ -454,7 +454,7 @@ Partial Class WinMain
         Me.NsButton3.Name = "NsButton3"
         Me.NsButton3.Size = New System.Drawing.Size(75, 23)
         Me.NsButton3.TabIndex = 7
-        Me.NsButton3.Text = "    Open"
+        Me.NsButton3.Text = "Open"
         '
         'NsLabel4
         '
@@ -540,7 +540,7 @@ Partial Class WinMain
         Me.NsButton1.Name = "NsButton1"
         Me.NsButton1.Size = New System.Drawing.Size(100, 23)
         Me.NsButton1.TabIndex = 3
-        Me.NsButton1.Text = "   FreeRAM();"
+        Me.NsButton1.Text = "FreeRAM();"
         '
         'NsControlButton2
         '

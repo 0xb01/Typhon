@@ -111,6 +111,14 @@ Public Class WinMain
         ShowNotification("~X:", "Scanned for killable processes")
     End Sub
 
+    ''' <summary>
+    ''' Click event handler opening the WinExceptions window.
+    ''' </summary>
+    Private Sub NsButton3_Click(sender As System.Object, e As System.EventArgs) Handles NsButton3.Click
+        Dim frm As New WinExceptions()
+        frm.ShowDialog()
+    End Sub
+
     Private peakRAMPct As Integer = 0
 
     ''' <summary>
