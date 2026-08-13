@@ -42,15 +42,15 @@ Partial Class WinMain
         Me.NsLabel1 = New Typhon.NSLabel()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.NsLabel7 = New Typhon.NSLabel()
-        Me.NsLabel8 = New Typhon.NSLabel()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.NsListView1 = New Typhon.NSListView()
+        Me.NsLabel8 = New Typhon.NSLabel()
         Me.NsButton5 = New Typhon.NSButton()
         Me.NsButton4 = New Typhon.NSButton()
         Me.NsButton6 = New Typhon.NSButton()
         Me.CleanerProgressBar = New Typhon.NSProgressBar()
+        Me.NsListView1 = New Typhon.NSListView()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.NsLabel6 = New Typhon.NSLabel()
         Me.NsOnOffBox2 = New Typhon.NSOnOffBox()
@@ -254,31 +254,31 @@ Partial Class WinMain
         ChartArea1.AxisX.IsMarginVisible = False
         ChartArea1.AxisX.LabelStyle.Enabled = False
         ChartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer))
+        ChartArea1.AxisY.Interval = 25.0R
         ChartArea1.AxisY.IsLabelAutoFit = False
-        ChartArea1.AxisY.Minimum = 0
-        ChartArea1.AxisY.Maximum = 100
-        ChartArea1.AxisY.Interval = 25
         ChartArea1.AxisY.LabelStyle.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         ChartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.White
         ChartArea1.AxisY.LabelStyle.Format = "{0}%"
         ChartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer))
+        ChartArea1.AxisY.Maximum = 100.0R
+        ChartArea1.AxisY.Minimum = 0R
         ChartArea1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.BorderColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.Name = "ChartArea1"
         Me.Chart1.ChartAreas.Add(ChartArea1)
+        Legend1.Alignment = System.Drawing.StringAlignment.Far
+        Legend1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top
+        Legend1.ForeColor = System.Drawing.Color.White
+        Legend1.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend1)
         Me.Chart1.Location = New System.Drawing.Point(6, 34)
         Me.Chart1.Name = "Chart1"
         Me.Chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent
-        Legend1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Legend1.ForeColor = System.Drawing.Color.White
-        Legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top
-        Legend1.Alignment = System.Drawing.StringAlignment.Far
-        Legend1.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend1)
         Series1.ChartArea = "ChartArea1"
         Series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
-        Series1.Color = System.Drawing.Color.FromArgb(51, 181, 229)
-        Series1.IsVisibleInLegend = True
+        Series1.Color = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(181, Byte), Integer), CType(CType(229, Byte), Integer))
+        Series1.Legend = "Legend1"
         Series1.LegendText = "RAM"
         Series1.MarkerBorderColor = System.Drawing.Color.Transparent
         Series1.MarkerColor = System.Drawing.Color.White
@@ -287,8 +287,8 @@ Partial Class WinMain
         Series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
         Series2.ChartArea = "ChartArea1"
         Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
-        Series2.Color = System.Drawing.Color.FromArgb(153, 204, 0)
-        Series2.IsVisibleInLegend = True
+        Series2.Color = System.Drawing.Color.FromArgb(CType(CType(153, Byte), Integer), CType(CType(204, Byte), Integer), CType(CType(0, Byte), Integer))
+        Series2.Legend = "Legend1"
         Series2.LegendText = "CPU"
         Series2.MarkerBorderColor = System.Drawing.Color.Transparent
         Series2.MarkerColor = System.Drawing.Color.White
@@ -297,8 +297,8 @@ Partial Class WinMain
         Series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
         Series3.ChartArea = "ChartArea1"
         Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea
-        Series3.Color = System.Drawing.Color.FromArgb(255, 187, 51)
-        Series3.IsVisibleInLegend = True
+        Series3.Color = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(187, Byte), Integer), CType(CType(51, Byte), Integer))
+        Series3.Legend = "Legend1"
         Series3.LegendText = "GPU"
         Series3.MarkerBorderColor = System.Drawing.Color.Transparent
         Series3.MarkerColor = System.Drawing.Color.White
@@ -317,28 +317,17 @@ Partial Class WinMain
         Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         Me.TabPage3.Controls.Add(Me.Label1)
         Me.TabPage3.Controls.Add(Me.NsLabel8)
-        Me.TabPage3.Controls.Add(Me.NsListView1)
         Me.TabPage3.Controls.Add(Me.NsButton5)
         Me.TabPage3.Controls.Add(Me.NsButton4)
         Me.TabPage3.Controls.Add(Me.NsButton6)
         Me.TabPage3.Controls.Add(Me.CleanerProgressBar)
+        Me.TabPage3.Controls.Add(Me.NsListView1)
         Me.TabPage3.Location = New System.Drawing.Point(119, 4)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage3.Size = New System.Drawing.Size(353, 211)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Cleaner"
-        '
-        'NsLabel8
-        '
-        Me.NsLabel8.Font = New System.Drawing.Font("Verdana", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel8.Location = New System.Drawing.Point(6, 6)
-        Me.NsLabel8.Name = "NsLabel8"
-        Me.NsLabel8.Size = New System.Drawing.Size(339, 18)
-        Me.NsLabel8.TabIndex = 13
-        Me.NsLabel8.Value1 = "Scanning:"
-        Me.NsLabel8.Value2 = ""
-        Me.NsLabel8.Visible = False
         '
         'Label1
         '
@@ -351,21 +340,21 @@ Partial Class WinMain
         Me.Label1.Text = "Recommended to run app as administrator if you intend to use the cleaner."
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'NsListView1
+        'NsLabel8
         '
-        Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
-        Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
-        Me.NsListView1.Location = New System.Drawing.Point(6, 26)
-        Me.NsListView1.MultiSelect = True
-        Me.NsListView1.Name = "NsListView1"
-        Me.NsListView1.Size = New System.Drawing.Size(339, 150)
-        Me.NsListView1.TabIndex = 10
-        Me.NsListView1.Visible = False
+        Me.NsLabel8.Font = New System.Drawing.Font("Verdana", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel8.Location = New System.Drawing.Point(6, 6)
+        Me.NsLabel8.Name = "NsLabel8"
+        Me.NsLabel8.Size = New System.Drawing.Size(339, 18)
+        Me.NsLabel8.TabIndex = 13
+        Me.NsLabel8.Value1 = "Scanning:"
+        Me.NsLabel8.Value2 = ""
+        Me.NsLabel8.Visible = False
         '
         'NsButton5
         '
         Me.NsButton5.Enabled = False
-        Me.NsButton5.Location = New System.Drawing.Point(270, 182)
+        Me.NsButton5.Location = New System.Drawing.Point(87, 182)
         Me.NsButton5.Name = "NsButton5"
         Me.NsButton5.Size = New System.Drawing.Size(75, 23)
         Me.NsButton5.TabIndex = 9
@@ -382,7 +371,7 @@ Partial Class WinMain
         '
         'NsButton6
         '
-        Me.NsButton6.Location = New System.Drawing.Point(87, 182)
+        Me.NsButton6.Location = New System.Drawing.Point(270, 182)
         Me.NsButton6.Name = "NsButton6"
         Me.NsButton6.Size = New System.Drawing.Size(75, 23)
         Me.NsButton6.TabIndex = 12
@@ -390,7 +379,7 @@ Partial Class WinMain
         '
         'CleanerProgressBar
         '
-        Me.CleanerProgressBar.Location = New System.Drawing.Point(168, 182)
+        Me.CleanerProgressBar.Location = New System.Drawing.Point(87, 182)
         Me.CleanerProgressBar.Maximum = 100
         Me.CleanerProgressBar.Minimum = 0
         Me.CleanerProgressBar.Name = "CleanerProgressBar"
@@ -398,6 +387,18 @@ Partial Class WinMain
         Me.CleanerProgressBar.TabIndex = 11
         Me.CleanerProgressBar.Value = 0
         Me.CleanerProgressBar.Visible = False
+        '
+        'NsListView1
+        '
+        Me.NsListView1.CheckBoxes = False
+        Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
+        Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
+        Me.NsListView1.Location = New System.Drawing.Point(6, 26)
+        Me.NsListView1.MultiSelect = True
+        Me.NsListView1.Name = "NsListView1"
+        Me.NsListView1.Size = New System.Drawing.Size(339, 150)
+        Me.NsListView1.TabIndex = 10
+        Me.NsListView1.Visible = False
         '
         'TabPage2
         '

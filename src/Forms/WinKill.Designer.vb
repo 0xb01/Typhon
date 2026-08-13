@@ -127,31 +127,31 @@ Partial Class WinKill
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectAllToolStripMenuItem, Me.DeselectAllToolStripMenuItem, Me.AddToIgnoreListToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(169, 70)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 70)
         '
         'SelectAllToolStripMenuItem
         '
         Me.SelectAllToolStripMenuItem.Name = "SelectAllToolStripMenuItem"
-        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
+        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
         Me.SelectAllToolStripMenuItem.Text = "Select All"
         '
         'DeselectAllToolStripMenuItem
         '
         Me.DeselectAllToolStripMenuItem.Name = "DeselectAllToolStripMenuItem"
-        Me.DeselectAllToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
+        Me.DeselectAllToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
         Me.DeselectAllToolStripMenuItem.Text = "Deselect All"
         '
         'AddToIgnoreListToolStripMenuItem
         '
         Me.AddToIgnoreListToolStripMenuItem.Name = "AddToIgnoreListToolStripMenuItem"
-        Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
+        Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
         Me.AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
         '
         'NsControlButton1
         '
         Me.NsControlButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton1.ControlButton = Typhon.NSControlButton.Button.Close
-        Me.NsControlButton1.Location = New System.Drawing.Point(253, 5)
+        Me.NsControlButton1.Location = New System.Drawing.Point(277, 5)
         Me.NsControlButton1.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton1.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton1.MinimumSize = New System.Drawing.Size(18, 20)

@@ -54,23 +54,9 @@ Public Class proc
     Private Shared _cpuCounterInitialized As Boolean = False
 
     ''' <summary>
-    ''' Fast CPU usage percentage tracker using PerformanceCounter with Win32 P/Invoke fallback.
+    ''' Ultra-fast, zero-overhead CPU usage percentage tracker using native Win32 GetSystemTimes API.
     ''' </summary>
     Public Function GetCPUPercentage() As Integer
-        Try
-            If Not _cpuCounterInitialized Then
-                _cpuCounterInitialized = True
-                _cpuCounter = New PerformanceCounter("Processor", "% Processor Time", "_Total")
-                _cpuCounter.NextValue()
-            End If
-
-            If _cpuCounter IsNot Nothing Then
-                Dim val As Single = _cpuCounter.NextValue()
-                Return Math.Min(100, Math.Max(0, CInt(val)))
-            End If
-        Catch ex As Exception
-        End Try
-
         Try
             Dim idleTime, kernelTime, userTime As System.Runtime.InteropServices.ComTypes.FILETIME
             If GetSystemTimes(idleTime, kernelTime, userTime) Then
@@ -106,41 +92,59 @@ Public Class proc
         Return 0
     End Function
 
-    Private Shared _gpuCounters As New List(Of PerformanceCounter)()
-    Private Shared _gpuCounterInitialized As Boolean = False
+    Private Shared _gpuCounterDict As New Dictionary(Of String, PerformanceCounter)(StringComparer.OrdinalIgnoreCase)
 
     ''' <summary>
     ''' Performance counter GPU usage percentage tracker (Windows 10 / 11).
-    ''' Sums utilization across active 3D GPU engine instances.
+    ''' Tracks primary 3D engine utilization across active GPU instances without PDH CPU overhead or dead instance errors.
     ''' </summary>
     Public Function GetGPUPercentage() As Integer
         Try
-            If Not _gpuCounterInitialized Then
-                _gpuCounterInitialized = True
-                If PerformanceCounterCategory.Exists("GPU Engine") Then
-                    Dim cat As New PerformanceCounterCategory("GPU Engine")
-                    Dim instanceNames() As String = cat.GetInstanceNames()
-                    For Each inst As String In instanceNames
-                        If inst.EndsWith("engtype_3D", StringComparison.OrdinalIgnoreCase) OrElse inst.Contains("3D") Then
+            If PerformanceCounterCategory.Exists("GPU Engine") Then
+                Dim cat As New PerformanceCounterCategory("GPU Engine")
+                Dim currentInstances() As String = cat.GetInstanceNames()
+                Dim activeSet As New HashSet(Of String)(currentInstances, StringComparer.OrdinalIgnoreCase)
+
+                ' Purge dead counter instances
+                Dim deadKeys As New List(Of String)()
+                For Each kvp In _gpuCounterDict
+                    If Not activeSet.Contains(kvp.Key) Then
+                        deadKeys.Add(kvp.Key)
+                    End If
+                Next
+
+                For Each key As String In deadKeys
+                    Try
+                        _gpuCounterDict(key).Dispose()
+                    Catch ex As Exception
+                    End Try
+                    _gpuCounterDict.Remove(key)
+                Next
+
+                ' Filter for 3D engine instances
+                For Each inst As String In currentInstances
+                    If inst.Contains("engtype_3D") Then
+                        If Not _gpuCounterDict.ContainsKey(inst) Then
                             Try
                                 Dim pc As New PerformanceCounter("GPU Engine", "Utilization Percentage", inst)
-                                pc.NextValue()
-                                _gpuCounters.Add(pc)
+                                pc.NextValue() ' Prime baseline sample
+                                _gpuCounterDict(inst) = pc
                             Catch ex As Exception
                             End Try
                         End If
-                    Next
-                End If
-            End If
+                    End If
+                Next
 
-            If _gpuCounters.Count > 0 Then
-                Dim totalGPU As Double = 0
-                For Each pc As PerformanceCounter In _gpuCounters
+                ' Sum utilization across all active primed 3D engine counters
+                Dim totalGPU As Double = 0.0
+                For Each kvp In _gpuCounterDict
                     Try
-                        totalGPU += pc.NextValue()
+                        Dim val As Single = kvp.Value.NextValue()
+                        totalGPU += val
                     Catch ex As Exception
                     End Try
                 Next
+
                 Return Math.Min(100, Math.Max(0, CInt(totalGPU)))
             End If
         Catch ex As Exception
@@ -199,7 +203,7 @@ Public Class proc
     ''' <summary>
     ''' Resolves the full file system path for a target process by querying Win32 image APIs with fallback to DOS device mapping.
     ''' </summary>
-    Private Function ProcessHandle(ByVal procItem As Process) As String
+    Private Shared Function ProcessHandle(ByVal procItem As Process) As String
         If procItem Is Nothing Then Return String.Empty
 
         Try
@@ -563,6 +567,61 @@ Public Class proc
         End Try
 
         _iconCache(fullPath) = Nothing
+        Return Nothing
+    End Function
+
+    Private Shared _exeIconCache As New Dictionary(Of String, Image)(StringComparer.OrdinalIgnoreCase)
+
+    ''' <summary>
+    ''' Resolves icon for executable name by matching active processes or standard system executable paths.
+    ''' </summary>
+    Public Shared Function GetExeIcon(exeName As String) As Image
+        If String.IsNullOrEmpty(exeName) Then Return Nothing
+
+        If _exeIconCache.ContainsKey(exeName) Then
+            Return _exeIconCache(exeName)
+        End If
+
+        Try
+            Dim nameOnly As String = Path.GetFileNameWithoutExtension(exeName)
+            Dim runningProcs() As Process = Process.GetProcessesByName(nameOnly)
+            For Each p As Process In runningProcs
+                Try
+                    Dim targetPath As String = ProcessHandle(p)
+                    p.Dispose()
+                    If Not String.IsNullOrEmpty(targetPath) AndAlso File.Exists(targetPath) Then
+                        Dim img As Image = GetProcessIcon(targetPath)
+                        If img IsNot Nothing Then
+                            _exeIconCache(exeName) = img
+                            Return img
+                        End If
+                    End If
+                Catch ex As Exception
+                    p.Dispose()
+                End Try
+            Next
+
+            Dim sysPath As String = Path.Combine(Environment.SystemDirectory, exeName)
+            If File.Exists(sysPath) Then
+                Dim img As Image = GetProcessIcon(sysPath)
+                If img IsNot Nothing Then
+                    _exeIconCache(exeName) = img
+                    Return img
+                End If
+            End If
+
+            Dim winPath As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), exeName)
+            If File.Exists(winPath) Then
+                Dim img As Image = GetProcessIcon(winPath)
+                If img IsNot Nothing Then
+                    _exeIconCache(exeName) = img
+                    Return img
+                End If
+            End If
+        Catch ex As Exception
+        End Try
+
+        _exeIconCache(exeName) = Nothing
         Return Nothing
     End Function
 End Class

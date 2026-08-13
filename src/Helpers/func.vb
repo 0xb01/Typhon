@@ -25,8 +25,8 @@ Public Class func
     End Function
 
     ''' <summary>
-    ''' Queries Windows Management Instrumentation (WMI) to aggregate system specifications 
-    ''' including OS, CPU, GPU, RAM, and attached storage drives. Caches results to prevent UI freezing.
+    ''' Queries Windows Management Instrumentation (WMI) to aggregate comprehensive system hardware specifications
+    ''' including OS architecture, motherboard model, CPU cores/threads, memory module speeds, GPU VRAM, and storage drives.
     ''' </summary>
     ''' <returns>A formatted multi-line String containing system specifications.</returns>
     Function GetSpecs() As String
@@ -34,64 +34,119 @@ Public Class func
             Return _cachedSpecs
         End If
 
-        Dim systemInfo As New System.Text.StringBuilder()
+        Dim sb As New System.Text.StringBuilder()
 
-        systemInfo.AppendLine("===== SPECS =====" & vbNewLine)
+        sb.AppendLine("==================================")
+        sb.AppendLine("                   SYSTEM SPECIFICATIONS                  ")
+        sb.AppendLine("==================================" & vbNewLine)
 
         Dim scope As New ManagementScope("\\.\root\cimv2")
 
-        Using osSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption FROM Win32_OperatingSystem"))
-            Using osCollection As ManagementObjectCollection = osSearcher.Get()
-                For Each os As ManagementObject In osCollection
-                    systemInfo.AppendLine("Operating System: " & os("Caption"))
-                Next
+        ' OS Info
+        Try
+            Using osSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption, OSArchitecture, Version, BuildNumber FROM Win32_OperatingSystem"))
+                Using osCollection As ManagementObjectCollection = osSearcher.Get()
+                    For Each os As ManagementObject In osCollection
+                        sb.AppendLine("  OS:           " & os("Caption") & " (" & os("OSArchitecture") & ")")
+                        sb.AppendLine("  Version:      " & os("Version") & " (Build " & os("BuildNumber") & ")")
+                    Next
+                End Using
             End Using
-        End Using
+        Catch ex As Exception
+        End Try
 
-        Using cpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name FROM Win32_Processor"))
-            Using cpuCollection As ManagementObjectCollection = cpuSearcher.Get()
-                For Each cpu As ManagementObject In cpuCollection
-                    systemInfo.AppendLine("Processor: " & cpu("Name"))
-                Next
+        ' Motherboard Info
+        Try
+            Using mbSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Manufacturer, Product FROM Win32_BaseBoard"))
+                Using mbCol As ManagementObjectCollection = mbSearcher.Get()
+                    For Each mb As ManagementObject In mbCol
+                        sb.AppendLine("  Motherboard:  " & mb("Manufacturer") & " " & mb("Product"))
+                    Next
+                End Using
             End Using
-        End Using
+        Catch ex As Exception
+        End Try
 
-        Using gpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name FROM Win32_VideoController"))
-            Using gpuCollection As ManagementObjectCollection = gpuSearcher.Get()
-                For Each gpu As ManagementObject In gpuCollection
-                    systemInfo.AppendLine("Graphics Card: " & gpu("Name"))
-                Next
+        ' CPU Info
+        Try
+            Using cpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name, NumberOfCores, NumberOfLogicalProcessors FROM Win32_Processor"))
+                Using cpuCol As ManagementObjectCollection = cpuSearcher.Get()
+                    For Each cpu As ManagementObject In cpuCol
+                        Dim cores As String = If(cpu("NumberOfCores") IsNot Nothing, cpu("NumberOfCores").ToString() & " Cores / " & cpu("NumberOfLogicalProcessors").ToString() & " Threads", "")
+                        sb.AppendLine("  Processor:    " & cpu("Name") & " [" & cores & "]")
+                    Next
+                End Using
             End Using
-        End Using
+        Catch ex As Exception
+        End Try
 
-        Using searcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT UserName, TotalPhysicalMemory FROM Win32_ComputerSystem"))
-            Using queryCollection As ManagementObjectCollection = searcher.Get()
-                For Each m As ManagementObject In queryCollection
-                    systemInfo.AppendLine("User Name: " & m("UserName"))
-                    If m("TotalPhysicalMemory") IsNot Nothing Then
-                        systemInfo.AppendLine("Total Physical Memory (RAM): " & FormatBytes(CLng(m("TotalPhysicalMemory"))))
-                    End If
-                Next
+        ' Memory Info
+        Try
+            Using sysSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem"))
+                Using sysCol As ManagementObjectCollection = sysSearcher.Get()
+                    For Each sys As ManagementObject In sysCol
+                        If sys("TotalPhysicalMemory") IsNot Nothing Then
+                            sb.AppendLine("  Total RAM:    " & FormatBytes(CLng(sys("TotalPhysicalMemory"))))
+                        End If
+                    Next
+                End Using
             End Using
-        End Using
 
-        systemInfo.AppendLine(vbNewLine & "===== STORAGE =====" & vbNewLine)
-
-        Using driveSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption, Size FROM Win32_DiskDrive"))
-            Using driveCollection As ManagementObjectCollection = driveSearcher.Get()
-                Dim drives As Integer = 1
-                For Each drive As ManagementObject In driveCollection
-                    Dim sizeStr As String = "Unknown"
-                    If drive("Size") IsNot Nothing Then
-                        sizeStr = FormatBytes(CLng(drive("Size")))
-                    End If
-                    systemInfo.AppendLine("Drive #" & drives & ": " & drive("Caption") & Space(1) & "(" & sizeStr & ")")
-                    drives += 1
-                Next
+            ' Memory Modules
+            Using memSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Capacity, Speed FROM Win32_PhysicalMemory"))
+                Using memCol As ManagementObjectCollection = memSearcher.Get()
+                    Dim stickIndex As Integer = 1
+                    For Each mem As ManagementObject In memCol
+                        Dim cap As String = FormatBytes(CLng(mem("Capacity")))
+                        Dim speed As String = If(mem("Speed") IsNot Nothing, mem("Speed").ToString() & " MHz", "")
+                        sb.AppendLine("   └─ Stick #" & stickIndex & ": " & cap & " @ " & speed)
+                        stickIndex += 1
+                    Next
+                End Using
             End Using
-        End Using
+        Catch ex As Exception
+        End Try
 
-        _cachedSpecs = systemInfo.ToString()
+        ' GPU Info
+        Try
+            Using gpuSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Name, DriverVersion, AdapterRAM FROM Win32_VideoController"))
+                Using gpuCol As ManagementObjectCollection = gpuSearcher.Get()
+                    For Each gpu As ManagementObject In gpuCol
+                        Dim vram As String = ""
+                        If gpu("AdapterRAM") IsNot Nothing AndAlso CLng(gpu("AdapterRAM")) > 0 Then
+                            vram = " (" & FormatBytes(CLng(gpu("AdapterRAM"))) & " VRAM)"
+                        End If
+                        Dim driver As String = If(gpu("DriverVersion") IsNot Nothing, " [Driver: " & gpu("DriverVersion").ToString() & "]", "")
+                        sb.AppendLine("  Graphics:     " & gpu("Name") & vram & driver)
+                    Next
+                End Using
+            End Using
+        Catch ex As Exception
+        End Try
+
+        sb.AppendLine(vbNewLine & "==================================")
+        sb.AppendLine("                   STORAGE & DISK DRIVES                  ")
+        sb.AppendLine("==================================" & vbNewLine)
+
+        Try
+            Using driveSearcher As New ManagementObjectSearcher(scope, New ObjectQuery("SELECT Caption, Size, InterfaceType FROM Win32_DiskDrive"))
+                Using driveCol As ManagementObjectCollection = driveSearcher.Get()
+                    Dim driveIdx As Integer = 1
+                    For Each drive As ManagementObject In driveCol
+                        Dim sizeStr As String = "Unknown"
+                        If drive("Size") IsNot Nothing Then
+                            sizeStr = FormatBytes(CLng(drive("Size")))
+                        End If
+                        Dim interfaceType As String = If(drive("InterfaceType") IsNot Nothing, " [" & drive("InterfaceType").ToString() & "]", "")
+                        sb.AppendLine("  Drive #" & driveIdx & ":       " & drive("Caption") & interfaceType & " - " & sizeStr)
+                        driveIdx += 1
+                    Next
+                End Using
+            End Using
+        Catch ex As Exception
+        End Try
+
+        _cachedSpecs = sb.ToString()
         Return _cachedSpecs
     End Function
 

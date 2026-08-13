@@ -32,6 +32,9 @@ Partial Class WinOptions
         Me.chkDumps = New Typhon.NSCheckBox()
         Me.chkRecent = New Typhon.NSCheckBox()
         Me.chkAppCache = New Typhon.NSCheckBox()
+        Me.chkWinUpdate = New Typhon.NSCheckBox()
+        Me.chkDriverCache = New Typhon.NSCheckBox()
+        Me.chkPkgCache = New Typhon.NSCheckBox()
         Me.btnSave = New Typhon.NSButton()
         Me.NsTheme1.SuspendLayout()
         Me.SuspendLayout()
@@ -52,12 +55,15 @@ Partial Class WinOptions
         Me.NsTheme1.Controls.Add(Me.chkDumps)
         Me.NsTheme1.Controls.Add(Me.chkRecent)
         Me.NsTheme1.Controls.Add(Me.chkAppCache)
+        Me.NsTheme1.Controls.Add(Me.chkWinUpdate)
+        Me.NsTheme1.Controls.Add(Me.chkDriverCache)
+        Me.NsTheme1.Controls.Add(Me.chkPkgCache)
         Me.NsTheme1.Controls.Add(Me.btnSave)
         Me.NsTheme1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.NsTheme1.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NsTheme1.Location = New System.Drawing.Point(0, 0)
         Me.NsTheme1.Name = "NsTheme1"
-        Me.NsTheme1.Size = New System.Drawing.Size(380, 350)
+        Me.NsTheme1.Size = New System.Drawing.Size(380, 390)
         Me.NsTheme1.TabIndex = 0
         Me.NsTheme1.Text = "Cleaner Options"
         '
@@ -112,7 +118,7 @@ Partial Class WinOptions
         '
         'chkGames
         '
-        Me.chkGames.Checked = True
+        Me.chkGames.Checked = False
         Me.chkGames.Location = New System.Drawing.Point(20, 165)
         Me.chkGames.Name = "chkGames"
         Me.chkGames.Size = New System.Drawing.Size(160, 23)
@@ -121,7 +127,7 @@ Partial Class WinOptions
         '
         'chkFolderCfg
         '
-        Me.chkFolderCfg.Checked = True
+        Me.chkFolderCfg.Checked = False
         Me.chkFolderCfg.Location = New System.Drawing.Point(20, 195)
         Me.chkFolderCfg.Name = "chkFolderCfg"
         Me.chkFolderCfg.Size = New System.Drawing.Size(160, 23)
@@ -130,7 +136,7 @@ Partial Class WinOptions
         '
         'chkCookies
         '
-        Me.chkCookies.Checked = True
+        Me.chkCookies.Checked = False
         Me.chkCookies.Location = New System.Drawing.Point(20, 225)
         Me.chkCookies.Name = "chkCookies"
         Me.chkCookies.Size = New System.Drawing.Size(160, 23)
@@ -184,26 +190,53 @@ Partial Class WinOptions
         '
         'chkAppCache
         '
-        Me.chkAppCache.Checked = True
+        Me.chkAppCache.Checked = False
         Me.chkAppCache.Location = New System.Drawing.Point(195, 195)
         Me.chkAppCache.Name = "chkAppCache"
         Me.chkAppCache.Size = New System.Drawing.Size(165, 23)
         Me.chkAppCache.TabIndex = 13
         Me.chkAppCache.Text = "Application Caches"
         '
+        'chkWinUpdate
+        '
+        Me.chkWinUpdate.Checked = True
+        Me.chkWinUpdate.Location = New System.Drawing.Point(20, 255)
+        Me.chkWinUpdate.Name = "chkWinUpdate"
+        Me.chkWinUpdate.Size = New System.Drawing.Size(160, 23)
+        Me.chkWinUpdate.TabIndex = 14
+        Me.chkWinUpdate.Text = "Windows Update Cache"
+        '
+        'chkDriverCache
+        '
+        Me.chkDriverCache.Checked = False
+        Me.chkDriverCache.Location = New System.Drawing.Point(195, 225)
+        Me.chkDriverCache.Name = "chkDriverCache"
+        Me.chkDriverCache.Size = New System.Drawing.Size(165, 23)
+        Me.chkDriverCache.TabIndex = 15
+        Me.chkDriverCache.Text = "GPU Driver Cache"
+        '
+        'chkPkgCache
+        '
+        Me.chkPkgCache.Checked = False
+        Me.chkPkgCache.Location = New System.Drawing.Point(195, 255)
+        Me.chkPkgCache.Name = "chkPkgCache"
+        Me.chkPkgCache.Size = New System.Drawing.Size(165, 23)
+        Me.chkPkgCache.TabIndex = 16
+        Me.chkPkgCache.Text = "Dev Package Caches"
+        '
         'btnSave
         '
-        Me.btnSave.Location = New System.Drawing.Point(130, 305)
+        Me.btnSave.Location = New System.Drawing.Point(130, 345)
         Me.btnSave.Name = "btnSave"
         Me.btnSave.Size = New System.Drawing.Size(120, 28)
-        Me.btnSave.TabIndex = 14
+        Me.btnSave.TabIndex = 17
         Me.btnSave.Text = "Save Settings"
         '
         'WinOptions
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(380, 350)
+        Me.ClientSize = New System.Drawing.Size(380, 390)
         Me.ControlBox = False
         Me.Controls.Add(Me.NsTheme1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
@@ -230,6 +263,9 @@ Partial Class WinOptions
     Friend WithEvents chkDumps As Typhon.NSCheckBox
     Friend WithEvents chkRecent As Typhon.NSCheckBox
     Friend WithEvents chkAppCache As Typhon.NSCheckBox
+    Friend WithEvents chkWinUpdate As Typhon.NSCheckBox
+    Friend WithEvents chkDriverCache As Typhon.NSCheckBox
+    Friend WithEvents chkPkgCache As Typhon.NSCheckBox
     Friend WithEvents btnSave As Typhon.NSButton
 
 End Class

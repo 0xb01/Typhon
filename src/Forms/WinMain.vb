@@ -47,6 +47,15 @@ Public Class WinMain
             ProcessIgnoreList = My.Settings.IgnoreProcessList
         End If
 
+        NsOnOffBox1.Checked = My.Settings.AutoFreeRAM
+
+        Dim isAutostartRegistryEnabled As Boolean = IsBootAutostartEnabled()
+        If My.Settings.AutoStartOnBoot <> isAutostartRegistryEnabled Then
+            My.Settings.AutoStartOnBoot = isAutostartRegistryEnabled
+            My.Settings.Save()
+        End If
+        NsOnOffBox2.Checked = My.Settings.AutoStartOnBoot
+
         If NsListView1.Columns.Length = 0 Then
             NsListView1.AddColumn("Filename", 120)
             NsListView1.AddColumn("Size", 60)
@@ -122,7 +131,7 @@ Public Class WinMain
     Private peakRAMPct As Integer = 0
 
     ''' <summary>
-    ''' Timer tick event handler updating the multi-series memory, CPU, and GPU usage chart visualization with smooth 60-point rolling window.
+    ''' Timer tick event handler updating the RAM, CPU, and GPU usage chart visualization with smooth 60-point rolling window.
     ''' </summary>
     Private Sub Timer1_Tick(sender As System.Object, e As System.EventArgs) Handles graphTimer.Tick
         Dim ramPct As Integer = CInt(Val(_proc.GetRAMPercentage()))
@@ -327,7 +336,8 @@ Public Class WinMain
             Using runKey As RegistryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
                 If runKey IsNot Nothing Then
                     If enable Then
-                        runKey.SetValue("Typhon", Application.ExecutablePath)
+                        Dim execPath As String = """" & Application.ExecutablePath & """"
+                        runKey.SetValue("Typhon", execPath)
                     Else
                         If runKey.GetValue("Typhon") IsNot Nothing Then
                             runKey.DeleteValue("Typhon", False)
@@ -339,6 +349,21 @@ Public Class WinMain
             ' Ignore registry write permissions error
         End Try
     End Sub
+
+    ''' <summary>
+    ''' Checks whether the Windows CurrentUser Run registry key exists for Typhon autostart.
+    ''' </summary>
+    Private Function IsBootAutostartEnabled() As Boolean
+        Try
+            Using runKey As RegistryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", False)
+                If runKey IsNot Nothing Then
+                    Return (runKey.GetValue("Typhon") IsNot Nothing)
+                End If
+            End Using
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
 
     ''' <summary>
     ''' Toggle switch event handler saving Auto-Start on Boot user setting and updating Windows startup registry.

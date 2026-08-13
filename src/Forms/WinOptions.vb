@@ -14,15 +14,18 @@ Public Class WinOptions
         chkRecycle.Checked = If(config.ContainsKey("Recycle Bin"), config("Recycle Bin"), True)
         chkIncompat.Checked = If(config.ContainsKey("Incompatible Files"), config("Incompatible Files"), True)
         chkThumb.Checked = If(config.ContainsKey("Thumbnail Caches"), config("Thumbnail Caches"), True)
-        chkGames.Checked = If(config.ContainsKey("Game Caches"), config("Game Caches"), True)
-        chkFolderCfg.Checked = If(config.ContainsKey("Folder Config Files"), config("Folder Config Files"), True)
-        chkCookies.Checked = If(config.ContainsKey("Internet Cookies"), config("Internet Cookies"), True)
+        chkGames.Checked = If(config.ContainsKey("Game Caches"), config("Game Caches"), False)
+        chkFolderCfg.Checked = If(config.ContainsKey("Folder Config Files"), config("Folder Config Files"), False)
+        chkCookies.Checked = If(config.ContainsKey("Internet Cookies"), config("Internet Cookies"), False)
         chkCache.Checked = If(config.ContainsKey("Internet Cache"), config("Internet Cache"), True)
         chkHistory.Checked = If(config.ContainsKey("Internet History"), config("Internet History"), True)
         chkLogs.Checked = If(config.ContainsKey("Windows Logs"), config("Windows Logs"), True)
         chkDumps.Checked = If(config.ContainsKey("Memory Dumps"), config("Memory Dumps"), True)
         chkRecent.Checked = If(config.ContainsKey("Recent Files"), config("Recent Files"), True)
-        chkAppCache.Checked = If(config.ContainsKey("Application Caches"), config("Application Caches"), True)
+        chkAppCache.Checked = If(config.ContainsKey("Application Caches"), config("Application Caches"), False)
+        chkWinUpdate.Checked = If(config.ContainsKey("Windows Update Cache"), config("Windows Update Cache"), True)
+        chkDriverCache.Checked = If(config.ContainsKey("GPU Driver Cache"), config("GPU Driver Cache"), False)
+        chkPkgCache.Checked = If(config.ContainsKey("Dev Package Caches"), config("Dev Package Caches"), False)
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
@@ -41,6 +44,9 @@ Public Class WinOptions
         config("Memory Dumps") = chkDumps.Checked
         config("Recent Files") = chkRecent.Checked
         config("Application Caches") = chkAppCache.Checked
+        config("Windows Update Cache") = chkWinUpdate.Checked
+        config("GPU Driver Cache") = chkDriverCache.Checked
+        config("Dev Package Caches") = chkPkgCache.Checked
 
         cleaner.SaveConfig(config)
         Me.DialogResult = DialogResult.OK

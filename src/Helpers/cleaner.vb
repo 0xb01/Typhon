@@ -126,7 +126,10 @@ Public Class cleaner
                 "Windows Logs",
                 "Memory Dumps",
                 "Recent Files",
-                "Application Caches"
+                "Application Caches",
+                "Windows Update Cache",
+                "GPU Driver Cache",
+                "Dev Package Caches"
             }
         End Get
     End Property
@@ -137,8 +140,17 @@ Public Class cleaner
     Public Shared Function LoadConfig() As Dictionary(Of String, Boolean)
         Dim config As New Dictionary(Of String, Boolean)(StringComparer.OrdinalIgnoreCase)
 
+        Dim defaultFalseCategories As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase) From {
+            "Game Caches",
+            "Folder Config Files",
+            "Internet Cookies",
+            "Application Caches",
+            "GPU Driver Cache",
+            "Dev Package Caches"
+        }
+
         For Each catName As String In StandardCategoryNames
-            config(catName) = True
+            config(catName) = Not defaultFalseCategories.Contains(catName)
         Next
 
         Try
@@ -285,6 +297,27 @@ Public Class cleaner
             categories.Add(New CleanCategory("Discord Cache", Path.Combine(localAppData, "Discord\Cache"), {"*.*"}, True))
             categories.Add(New CleanCategory("Spotify Cache", Path.Combine(localAppData, "Spotify\Storage"), {"*.*"}, True))
             categories.Add(New CleanCategory("Adobe Media Cache", Path.Combine(appData, "Adobe\Common\Media Cache Files"), {"*.*"}, True))
+        End If
+
+        ' 14. Windows Update Cache
+        If config.ContainsKey("Windows Update Cache") AndAlso config("Windows Update Cache") Then
+            categories.Add(New CleanCategory("Windows Update Download", Path.Combine(windir, "SoftwareDistribution\Download"), {"*.*"}, True))
+        End If
+
+        ' 15. GPU Driver Cache
+        If config.ContainsKey("GPU Driver Cache") AndAlso config("GPU Driver Cache") Then
+            categories.Add(New CleanCategory("NVIDIA DXCache", Path.Combine(localAppData, "NVIDIA\DXCache"), {"*.*"}, True))
+            categories.Add(New CleanCategory("NVIDIA GLCache", Path.Combine(localAppData, "NVIDIA\GLCache"), {"*.*"}, True))
+            categories.Add(New CleanCategory("AMD DxCache", Path.Combine(localAppData, "AMD\DxCache"), {"*.*"}, True))
+            categories.Add(New CleanCategory("Intel ShaderCache", Path.Combine(localAppData, "Intel\ShaderCache"), {"*.*"}, True))
+        End If
+
+        ' 16. Dev Package Caches
+        If config.ContainsKey("Dev Package Caches") AndAlso config("Dev Package Caches") Then
+            categories.Add(New CleanCategory("Pip Cache", Path.Combine(localAppData, "pip\Cache"), {"*.*"}, True))
+            categories.Add(New CleanCategory("Npm Cache", Path.Combine(localAppData, "npm-cache"), {"*.*"}, True))
+            Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            categories.Add(New CleanCategory("NuGet Scratch Cache", Path.Combine(userProfile, ".nuget\packages"), {"*.tmp", "*.log"}, True))
         End If
 
         Return categories

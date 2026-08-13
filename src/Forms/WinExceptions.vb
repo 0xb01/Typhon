@@ -20,7 +20,8 @@ Public Class WinExceptions
             For Each exeName As String In WinMain.ProcessIgnoreList
                 If Not String.IsNullOrEmpty(exeName) Then
                     Dim lvi As New NSListView.NSListViewItem() With {
-                        .Text = exeName
+                        .Text = exeName,
+                        .Icon = proc.GetExeIcon(exeName)
                     }
                     itemList.Add(lvi)
                 End If
