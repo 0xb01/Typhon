@@ -4977,6 +4977,7 @@ Class NSListView
         _Items.Clear()
         _SelectedItems.Clear()
         InvalidateScroll()
+        Invalidate()
     End Sub
 
     Public Sub AddItems(ByVal items As IEnumerable(Of NSListViewItem))
@@ -5053,6 +5054,37 @@ Class NSListView
     Private DragStartX As Integer = 0
     Private DragStartWidth As Integer = 0
 
+    Private Function ParseByteSize(ByVal input As String) As Double
+        If String.IsNullOrWhiteSpace(input) Then Return -1.0
+        Dim s As String = input.Trim().ToUpper()
+
+        Dim mult As Double = 1.0
+        If s.EndsWith("TB") Then
+            mult = 1099511627776.0
+            s = s.Replace("TB", "").Trim()
+        ElseIf s.EndsWith("GB") Then
+            mult = 1073741824.0
+            s = s.Replace("GB", "").Trim()
+        ElseIf s.EndsWith("MB") Then
+            mult = 1048576.0
+            s = s.Replace("MB", "").Trim()
+        ElseIf s.EndsWith("KB") Then
+            mult = 1024.0
+            s = s.Replace("KB", "").Trim()
+        ElseIf s.EndsWith("B") Then
+            mult = 1.0
+            s = s.Replace("B", "").Trim()
+        Else
+            Return -1.0
+        End If
+
+        Dim val As Double = 0.0
+        If Double.TryParse(s, val) Then
+            Return val * mult
+        End If
+        Return -1.0
+    End Function
+
     Public Sub SortByColumn(ByVal columnIndex As Integer)
         If columnIndex < 0 OrElse columnIndex >= _Columns.Count Then Return
 
@@ -5066,6 +5098,12 @@ Class NSListView
         _Items.Sort(Function(a, b)
                         Dim strA As String = GetItemColumnText(a, columnIndex)
                         Dim strB As String = GetItemColumnText(b, columnIndex)
+
+                        Dim bytesA As Double = ParseByteSize(strA)
+                        Dim bytesB As Double = ParseByteSize(strB)
+                        If bytesA >= 0.0 AndAlso bytesB >= 0.0 Then
+                            Return If(SortAscending, bytesA.CompareTo(bytesB), bytesB.CompareTo(bytesA))
+                        End If
 
                         Dim dblA, dblB As Double
                         If Double.TryParse(strA, dblA) AndAlso Double.TryParse(strB, dblB) Then

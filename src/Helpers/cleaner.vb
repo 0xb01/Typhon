@@ -213,7 +213,11 @@ Public Class cleaner
             For Each drv As String In selectedDrives
                 Dim tempSubDir As String = Path.Combine(drv, "Temp")
                 If Directory.Exists(tempSubDir) Then
-                    categories.Add(New CleanCategory("Drive Temp (" & drv.TrimEnd("\"c) & ")", tempSubDir, {"*.tmp", "*.log", "*.bak", "*.old", "*.chk"}, True))
+                    categories.Add(New CleanCategory("Drive Temp (" & drv.TrimEnd("\"c) & ")", tempSubDir, {"*.tmp", "*.log", "*.bak", "*.old", "*.chk", "*.*"}, True))
+                End If
+                Dim tmpSubDir As String = Path.Combine(drv, "TMP")
+                If Directory.Exists(tmpSubDir) Then
+                    categories.Add(New CleanCategory("Drive TMP (" & drv.TrimEnd("\"c) & ")", tmpSubDir, {"*.tmp", "*.log", "*.bak", "*.old", "*.chk", "*.*"}, True))
                 End If
                 categories.Add(New CleanCategory("Drive Root Temp (" & drv.TrimEnd("\"c) & ")", drv, {"*.tmp", "*.bak", "*.old", "*.chk"}, False))
             Next
@@ -231,6 +235,13 @@ Public Class cleaner
         If config.ContainsKey("Incompatible Files") AndAlso config("Incompatible Files") Then
             categories.Add(New CleanCategory("Crash Dumps", Path.Combine(localAppData, "CrashDumps"), {"*.dmp", "*.hdmp"}, True))
             categories.Add(New CleanCategory("Windows Error Reporting", "C:\ProgramData\Microsoft\Windows\WER", {"*.*"}, True))
+            For Each drv As String In selectedDrives
+                Dim winBt As String = Path.Combine(drv, "$Windows.~BT")
+                If Directory.Exists(winBt) Then categories.Add(New CleanCategory("Windows Upgrade Cache (" & drv.TrimEnd("\"c) & ")", winBt, {"*.*"}, True))
+                Dim winWs As String = Path.Combine(drv, "$Windows.~WS")
+                If Directory.Exists(winWs) Then categories.Add(New CleanCategory("Windows Installation Cache (" & drv.TrimEnd("\"c) & ")", winWs, {"*.*"}, True))
+                categories.Add(New CleanCategory("Drive Dumps (" & drv.TrimEnd("\"c) & ")", drv, {"*.dmp", "*.hdmp", "*.mdmp"}, False))
+            Next
         End If
 
         ' 4. Thumbnail Caches
@@ -243,6 +254,10 @@ Public Class cleaner
             categories.Add(New CleanCategory("Steam Web Cache", Path.Combine(localAppData, "Steam\htmlcache"), {"*.*"}, True))
             categories.Add(New CleanCategory("Epic Games Cache", Path.Combine(localAppData, "EpicGamesLauncher\Saved\webcache"), {"*.*"}, True))
             categories.Add(New CleanCategory("DirectX Shader Cache", Path.Combine(localAppData, "D3DSCache"), {"*.*"}, True))
+            For Each drv As String In selectedDrives
+                Dim steamShader As String = Path.Combine(drv, "SteamLibrary\steamapps\shadercache")
+                If Directory.Exists(steamShader) Then categories.Add(New CleanCategory("Steam Shader Cache (" & drv.TrimEnd("\"c) & ")", steamShader, {"*.*"}, True))
+            Next
         End If
 
         ' 6. Folder Config Files
@@ -318,6 +333,9 @@ Public Class cleaner
             categories.Add(New CleanCategory("Npm Cache", Path.Combine(localAppData, "npm-cache"), {"*.*"}, True))
             Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
             categories.Add(New CleanCategory("NuGet Scratch Cache", Path.Combine(userProfile, ".nuget\packages"), {"*.tmp", "*.log"}, True))
+            For Each drv As String In selectedDrives
+                categories.Add(New CleanCategory("Drive Dev Scratch (" & drv.TrimEnd("\"c) & ")", drv, {"*.tmp", "*.log", "*.bak"}, False))
+            Next
         End If
 
         Return categories
@@ -341,12 +359,27 @@ Public Class cleaner
     Private Shared Iterator Function SafeEnumerateFiles(rootPath As String, patterns() As String, recursive As Boolean, dirVisitedCallback As Action(Of String, Integer), cancelCheck As Func(Of Boolean)) As IEnumerable(Of String)
         Dim dirsToVisit As New Queue(Of String)()
         dirsToVisit.Enqueue(rootPath)
+
+        ' If target is a drive's $Recycle.Bin, also directly attempt to enqueue all child SID directories
+        Try
+            If rootPath.EndsWith("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) OrElse rootPath.EndsWith("RECYCLER", StringComparison.OrdinalIgnoreCase) Then
+                For Each sidDir As String In Directory.GetDirectories(rootPath)
+                    dirsToVisit.Enqueue(sidDir)
+                Next
+            End If
+        Catch ex As Exception
+        End Try
+
         Dim dirCounter As Integer = 0
+        Dim processedDirs As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
 
         While dirsToVisit.Count > 0
             If cancelCheck IsNot Nothing AndAlso cancelCheck() Then Exit Function
 
             Dim currentDir As String = dirsToVisit.Dequeue()
+            If processedDirs.Contains(currentDir) Then Continue While
+            processedDirs.Add(currentDir)
+
             dirCounter += 1
 
             If dirCounter Mod 25 = 0 AndAlso dirVisitedCallback IsNot Nothing Then
@@ -355,17 +388,23 @@ Public Class cleaner
 
             If recursive Then
                 Try
-                    Dim subDirs() As String = Directory.GetDirectories(currentDir)
-                    For Each sd As String In subDirs
+                    Dim di As New DirectoryInfo(currentDir)
+                    For Each sd As DirectoryInfo In di.EnumerateDirectories()
                         Try
-                            Dim di As New DirectoryInfo(sd)
-                            If Not di.Attributes.HasFlag(FileAttributes.ReparsePoint) Then
-                                dirsToVisit.Enqueue(sd)
+                            If Not sd.Attributes.HasFlag(FileAttributes.ReparsePoint) Then
+                                dirsToVisit.Enqueue(sd.FullName)
                             End If
                         Catch ex As Exception
                         End Try
                     Next
                 Catch ex As Exception
+                    ' Fallback directory retrieval if EnumerateDirectories throws
+                    Try
+                        For Each sdPath As String In Directory.GetDirectories(currentDir)
+                            dirsToVisit.Enqueue(sdPath)
+                        Next
+                    Catch ex2 As Exception
+                    End Try
                 End Try
             End If
 
@@ -403,7 +442,7 @@ Public Class cleaner
             Dim catIndex As Integer = i
             Dim initPct As Integer = CInt((catIndex / CDbl(total)) * 100.0)
             If progressCallback IsNot Nothing Then
-                progressCallback(initPct, 100, "Scanning: " & cat.Name)
+                progressCallback(initPct, 100, cat.Name)
             End If
 
             Try
@@ -444,7 +483,7 @@ Public Class cleaner
     ''' <summary>
     ''' Deletes detailed scanned items and empties Windows Recycle Bin, updating progress callbacks.
     ''' </summary>
-    Public Shared Function CleanDetailedFiles(items As List(Of CleanItem), progressCallback As Action(Of Integer, Integer, String)) As Integer
+    Public Shared Function CleanDetailedFiles(items As List(Of CleanItem), progressCallback As Action(Of Integer, Integer, String), Optional itemProcessedCallback As Action(Of CleanItem, Boolean) = Nothing) As Integer
         Dim cleanedCount As Integer = 0
         Dim total As Integer = items.Count
 
@@ -464,18 +503,29 @@ Public Class cleaner
 
         For i As Integer = 0 To total - 1
             Dim item As CleanItem = items(i)
-            If progressCallback IsNot Nothing AndAlso (i Mod 50 = 0 OrElse i = total - 1) Then
+            If progressCallback IsNot Nothing AndAlso (i Mod 10 = 0 OrElse i = total - 1) Then
                 progressCallback(i + 1, total, "Cleaning item " & (i + 1) & " of " & total)
             End If
 
+            Dim wasCleaned As Boolean = False
             Try
                 If File.Exists(item.FilePath) Then
                     File.Delete(item.FilePath)
                     cleanedCount += 1
+                    wasCleaned = True
+                Else
+                    ' File was emptied via SHEmptyRecycleBin API or previously removed
+                    cleanedCount += 1
+                    wasCleaned = True
                 End If
             Catch ex As Exception
-                ' Skip locked or in-use files
+                ' File is locked or access denied
+                wasCleaned = False
             End Try
+
+            If itemProcessedCallback IsNot Nothing Then
+                itemProcessedCallback(item, wasCleaned)
+            End If
         Next
 
         If progressCallback IsNot Nothing Then

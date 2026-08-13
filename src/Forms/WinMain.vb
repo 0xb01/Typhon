@@ -27,12 +27,18 @@ Public Class WinMain
         NsLabel3.Value1 = title
         NsLabel3.Value2 = Space(1) & message
         cooldownTimer.Start()
+
+        If My.Settings.ShowTrayNotifications AndAlso notifIcon.Visible Then
+            notifIcon.ShowBalloonTip(3000, "Typhon PC Booster", title & Space(1) & message, ToolTipIcon.Info)
+        End If
     End Sub
 
     ''' <summary>
     ''' Initializes application controls, queries system hardware specs, and loads user settings.
     ''' </summary>
     Sub LoadStuff()
+        ShowNotification("~X:", "Loading system information...")
+
         Dim infoProcessor As String = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\SYSTEM\CentralProcessor\0", "ProcessorNameString", Nothing)
 
         NsGroupBox1.Title = "[" & _func.GetPCName & "]"
@@ -55,12 +61,19 @@ Public Class WinMain
             My.Settings.Save()
         End If
         NsOnOffBox2.Checked = My.Settings.AutoStartOnBoot
+        NsOnOffBox3.Checked = My.Settings.MinimizeToTray
+        NsOnOffBox4.Checked = My.Settings.CloseToTray
+        NsOnOffBox5.Checked = My.Settings.ShowTrayNotifications
+        NsOnOffBox6.Checked = My.Settings.StartMinimizedOnBoot
 
-        If NsListView1.Columns.Length = 0 Then
-            NsListView1.AddColumn("Filename", 120)
-            NsListView1.AddColumn("Size", 60)
-            NsListView1.AddColumn("Type", 100)
-            NsListView1.AddColumn("Path", 300)
+        If Me.Icon IsNot Nothing Then
+            notifIcon.Icon = Me.Icon
+        End If
+
+        If Environment.GetCommandLineArgs().Contains("/minimized", StringComparer.OrdinalIgnoreCase) OrElse (My.Settings.StartMinimizedOnBoot AndAlso isAutostartRegistryEnabled) Then
+            Me.WindowState = FormWindowState.Minimized
+            Me.Hide()
+            notifIcon.Visible = True
         End If
 
         init = False
@@ -84,9 +97,16 @@ Public Class WinMain
 
         If My.Settings.AutoFreeRAM Then
             autoFreeCounter += 1
-            If autoFreeCounter >= 60 Then
-                _proc.FreeProcesses()
+            Dim intervalSec As Integer = Math.Max(1, My.Settings.AutoFreeRAMInterval) * 60
+            If autoFreeCounter >= intervalSec Then
                 autoFreeCounter = 0
+                Dim currentRAMPct As Integer = _proc.GetRAMPercentage()
+                If currentRAMPct >= My.Settings.AutoFreeRAMThreshold Then
+                    Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
+                    If res.ReleasedBytes > 0 Then
+                        ShowNotification("AutoRAM:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes) & " (" & currentRAMPct & "% RAM)")
+                    End If
+                End If
             End If
         End If
     End Sub
@@ -164,157 +184,13 @@ Public Class WinMain
         NsLabel7.Value2 = Space(1) & ramPct & "% | CPU: " & cpuPct & "% | GPU: " & gpuPct & "% | Peak RAM: " & peakRAMPct & "%"
     End Sub
 
-    Private ScannedCleanItems As New List(Of cleaner.CleanItem)()
-    Private IsScanning As Boolean = False
-    Private CancelScanRequested As Boolean = False
-
-    ''' <summary>
-    ''' Opens Options window allowing user to toggle and save 13 target clean categories in clean_state.config.
-    ''' </summary>
-    Private Sub NsButton6_Click(sender As Object, e As EventArgs) Handles NsButton6.Click
-        Using dlg As New WinOptions()
-            dlg.ShowDialog(Me)
-        End Using
-    End Sub
-
-    ''' <summary>
-    ''' Click event handler toggling Scan / Cancel. Opens Disk Selector window to choose drives,
-    ''' then scans configured categories from clean_state.config across selected drives.
-    ''' </summary>
-    Private Sub NsButton4_Click(sender As System.Object, e As System.EventArgs) Handles NsButton4.Click
-        If IsScanning Then
-            CancelScanRequested = True
-            NsButton4.Text = "Scan"
-            ShowNotification("~X:", "Cancelling scan...")
-            Return
+    Private Sub NsTabControl1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles NsTabControl1.SelectedIndexChanged
+        If NsTabControl1.SelectedTab Is TabPage3 Then
+            NsTabControl1.SelectedTab = TabPage1
+            Using dlg As New WinCleaner()
+                dlg.ShowDialog(Me)
+            End Using
         End If
-
-        Dim targetDrives As List(Of String) = Nothing
-        Using selector As New WinDiskSelector()
-            If selector.ShowDialog(Me) <> DialogResult.OK Then
-                Return
-            End If
-            targetDrives = selector.SelectedDrives
-        End Using
-
-        If targetDrives Is Nothing OrElse targetDrives.Count = 0 Then Return
-
-        Dim enabledCategories As Dictionary(Of String, Boolean) = cleaner.LoadConfig()
-
-        IsScanning = True
-        CancelScanRequested = False
-
-        NsButton4.Text = "Cancel"
-        NsButton4.Enabled = True
-
-        NsButton5.Visible = False
-        CleanerProgressBar.Value = 0
-        CleanerProgressBar.Visible = True
-
-        Label1.Visible = False
-        NsLabel8.Visible = True
-        NsLabel8.Value1 = "Scanning:"
-        NsLabel8.Value2 = " Starting..."
-        NsListView1.Visible = True
-        NsListView1.Clear()
-
-        Application.DoEvents()
-
-        Dim accumulatedBytes As Long = 0
-        Dim scannedFilesCount As Integer = 0
-        Dim realtimeBatch As New List(Of NSListView.NSListViewItem)()
-
-        ScannedCleanItems = cleaner.ScanDetailedFiles(targetDrives, enabledCategories,
-                                                       Sub(current, total, status)
-                                                           Dim pct As Integer = CInt((current / CDbl(total)) * 100)
-                                                           CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
-                                                           NsLabel8.Value1 = "Scanning:"
-                                                           NsLabel8.Value2 = " " & status
-                                                           ShowNotification("~X:", "Scanned " & scannedFilesCount & " files (" & cleaner.FormatBytes(accumulatedBytes) & ")")
-                                                           Application.DoEvents()
-                                                       End Sub,
-                                                       Sub(item)
-                                                           accumulatedBytes += item.ByteSize
-                                                           scannedFilesCount += 1
-
-                                                           Dim subItemsList As New List(Of NSListView.NSListViewSubItem)()
-                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.FormattedSize})
-                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.CategoryName})
-                                                           subItemsList.Add(New NSListView.NSListViewSubItem With {.Text = item.FilePath})
-
-                                                           Dim nsItem As New NSListView.NSListViewItem With {
-                                                               .Text = item.FileName,
-                                                               .SubItems = subItemsList
-                                                           }
-
-                                                           realtimeBatch.Add(nsItem)
-
-                                                           If realtimeBatch.Count >= 25 Then
-                                                               NsListView1.AddItems(realtimeBatch)
-                                                               realtimeBatch.Clear()
-                                                               ShowNotification("~X:", "Scanned " & scannedFilesCount & " files (" & cleaner.FormatBytes(accumulatedBytes) & ")")
-                                                               Application.DoEvents()
-                                                           End If
-                                                       End Sub,
-                                                       Function() CancelScanRequested)
-
-        If realtimeBatch.Count > 0 Then
-            NsListView1.AddItems(realtimeBatch)
-            realtimeBatch.Clear()
-        End If
-
-        IsScanning = False
-        NsButton4.Text = "Scan"
-        CleanerProgressBar.Visible = False
-
-        Dim finalFormattedSize As String = cleaner.FormatBytes(accumulatedBytes)
-        If CancelScanRequested Then
-            NsLabel8.Value1 = "Status:"
-            NsLabel8.Value2 = " Scan cancelled"
-            ShowNotification("~X:", "Scan cancelled: Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")")
-            NsButton5.Visible = False
-        Else
-            CleanerProgressBar.Value = 100
-            NsLabel8.Value1 = "Status:"
-            NsLabel8.Value2 = " Scan complete"
-            NsButton5.Visible = (NsListView1.Items.Length > 0)
-            NsButton5.Enabled = (NsListView1.Items.Length > 0)
-            ShowNotification("~X:", "Scan complete: Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")")
-        End If
-    End Sub
-
-    ''' <summary>
-    ''' Click event handler removing all scanned detailed items across 9 categories and emptying Windows Recycle Bin.
-    ''' Updates progress bar and clears NSListView upon completion.
-    ''' </summary>
-    Private Sub NsButton5_Click(sender As System.Object, e As System.EventArgs) Handles NsButton5.Click
-        If ScannedCleanItems.Count = 0 Then Return
-
-        NsButton4.Enabled = False
-        NsButton5.Enabled = False
-        CleanerProgressBar.Value = 0
-        CleanerProgressBar.Visible = True
-
-        Application.DoEvents()
-
-        Dim cleanedCount As Integer = cleaner.CleanDetailedFiles(ScannedCleanItems, Sub(current, total, status)
-                                                                                          Dim pct As Integer = CInt((current / CDbl(total)) * 100)
-                                                                                          CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
-                                                                                          ShowNotification("~X:", status)
-                                                                                          Application.DoEvents()
-                                                                                      End Sub)
-
-        NsListView1.Clear()
-        ScannedCleanItems.Clear()
-
-        CleanerProgressBar.Value = 100
-        CleanerProgressBar.Visible = False
-
-        ShowNotification("~X:", "Cleaned " & cleanedCount & " items & emptied Recycle Bin")
-
-        NsButton4.Enabled = True
-        NsButton5.Visible = False
-        NsButton5.Enabled = False
     End Sub
 
     ''' <summary>
@@ -374,5 +250,78 @@ Public Class WinMain
         If init = False Then
             My.Settings.Save()
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Toggle switch event handler saving Minimize to System Tray user setting.
+    ''' </summary>
+    Private Sub NsOnOffBox3_CheckedChanged(sender As System.Object) Handles NsOnOffBox3.CheckedChanged
+        My.Settings.MinimizeToTray = NsOnOffBox3.Checked
+        If init = False Then
+            My.Settings.Save()
+        End If
+    End Sub
+
+    Private Sub NsOnOffBox4_CheckedChanged(sender As System.Object) Handles NsOnOffBox4.CheckedChanged
+        My.Settings.CloseToTray = NsOnOffBox4.Checked
+        If init = False Then
+            My.Settings.Save()
+        End If
+    End Sub
+
+    Private Sub NsOnOffBox5_CheckedChanged(sender As System.Object) Handles NsOnOffBox5.CheckedChanged
+        My.Settings.ShowTrayNotifications = NsOnOffBox5.Checked
+        If init = False Then
+            My.Settings.Save()
+        End If
+    End Sub
+
+    Private Sub NsOnOffBox6_CheckedChanged(sender As System.Object) Handles NsOnOffBox6.CheckedChanged
+        My.Settings.StartMinimizedOnBoot = NsOnOffBox6.Checked
+        If init = False Then
+            My.Settings.Save()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Intercepts user form closing to minimize application to tray if CloseToTray is enabled.
+    ''' </summary>
+    Private Sub WinMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        If e.CloseReason = CloseReason.UserClosing AndAlso My.Settings.CloseToTray Then
+            e.Cancel = True
+            Me.Hide()
+            notifIcon.Visible = True
+            ShowNotification("Tray:", "Typhon minimized to system tray")
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Hides application to system tray when minimized if MinimizeToTray setting is enabled.
+    ''' </summary>
+    Private Sub WinMain_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+        If My.Settings.MinimizeToTray AndAlso Me.WindowState = FormWindowState.Minimized Then
+            Me.Hide()
+            notifIcon.Visible = True
+        End If
+    End Sub
+
+    Private Sub notifIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles notifIcon.MouseDoubleClick
+        RestoreFromTray()
+    End Sub
+
+    Private Sub OpenTyphonToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenTyphonToolStripMenuItem.Click
+        RestoreFromTray()
+    End Sub
+
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        notifIcon.Visible = False
+        Application.Exit()
+    End Sub
+
+    Private Sub RestoreFromTray()
+        Me.Show()
+        Me.WindowState = FormWindowState.Normal
+        Me.Activate()
+        notifIcon.Visible = False
     End Sub
 End Class

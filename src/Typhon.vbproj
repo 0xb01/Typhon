@@ -168,6 +168,13 @@
       <DependentUpon>WinExceptions.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\WinCleaner.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinCleaner.Designer.vb">
+      <DependentUpon>WinCleaner.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -192,6 +199,9 @@
     <Compile Include="Helpers\func.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\WinCleaner.resx">
+      <DependentUpon>WinCleaner.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinDiskSelector.resx">
       <DependentUpon>WinDiskSelector.vb</DependentUpon>
     </EmbeddedResource>

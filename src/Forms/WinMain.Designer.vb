@@ -44,14 +44,15 @@ Partial Class WinMain
         Me.NsLabel7 = New Typhon.NSLabel()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.NsLabel8 = New Typhon.NSLabel()
-        Me.NsButton5 = New Typhon.NSButton()
-        Me.NsButton4 = New Typhon.NSButton()
-        Me.NsButton6 = New Typhon.NSButton()
-        Me.CleanerProgressBar = New Typhon.NSProgressBar()
-        Me.NsListView1 = New Typhon.NSListView()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.NsLabel11 = New Typhon.NSLabel()
+        Me.NsOnOffBox6 = New Typhon.NSOnOffBox()
+        Me.NsLabel10 = New Typhon.NSLabel()
+        Me.NsOnOffBox5 = New Typhon.NSOnOffBox()
+        Me.NsLabel9 = New Typhon.NSLabel()
+        Me.NsOnOffBox4 = New Typhon.NSOnOffBox()
+        Me.NsLabel12 = New Typhon.NSLabel()
+        Me.NsOnOffBox3 = New Typhon.NSOnOffBox()
         Me.NsLabel6 = New Typhon.NSLabel()
         Me.NsOnOffBox2 = New Typhon.NSOnOffBox()
         Me.NsLabel5 = New Typhon.NSLabel()
@@ -77,7 +78,6 @@ Partial Class WinMain
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage4.SuspendLayout()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabPage3.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.NsContextMenu1.SuspendLayout()
@@ -242,11 +242,11 @@ Partial Class WinMain
         Me.NsLabel7.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NsLabel7.Location = New System.Drawing.Point(6, 6)
         Me.NsLabel7.Name = "NsLabel7"
-        Me.NsLabel7.Size = New System.Drawing.Size(341, 23)
-        Me.NsLabel7.TabIndex = 5
-        Me.NsLabel7.Text = "NsLabel7"
-        Me.NsLabel7.Value1 = "Memory Usage:"
-        Me.NsLabel7.Value2 = "-"
+        Me.NsLabel7.Size = New System.Drawing.Size(339, 23)
+        Me.NsLabel7.TabIndex = 11
+        Me.NsLabel7.Text = "Graph Information"
+        Me.NsLabel7.Value1 = "Graph"
+        Me.NsLabel7.Value2 = "Information"
         '
         'Chart1
         '
@@ -315,13 +315,6 @@ Partial Class WinMain
         'TabPage3
         '
         Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage3.Controls.Add(Me.Label1)
-        Me.TabPage3.Controls.Add(Me.NsLabel8)
-        Me.TabPage3.Controls.Add(Me.NsButton5)
-        Me.TabPage3.Controls.Add(Me.NsButton4)
-        Me.TabPage3.Controls.Add(Me.NsButton6)
-        Me.TabPage3.Controls.Add(Me.CleanerProgressBar)
-        Me.TabPage3.Controls.Add(Me.NsListView1)
         Me.TabPage3.Location = New System.Drawing.Point(119, 4)
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
@@ -329,80 +322,17 @@ Partial Class WinMain
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Cleaner"
         '
-        'Label1
-        '
-        Me.Label1.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.ForeColor = System.Drawing.Color.White
-        Me.Label1.Location = New System.Drawing.Point(34, 55)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(286, 82)
-        Me.Label1.TabIndex = 7
-        Me.Label1.Text = "Recommended to run app as administrator if you intend to use the cleaner."
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'NsLabel8
-        '
-        Me.NsLabel8.Font = New System.Drawing.Font("Verdana", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel8.Location = New System.Drawing.Point(6, 6)
-        Me.NsLabel8.Name = "NsLabel8"
-        Me.NsLabel8.Size = New System.Drawing.Size(339, 18)
-        Me.NsLabel8.TabIndex = 13
-        Me.NsLabel8.Value1 = "Scanning:"
-        Me.NsLabel8.Value2 = ""
-        Me.NsLabel8.Visible = False
-        '
-        'NsButton5
-        '
-        Me.NsButton5.Enabled = False
-        Me.NsButton5.Location = New System.Drawing.Point(87, 182)
-        Me.NsButton5.Name = "NsButton5"
-        Me.NsButton5.Size = New System.Drawing.Size(75, 23)
-        Me.NsButton5.TabIndex = 9
-        Me.NsButton5.Text = "Clean"
-        Me.NsButton5.Visible = False
-        '
-        'NsButton4
-        '
-        Me.NsButton4.Location = New System.Drawing.Point(6, 182)
-        Me.NsButton4.Name = "NsButton4"
-        Me.NsButton4.Size = New System.Drawing.Size(75, 23)
-        Me.NsButton4.TabIndex = 8
-        Me.NsButton4.Text = "Scan"
-        '
-        'NsButton6
-        '
-        Me.NsButton6.Location = New System.Drawing.Point(270, 182)
-        Me.NsButton6.Name = "NsButton6"
-        Me.NsButton6.Size = New System.Drawing.Size(75, 23)
-        Me.NsButton6.TabIndex = 12
-        Me.NsButton6.Text = "Options"
-        '
-        'CleanerProgressBar
-        '
-        Me.CleanerProgressBar.Location = New System.Drawing.Point(87, 182)
-        Me.CleanerProgressBar.Maximum = 100
-        Me.CleanerProgressBar.Minimum = 0
-        Me.CleanerProgressBar.Name = "CleanerProgressBar"
-        Me.CleanerProgressBar.Size = New System.Drawing.Size(177, 23)
-        Me.CleanerProgressBar.TabIndex = 11
-        Me.CleanerProgressBar.Value = 0
-        Me.CleanerProgressBar.Visible = False
-        '
-        'NsListView1
-        '
-        Me.NsListView1.CheckBoxes = False
-        Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
-        Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
-        Me.NsListView1.Location = New System.Drawing.Point(6, 26)
-        Me.NsListView1.MultiSelect = True
-        Me.NsListView1.Name = "NsListView1"
-        Me.NsListView1.Size = New System.Drawing.Size(339, 150)
-        Me.NsListView1.TabIndex = 10
-        Me.NsListView1.Visible = False
-        '
         'TabPage2
         '
         Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.TabPage2.Controls.Add(Me.NsLabel11)
+        Me.TabPage2.Controls.Add(Me.NsOnOffBox6)
+        Me.TabPage2.Controls.Add(Me.NsLabel10)
+        Me.TabPage2.Controls.Add(Me.NsOnOffBox5)
+        Me.TabPage2.Controls.Add(Me.NsLabel9)
+        Me.TabPage2.Controls.Add(Me.NsOnOffBox4)
+        Me.TabPage2.Controls.Add(Me.NsLabel12)
+        Me.TabPage2.Controls.Add(Me.NsOnOffBox3)
         Me.TabPage2.Controls.Add(Me.NsLabel6)
         Me.TabPage2.Controls.Add(Me.NsOnOffBox2)
         Me.TabPage2.Controls.Add(Me.NsLabel5)
@@ -416,10 +346,98 @@ Partial Class WinMain
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Settings"
         '
+        'NsLabel11
+        '
+        Me.NsLabel11.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel11.Location = New System.Drawing.Point(6, 141)
+        Me.NsLabel11.Name = "NsLabel11"
+        Me.NsLabel11.Size = New System.Drawing.Size(198, 23)
+        Me.NsLabel11.TabIndex = 17
+        Me.NsLabel11.Text = "NsLabel11"
+        Me.NsLabel11.Value1 = "Start Minimized"
+        Me.NsLabel11.Value2 = " on Boot"
+        '
+        'NsOnOffBox6
+        '
+        Me.NsOnOffBox6.Checked = False
+        Me.NsOnOffBox6.Location = New System.Drawing.Point(288, 141)
+        Me.NsOnOffBox6.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox6.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox6.Name = "NsOnOffBox6"
+        Me.NsOnOffBox6.Size = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox6.TabIndex = 18
+        Me.NsOnOffBox6.Text = "NsOnOffBox6"
+        '
+        'NsLabel10
+        '
+        Me.NsLabel10.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel10.Location = New System.Drawing.Point(6, 114)
+        Me.NsLabel10.Name = "NsLabel10"
+        Me.NsLabel10.Size = New System.Drawing.Size(198, 23)
+        Me.NsLabel10.TabIndex = 15
+        Me.NsLabel10.Text = "NsLabel10"
+        Me.NsLabel10.Value1 = "Show Tray "
+        Me.NsLabel10.Value2 = "Notifications"
+        '
+        'NsOnOffBox5
+        '
+        Me.NsOnOffBox5.Checked = False
+        Me.NsOnOffBox5.Location = New System.Drawing.Point(288, 114)
+        Me.NsOnOffBox5.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox5.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox5.Name = "NsOnOffBox5"
+        Me.NsOnOffBox5.Size = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox5.TabIndex = 16
+        Me.NsOnOffBox5.Text = "NsOnOffBox5"
+        '
+        'NsLabel9
+        '
+        Me.NsLabel9.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel9.Location = New System.Drawing.Point(6, 87)
+        Me.NsLabel9.Name = "NsLabel9"
+        Me.NsLabel9.Size = New System.Drawing.Size(198, 23)
+        Me.NsLabel9.TabIndex = 13
+        Me.NsLabel9.Text = "NsLabel9"
+        Me.NsLabel9.Value1 = "[X] "
+        Me.NsLabel9.Value2 = "Minimize to System Tray"
+        '
+        'NsOnOffBox4
+        '
+        Me.NsOnOffBox4.Checked = False
+        Me.NsOnOffBox4.Location = New System.Drawing.Point(288, 87)
+        Me.NsOnOffBox4.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox4.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox4.Name = "NsOnOffBox4"
+        Me.NsOnOffBox4.Size = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox4.TabIndex = 14
+        Me.NsOnOffBox4.Text = "NsOnOffBox4"
+        '
+        'NsLabel12
+        '
+        Me.NsLabel12.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NsLabel12.Location = New System.Drawing.Point(6, 60)
+        Me.NsLabel12.Name = "NsLabel12"
+        Me.NsLabel12.Size = New System.Drawing.Size(198, 23)
+        Me.NsLabel12.TabIndex = 19
+        Me.NsLabel12.Text = "NsLabel12"
+        Me.NsLabel12.Value1 = "Minimize to "
+        Me.NsLabel12.Value2 = "System Tray"
+        '
+        'NsOnOffBox3
+        '
+        Me.NsOnOffBox3.Checked = False
+        Me.NsOnOffBox3.Location = New System.Drawing.Point(288, 60)
+        Me.NsOnOffBox3.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox3.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox3.Name = "NsOnOffBox3"
+        Me.NsOnOffBox3.Size = New System.Drawing.Size(56, 24)
+        Me.NsOnOffBox3.TabIndex = 12
+        Me.NsOnOffBox3.Text = "NsOnOffBox3"
+        '
         'NsLabel6
         '
         Me.NsLabel6.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel6.Location = New System.Drawing.Point(6, 37)
+        Me.NsLabel6.Location = New System.Drawing.Point(6, 34)
         Me.NsLabel6.Name = "NsLabel6"
         Me.NsLabel6.Size = New System.Drawing.Size(198, 23)
         Me.NsLabel6.TabIndex = 10
@@ -430,7 +448,7 @@ Partial Class WinMain
         'NsOnOffBox2
         '
         Me.NsOnOffBox2.Checked = False
-        Me.NsOnOffBox2.Location = New System.Drawing.Point(288, 37)
+        Me.NsOnOffBox2.Location = New System.Drawing.Point(288, 33)
         Me.NsOnOffBox2.MaximumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox2.MinimumSize = New System.Drawing.Size(56, 24)
         Me.NsOnOffBox2.Name = "NsOnOffBox2"
@@ -572,8 +590,7 @@ Partial Class WinMain
         'notifIcon
         '
         Me.notifIcon.ContextMenuStrip = Me.NsContextMenu1
-        Me.notifIcon.Text = "NotifyIcon1"
-        Me.notifIcon.Visible = True
+        Me.notifIcon.Text = "Typhon PC Booster"
         '
         'NsContextMenu1
         '
@@ -615,7 +632,6 @@ Partial Class WinMain
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabPage3.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
         Me.TabPage6.ResumeLayout(False)
         Me.NsContextMenu1.ResumeLayout(False)
@@ -656,12 +672,13 @@ Partial Class WinMain
     Friend WithEvents TabPage5 As System.Windows.Forms.TabPage
     Friend WithEvents TabPage6 As System.Windows.Forms.TabPage
     Friend WithEvents RichTextBox1 As System.Windows.Forms.RichTextBox
-    Friend WithEvents NsButton5 As Typhon.NSButton
-    Friend WithEvents NsButton4 As Typhon.NSButton
-    Friend WithEvents NsListView1 As Typhon.NSListView
-    Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents CleanerProgressBar As Typhon.NSProgressBar
-    Friend WithEvents NsButton6 As Typhon.NSButton
-    Friend WithEvents NsLabel8 As Typhon.NSLabel
+    Friend WithEvents NsOnOffBox3 As Typhon.NSOnOffBox
+    Friend WithEvents NsOnOffBox4 As Typhon.NSOnOffBox
+    Friend WithEvents NsOnOffBox5 As Typhon.NSOnOffBox
+    Friend WithEvents NsOnOffBox6 As Typhon.NSOnOffBox
+    Friend WithEvents NsLabel9 As Typhon.NSLabel
+    Friend WithEvents NsLabel10 As Typhon.NSLabel
+    Friend WithEvents NsLabel11 As Typhon.NSLabel
+    Friend WithEvents NsLabel12 As Typhon.NSLabel
 
 End Class
