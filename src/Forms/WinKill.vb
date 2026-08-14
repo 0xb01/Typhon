@@ -92,43 +92,38 @@ Public Class WinKill
     End Sub
 
     ''' <summary>
-    ''' Handles expansion toggling and checkbox state synchronization across parent/child process items.
+    ''' Handles expansion toggling and checkbox state synchronization for the clicked process item.
     ''' </summary>
     Private Sub NsListView1_MouseDown(sender As Object, e As MouseEventArgs) Handles NsListView1.MouseDown
         If e.Button = Windows.Forms.MouseButtons.Left Then
-            For Each lvi As NSListView.NSListViewItem In NsListView1.Items
-                If TypeOf lvi.Tag Is proc.ProcessGroupItem Then
-                    Dim grp As proc.ProcessGroupItem = DirectCast(lvi.Tag, proc.ProcessGroupItem)
+            If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+                Dim selectedItem As NSListView.NSListViewItem = NsListView1.SelectedItems(0)
+
+                If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
+                    Dim grp As proc.ProcessGroupItem = DirectCast(selectedItem.Tag, proc.ProcessGroupItem)
                     If e.X <= 24 Then
-                        If grp.Checked <> lvi.Checked Then
-                            grp.Checked = lvi.Checked
-                            For Each inst As proc.ProcessInstanceItem In grp.Instances
-                                inst.Checked = grp.Checked
-                            Next
-                            RenderListView()
-                            Return
-                        End If
+                        grp.Checked = selectedItem.Checked
+                        For Each inst As proc.ProcessInstanceItem In grp.Instances
+                            inst.Checked = grp.Checked
+                        Next
+                        RenderListView()
                     Else
-                        ' Check if group header text/symbol was clicked
+                        ' Toggle expansion when group header is clicked
                         If grp.InstanceCount > 1 Then
                             grp.IsExpanded = Not grp.IsExpanded
                             RenderListView()
-                            Return
                         End If
                     End If
-                ElseIf TypeOf lvi.Tag Is proc.ProcessInstanceItem Then
-                    Dim inst As proc.ProcessInstanceItem = DirectCast(lvi.Tag, proc.ProcessInstanceItem)
-                    If inst.Checked <> lvi.Checked Then
-                        inst.Checked = lvi.Checked
-                        Dim parentGrp As proc.ProcessGroupItem = _groups.Find(Function(g) g.ProcessName.Equals(inst.ProcessName, StringComparison.OrdinalIgnoreCase))
-                        If parentGrp IsNot Nothing Then
-                            parentGrp.Checked = parentGrp.Instances.Exists(Function(i) i.Checked)
-                        End If
-                        RenderListView()
-                        Return
+                ElseIf TypeOf selectedItem.Tag Is proc.ProcessInstanceItem Then
+                    Dim inst As proc.ProcessInstanceItem = DirectCast(selectedItem.Tag, proc.ProcessInstanceItem)
+                    inst.Checked = selectedItem.Checked
+                    Dim parentGrp As proc.ProcessGroupItem = _groups.Find(Function(g) g.ProcessName.Equals(inst.ProcessName, StringComparison.OrdinalIgnoreCase))
+                    If parentGrp IsNot Nothing Then
+                        parentGrp.Checked = parentGrp.Instances.Exists(Function(i) i.Checked)
                     End If
+                    RenderListView()
                 End If
-            Next
+            End If
         End If
     End Sub
 

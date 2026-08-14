@@ -1,72 +1,68 @@
 # Typhon
 
-A lightweight Windows application built in VB.NET designed to boost PC performance by optimizing memory, scanning and managing background processes, and cleaning system temporary files.
+## About the app
+Typhon is a simple Windows application made in VB.NET. It helps you boost your PC performance by freeing up memory (RAM), closing unnecessary background programs, cleaning temporary junk files, viewing detailed hardware specs, and testing game compatibility.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://microsoft.com/windows)
-[![Target](https://img.shields.io/badge/.NET_Framework-4.8-purple.svg)](https://dotnet.microsoft.com/)
+## How it helps the PC and the user
+- **Frees up RAM:** Clears unused memory so your computer runs faster.
+- **Closes background apps:** Helps you find and close heavy programs that slow down your system.
+- **Cleans junk files:** Removes temporary files and log files to free up disk space.
+- **Monitors PC usage:** Shows live graphs for CPU, RAM, and GPU usage.
+- **Views PC Specs & Peripherals:** Displays your hardware details, plugged-in devices, and lets you open drives directly in File Explorer.
+- **Checks Game Performance:** One-click check to see if your PC can run games on PC Game Benchmark.
 
----
+## Freeing RAM process
+When you click **FreeRAM();** or when **Auto FreeRAM();** runs:
+1. Typhon scans active programs running on your PC.
+2. It calls Windows system functions (`SetProcessWorkingSetSize`) to trim unused memory from those programs.
+3. The freed memory is returned back to your system instantly.
 
-## ⚡ Features
+## Killing process process
+When you open **KillProcesses();**:
+1. Typhon scans running background programs and groups them together by name.
+2. It excludes important Windows system files (like `C:\Windows\System32`) and your saved ignore list so Windows stays safe.
+3. You select the programs you want to close and click **KillProcesses();** to stop them.
 
-- **Memory Optimizer**: Force-trims the working set memory across active processes to free up RAM instantly.
-- **Process Manager**: Scans for killable user-space processes with support for custom process exclusion / ignore lists.
-- **System Junk Cleaner**: Safely identifies and removes temporary files (`*.tmp`), log files (`*.log`), and prefetch cache.
-- **Resource Monitoring**: Live graph and real-time indicators for RAM usage, memory percentage, and active process count.
-- **System Information**: Displays hardware specifications (CPU, GPU, RAM, OS, Storage drives).
+## File structure
+```
+Typhon/
+├── Typhon.sln              # Visual Studio solution file
+└── src/                    # Source code folder
+    ├── App.config          # App settings configuration
+    ├── Controls/
+    │   └── theme.vb        # Custom dark UI controls and styling
+    ├── Forms/
+    │   ├── WinMain.vb      # Main window (RAM, Graph, Settings, Specs, About)
+    │   ├── WinKill.vb      # Process killer window
+    │   ├── WinCleaner.vb   # System junk cleaner window
+    │   └── WinExceptions.vb# Ignored processes window
+    └── Helpers/
+        ├── proc.vb         # RAM and process management code
+        ├── cleaner.vb      # Junk file cleaner code
+        └── func.vb         # System specs, peripherals, and benchmark logic
+```
 
----
-
-## 🛠️ Building & Running
-
+## How to build
 ### Requirements
-- **OS**: Windows 7 / 10 / 11 (x86 or x64)
-- **Runtime**: .NET Framework 4.8 or higher
-- **IDE / Tools**: Visual Studio 2019+ or .NET SDK / MSBuild
+- Windows 7, 10, or 11
+- .NET Framework 4.8 or Visual Studio 2019+
 
-### Build via Command Line
-```powershell
-# Using dotnet CLI
-dotnet build Typhon.sln
+### Steps
+1. Open `Typhon.sln` in Visual Studio.
+2. Select **Release** or **Debug** mode.
+3. Click **Build Solution** or press `F5` to run.
 
-# Or using MSBuild
+Or build using MSBuild in command line:
+```cmd
 MSBuild.exe Typhon.sln /t:Rebuild /p:Configuration=Release
 ```
 
-### Build via Visual Studio
-1. Open `Typhon.sln` in Visual Studio.
-2. Select **Release** or **Debug** configuration.
-3. Build and run (`F5`).
+## How to contribute
+1. Fork this repository on GitHub.
+2. Create a new feature branch for your changes.
+3. Make your changes and test your code.
+4. Send a Pull Request with a short description of what you fixed or added.
 
----
-
-## 📁 Repository Structure
-
-```
-Typhon/
-├── LICENSE                 # MIT License
-├── README.md               # Documentation
-├── Typhon.sln              # Visual Studio solution file
-└── src/                    # Project source directory
-    ├── App.config          # Application configuration
-    ├── ApplicationEvents.vb# App lifecycle event handlers
-    ├── Typhon.vbproj       # VB.NET project file
-    ├── typhon_ico.ico      # Main app icon
-    ├── Controls/           # Custom UI controls
-    │   └── theme.vb        # Theme component implementation
-    ├── Forms/              # Application WinForms UI
-    │   ├── WinKill.vb      # Process killer form
-    │   └── WinMain.vb      # Main application window
-    ├── Helpers/            # Core system logic and native API helpers
-    │   ├── func.vb         # WMI hardware specs query helper
-    │   └── proc.vb         # Native P/Invoke & process manager helper
-    ├── My Project/         # Assembly metadata and settings
-    └── Resources/          # Asset files (images, icons)
-```
-
----
-
-## 📄 License
-
-This project is open-source software licensed under the [MIT License](LICENSE).
+## Thanks
+- Special thanks to **aeonhack** for the NetSeal Theme.
+- Special thanks to **icons8.com** for the icons.

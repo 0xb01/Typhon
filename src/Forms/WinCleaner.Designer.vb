@@ -17,7 +17,6 @@ Partial Class WinCleaner
 
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
         Me.NsTheme1 = New Typhon.NSTheme()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsLabelStatus = New Typhon.NSLabel()
@@ -82,7 +81,7 @@ Partial Class WinCleaner
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.NsTheme1.TabIndex = 0
-        Me.NsTheme1.Text = "Typhon - System Cleaner"
+        Me.NsTheme1.Text = "System Cleaner"
         Me.NsTheme1.TransparencyKey = System.Drawing.Color.Empty
         Me.NsTheme1.Transparent = False
         '
@@ -123,30 +122,6 @@ Partial Class WinCleaner
         Me.CleanerProgressBar.Value = 0
         Me.CleanerProgressBar.Visible = False
         '
-        'ctxListView
-        '
-        Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle})
-        Me.ctxListView.Name = "ctxListView"
-        Me.ctxListView.Size = New System.Drawing.Size(181, 70)
-        '
-        'tsCopyPath
-        '
-        Me.tsCopyPath.Name = "tsCopyPath"
-        Me.tsCopyPath.Size = New System.Drawing.Size(180, 22)
-        Me.tsCopyPath.Text = "Copy Path"
-        '
-        'tsOpenFileLocation
-        '
-        Me.tsOpenFileLocation.Name = "tsOpenFileLocation"
-        Me.tsOpenFileLocation.Size = New System.Drawing.Size(180, 22)
-        Me.tsOpenFileLocation.Text = "Open File Location"
-        '
-        'tsSearchGoogle
-        '
-        Me.tsSearchGoogle.Name = "tsSearchGoogle"
-        Me.tsSearchGoogle.Size = New System.Drawing.Size(180, 22)
-        Me.tsSearchGoogle.Text = "Search in Google"
-        '
         'NsListView1
         '
         Me.NsListView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -161,6 +136,31 @@ Partial Class WinCleaner
         Me.NsListView1.Name = "NsListView1"
         Me.NsListView1.Size = New System.Drawing.Size(500, 437)
         Me.NsListView1.TabIndex = 3
+        '
+        'ctxListView
+        '
+        Me.ctxListView.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle})
+        Me.ctxListView.Name = "ctxListView"
+        Me.ctxListView.Size = New System.Drawing.Size(174, 70)
+        '
+        'tsCopyPath
+        '
+        Me.tsCopyPath.Name = "tsCopyPath"
+        Me.tsCopyPath.Size = New System.Drawing.Size(173, 22)
+        Me.tsCopyPath.Text = "Copy Path"
+        '
+        'tsOpenFileLocation
+        '
+        Me.tsOpenFileLocation.Name = "tsOpenFileLocation"
+        Me.tsOpenFileLocation.Size = New System.Drawing.Size(173, 22)
+        Me.tsOpenFileLocation.Text = "Open File Location"
+        '
+        'tsSearchGoogle
+        '
+        Me.tsSearchGoogle.Name = "tsSearchGoogle"
+        Me.tsSearchGoogle.Size = New System.Drawing.Size(173, 22)
+        Me.tsSearchGoogle.Text = "Search in Google"
         '
         'NsGroupBoxOptions
         '
@@ -401,7 +401,7 @@ Partial Class WinCleaner
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "WinCleaner"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Typhon - System Cleaner"
+        Me.Text = "System Cleaner"
         Me.NsTheme1.ResumeLayout(False)
         Me.ctxListView.ResumeLayout(False)
         Me.NsGroupBoxOptions.ResumeLayout(False)

@@ -152,6 +152,17 @@ Namespace My
                 Me("AutoFreeRAMInterval") = value
             End Set
         End Property
+
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute()>  _
+        Public Property AutoFreeRAMMode() As Integer
+            Get
+                Return CType(Me("AutoFreeRAMMode"),Integer)
+            End Get
+            Set
+                Me("AutoFreeRAMMode") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

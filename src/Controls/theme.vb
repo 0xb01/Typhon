@@ -113,7 +113,7 @@ MustInherit Class ThemeContainer154
         If _StartPosition = FormStartPosition.CenterParent OrElse _StartPosition = FormStartPosition.CenterScreen Then
             Dim SB As Rectangle = Screen.PrimaryScreen.Bounds
             Dim CB As Rectangle = ParentForm.Bounds
-            ParentForm.Location = New Point(SB.Width \ 2 - CB.Width \ 2, SB.Height \ 2 - CB.Width \ 2)
+            ParentForm.Location = New Point(SB.Width \ 2 - CB.Width \ 2, SB.Height \ 2 - CB.Height \ 2)
         End If
 
         HasShown = True
@@ -5313,7 +5313,7 @@ Class NSListView
                 G.FillRectangle(B4, chkX, chkY, 13, 13)
                 G.DrawRectangle(P1, chkX, chkY, 13, 13)
                 If CI.Checked Then
-                    G.DrawString("✓", Font, Brushes.WhiteSmoke, chkX - 2, chkY - 3)
+                    G.DrawString("✓", Font, Brushes.WhiteSmoke, chkX, chkY)
                 End If
             End If
 
