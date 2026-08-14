@@ -76,4 +76,28 @@ Public Class WinExceptions
         Me.Close()
     End Sub
 
+    Private Sub SearchGoogleToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchGoogleToolStripMenuItem.Click
+        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+            For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
+                Dim exeName As String = item.Text
+                If Not String.IsNullOrEmpty(exeName) Then
+                    Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(exeName)
+                    Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+                End If
+            Next
+        End If
+    End Sub
+
+    Private Sub SearchVirusTotalToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchVirusTotalToolStripMenuItem.Click
+        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+            For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
+                Dim exeName As String = item.Text
+                If Not String.IsNullOrEmpty(exeName) Then
+                    Dim url As String = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(exeName)
+                    Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+                End If
+            Next
+        End If
+    End Sub
+
 End Class

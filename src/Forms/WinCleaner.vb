@@ -300,7 +300,7 @@ Public Class WinCleaner
             NsListView1.Clear()
             ScannedCleanItems.Clear()
         Else
-            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " locked/in-use)"
+            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " in-use)"
         End If
 
         btnScan.Enabled = True
@@ -359,6 +359,17 @@ Public Class WinCleaner
             Dim fileName As String = item.Text
             If Not String.IsNullOrEmpty(fileName) Then
                 Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(fileName)
+                Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+            End If
+        Next
+    End Sub
+
+    Private Sub tsSearchVirusTotal_Click(sender As Object, e As EventArgs) Handles tsSearchVirusTotal.Click
+        If NsListView1.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In NsListView1.SelectedItems
+            Dim fileName As String = item.Text
+            If Not String.IsNullOrEmpty(fileName) Then
+                Dim url As String = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(fileName)
                 Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
             End If
         Next

@@ -24,7 +24,11 @@ Partial Class WinExceptions
         Me.txtExeName = New Typhon.NSTextBox()
         Me.btnAdd = New Typhon.NSButton()
         Me.btnRemove = New Typhon.NSButton()
+        Me.NsContextMenu1 = New Typhon.NSContextMenu()
+        Me.SearchGoogleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SearchVirusTotalToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.NsTheme1.SuspendLayout()
+        Me.NsContextMenu1.SuspendLayout()
         Me.SuspendLayout()
         '
         'NsTheme1
@@ -77,6 +81,7 @@ Partial Class WinExceptions
         NsListViewColumnHeader1.Text = "Executable Name"
         NsListViewColumnHeader1.Width = 270
         Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader() {NsListViewColumnHeader1}
+        Me.NsListView1.ContextMenuStrip = Me.NsContextMenu1
         Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
         Me.NsListView1.Location = New System.Drawing.Point(12, 40)
         Me.NsListView1.MultiSelect = True
@@ -84,6 +89,25 @@ Partial Class WinExceptions
         Me.NsListView1.Size = New System.Drawing.Size(296, 260)
         Me.NsListView1.TabIndex = 1
         Me.NsListView1.Text = "NsListView1"
+        '
+        'NsContextMenu1
+        '
+        Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
+        Me.NsContextMenu1.Name = "NsContextMenu1"
+        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 48)
+        '
+        'SearchGoogleToolStripMenuItem
+        '
+        Me.SearchGoogleToolStripMenuItem.Name = "SearchGoogleToolStripMenuItem"
+        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchGoogleToolStripMenuItem.Text = "Search in Google"
+        '
+        'SearchVirusTotalToolStripMenuItem
+        '
+        Me.SearchVirusTotalToolStripMenuItem.Name = "SearchVirusTotalToolStripMenuItem"
+        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal"
         '
         'txtExeName
         '
@@ -128,6 +152,7 @@ Partial Class WinExceptions
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Process Exceptions"
         Me.NsTheme1.ResumeLayout(False)
+        Me.NsContextMenu1.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -138,4 +163,7 @@ Partial Class WinExceptions
     Friend WithEvents txtExeName As Typhon.NSTextBox
     Friend WithEvents btnAdd As Typhon.NSButton
     Friend WithEvents btnRemove As Typhon.NSButton
+    Friend WithEvents NsContextMenu1 As Typhon.NSContextMenu
+    Friend WithEvents SearchGoogleToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents SearchVirusTotalToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 End Class

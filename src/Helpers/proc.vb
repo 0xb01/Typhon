@@ -32,6 +32,12 @@ Public Class proc
     End Function
 
     <DllImport("kernel32.dll", SetLastError:=True)> _
+    Private Shared Function IsProcessCritical( _
+        ByVal hProcess As IntPtr, _
+        ByRef isCritical As Boolean) As Boolean
+    End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)> _
     Private Shared Function GetSystemTimes( _
         ByRef lpIdleTime As System.Runtime.InteropServices.ComTypes.FILETIME, _
         ByRef lpKernelTime As System.Runtime.InteropServices.ComTypes.FILETIME, _
@@ -321,14 +327,16 @@ Public Class proc
         Dim procs() As Process = Process.GetProcesses()
         For Each procItem As Process In procs
             Try
-                Dim targetPath As String = ProcessHandle(procItem)
-                If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
-                    Dim dirName As String = Path.GetDirectoryName(targetPath)
-                    If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
-                        Dim fileName As String = Path.GetFileName(targetPath)
-                        If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
-                            result.Add(procItem)
-                            Continue For
+                If Not IsCriticalProcess(procItem) Then
+                    Dim targetPath As String = ProcessHandle(procItem)
+                    If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
+                        Dim dirName As String = Path.GetDirectoryName(targetPath)
+                        If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
+                            Dim fileName As String = Path.GetFileName(targetPath)
+                            If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
+                                result.Add(procItem)
+                                Continue For
+                            End If
                         End If
                     End If
                 End If
@@ -340,6 +348,44 @@ Public Class proc
 
         Return result
     End Function
+
+    ''' <summary>
+    ''' Checks if Windows OS marks process as a critical system process using native Win32 API.
+    ''' </summary>
+    Public Shared Function IsCriticalProcess(procItem As Process) As Boolean
+        If procItem Is Nothing Then Return True
+        Try
+            Dim hProc As IntPtr = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, CUInt(procItem.Id))
+            If Not hProc = IntPtr.Zero Then
+                Try
+                    Dim critical As Boolean = False
+                    If IsProcessCritical(hProc, critical) AndAlso critical Then
+                        Return True
+                    End If
+                Finally
+                    CloseHandle(hProc)
+                End Try
+            End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
+
+    ''' <summary>
+    ''' Safe process termination helper attempting graceful window close before forced kill.
+    ''' </summary>
+    Public Shared Sub SafeKillProcess(procItem As Process)
+        If procItem Is Nothing Then Return
+        Try
+            If procItem.CloseMainWindow() Then
+                If procItem.WaitForExit(1000) Then
+                    Return
+                End If
+            End If
+            procItem.Kill()
+        Catch ex As Exception
+        End Try
+    End Sub
 
     Public Class ProcessInstanceItem
         Property ProcessId As Integer = 0
@@ -386,31 +432,33 @@ Public Class proc
 
         For Each procItem As Process In procs
             Try
-                Dim targetPath As String = ProcessHandle(procItem)
-                If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
-                    Dim dirName As String = Path.GetDirectoryName(targetPath)
-                    If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
-                        Dim fileName As String = Path.GetFileName(targetPath)
-                        If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
-                            Dim memBytes As Long = 0L
-                            Try
-                                memBytes = procItem.WorkingSet64
-                            Catch ex As Exception
-                            End Try
+                If Not IsCriticalProcess(procItem) Then
+                    Dim targetPath As String = ProcessHandle(procItem)
+                    If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
+                        Dim dirName As String = Path.GetDirectoryName(targetPath)
+                        If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
+                            Dim fileName As String = Path.GetFileName(targetPath)
+                            If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
+                                Dim memBytes As Long = 0L
+                                Try
+                                    memBytes = procItem.WorkingSet64
+                                Catch ex As Exception
+                                End Try
 
-                            Dim grp As ProcessGroupItem = Nothing
-                            If Not groups.TryGetValue(fileName, grp) Then
-                                grp = New ProcessGroupItem() With {.ProcessName = fileName}
-                                groups(fileName) = grp
+                                Dim grp As ProcessGroupItem = Nothing
+                                If Not groups.TryGetValue(fileName, grp) Then
+                                    grp = New ProcessGroupItem() With {.ProcessName = fileName}
+                                    groups(fileName) = grp
+                                End If
+
+                                grp.Instances.Add(New ProcessInstanceItem() With {
+                                    .ProcessId = procItem.Id,
+                                    .ProcessName = fileName,
+                                    .MemoryBytes = memBytes,
+                                    .FullPath = targetPath,
+                                    .Checked = True
+                                })
                             End If
-
-                            grp.Instances.Add(New ProcessInstanceItem() With {
-                                .ProcessId = procItem.Id,
-                                .ProcessName = fileName,
-                                .MemoryBytes = memBytes,
-                                .FullPath = targetPath,
-                                .Checked = True
-                            })
                         End If
                     End If
                 End If
@@ -489,7 +537,7 @@ Public Class proc
                     Dim fileName As String = Path.GetFileName(targetPath)
                     Dim targetName As String = fileName
                     If selectedNames.Exists(Function(x) x.Equals(targetName, StringComparison.OrdinalIgnoreCase)) Then
-                        procItem.Kill()
+                        SafeKillProcess(procItem)
                         killedCount += 1
                     End If
                 End If
@@ -531,7 +579,7 @@ Public Class proc
         Dim items As List(Of Process) = GetKillableProcessItems(ignoreList)
         For Each p As Process In items
             Try
-                p.Kill()
+                SafeKillProcess(p)
                 killedCount += 1
             Catch ex As Exception
             Finally

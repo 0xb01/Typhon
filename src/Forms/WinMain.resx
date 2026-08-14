@@ -129,7 +129,9 @@
   <data name="Label2.Text" xml:space="preserve">
     <value>Typhon is a lightweight system optimization tool designed to boost PC performance by freeing unused memory (RAM), closing unnecessary background processes, and cleaning temporary junk files.
 
-Special thanks to aeonhack for the NetSeal Theme and icons8.com for the icons.</value>
+Special thanks to
+aeonhack for the NetSeal Theme
+icons8.com for the icons.</value>
   </data>
   <metadata name="notifIcon.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>255, 17</value>

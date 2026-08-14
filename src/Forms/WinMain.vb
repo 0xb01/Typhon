@@ -68,8 +68,12 @@ Public Class WinMain
 
         My.Settings.Reload()
 
-        If My.Settings.IgnoreProcessList IsNot Nothing Then
+        If My.Settings.IgnoreProcessList IsNot Nothing AndAlso My.Settings.IgnoreProcessList.Count > 0 Then
             ProcessIgnoreList = My.Settings.IgnoreProcessList
+        Else
+            ProcessIgnoreList = GetDefaultIgnoreList()
+            My.Settings.IgnoreProcessList = ProcessIgnoreList
+            My.Settings.Save()
         End If
 
         If My.Settings.AutoFreeRAMMode >= 0 AndAlso My.Settings.AutoFreeRAMMode < NsComboBox1.Items.Count Then
@@ -102,6 +106,22 @@ Public Class WinMain
     End Sub
 
     ''' <summary>
+    ''' Returns default protection whitelist executables.
+    ''' </summary>
+    Public Shared Function GetDefaultIgnoreList() As StringCollection
+        Dim col As New StringCollection()
+        Dim defaults() As String = {
+            "chrome.exe", "msedge.exe", "firefox.exe", "brave.exe", "opera.exe",
+            "devenv.exe", "Code.exe", "idea64.exe", "eclipse.exe",
+            "sqlservr.exe", "mysqld.exe", "postgres.exe",
+            "onedrive.exe", "dropbox.exe", "googledrivefs.exe",
+            "MsMpEng.exe", "NisSrv.exe", "SecurityHealthService.exe"
+        }
+        col.AddRange(defaults)
+        Return col
+    End Function
+
+    ''' <summary>
     ''' Form load event handler.
     ''' </summary>
     Private Sub WinMain_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
@@ -124,38 +144,26 @@ Public Class WinMain
                 Case 1 ' Every 1 minute
                     If autoFreeCounter >= 60 Then
                         autoFreeCounter = 0
-                        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
-                        If res.ReleasedBytes > 0 Then
-                            ShowNotification("AutoRAM:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes))
-                        End If
+                        _proc.FreeProcesses()
                     End If
 
                 Case 2 ' Every 5 minutes
                     If autoFreeCounter >= 300 Then
                         autoFreeCounter = 0
-                        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
-                        If res.ReleasedBytes > 0 Then
-                            ShowNotification("AutoRAM:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes))
-                        End If
+                        _proc.FreeProcesses()
                     End If
 
                 Case 3 ' Every 10 minutes
                     If autoFreeCounter >= 600 Then
                         autoFreeCounter = 0
-                        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
-                        If res.ReleasedBytes > 0 Then
-                            ShowNotification("AutoRAM:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes))
-                        End If
+                        _proc.FreeProcesses()
                     End If
 
                 Case 4 ' When reaching 80% RAM
                     Dim currentRAMPct As Integer = _proc.GetRAMPercentage()
                     If currentRAMPct >= 80 AndAlso autoFreeCounter >= 30 Then
                         autoFreeCounter = 0
-                        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
-                        If res.ReleasedBytes > 0 Then
-                            ShowNotification("AutoRAM:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes) & " (" & currentRAMPct & "% RAM)")
-                        End If
+                        _proc.FreeProcesses()
                     End If
             End Select
         End If
@@ -165,12 +173,7 @@ Public Class WinMain
     ''' Click event handler triggering memory working set release for all processes.
     ''' </summary>
     Private Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
-        Dim res As proc.FreeMemoryResult = _proc.FreeProcesses()
-        If res.ReleasedBytes > 0 Then
-            ShowNotification("~X:", "Freed " & cleaner.FormatBytes(res.ReleasedBytes) & " from " & res.ProcessCount & " processes")
-        Else
-            ShowNotification("~X:", "Memory released from " & res.ProcessCount & " processes")
-        End If
+        _proc.FreeProcesses()
     End Sub
 
     ''' <summary>
@@ -187,7 +190,6 @@ Public Class WinMain
     ''' </summary>
     Private Sub NsButton2_Click(sender As System.Object, e As System.EventArgs) Handles NsButton2.Click
         WinKill.Show()
-        ShowNotification("~X:", "Scanned for killable processes")
     End Sub
 
     ''' <summary>

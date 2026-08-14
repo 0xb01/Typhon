@@ -26,6 +26,7 @@ Partial Class WinCleaner
         Me.tsCopyPath = New System.Windows.Forms.ToolStripMenuItem()
         Me.tsOpenFileLocation = New System.Windows.Forms.ToolStripMenuItem()
         Me.tsSearchGoogle = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsSearchVirusTotal = New System.Windows.Forms.ToolStripMenuItem()
         Me.NsGroupBoxOptions = New Typhon.NSGroupBox()
         Me.pnlOptions = New System.Windows.Forms.Panel()
         Me.chkTemp = New Typhon.NSCheckBox()
@@ -140,9 +141,9 @@ Partial Class WinCleaner
         'ctxListView
         '
         Me.ctxListView.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
-        Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle})
+        Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle, Me.tsSearchVirusTotal})
         Me.ctxListView.Name = "ctxListView"
-        Me.ctxListView.Size = New System.Drawing.Size(174, 70)
+        Me.ctxListView.Size = New System.Drawing.Size(174, 92)
         '
         'tsCopyPath
         '
@@ -161,6 +162,12 @@ Partial Class WinCleaner
         Me.tsSearchGoogle.Name = "tsSearchGoogle"
         Me.tsSearchGoogle.Size = New System.Drawing.Size(173, 22)
         Me.tsSearchGoogle.Text = "Search in Google"
+        '
+        'tsSearchVirusTotal
+        '
+        Me.tsSearchVirusTotal.Name = "tsSearchVirusTotal"
+        Me.tsSearchVirusTotal.Size = New System.Drawing.Size(173, 22)
+        Me.tsSearchVirusTotal.Text = "Search in VirusTotal"
         '
         'NsGroupBoxOptions
         '
@@ -419,6 +426,7 @@ Partial Class WinCleaner
     Friend WithEvents tsCopyPath As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsOpenFileLocation As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsSearchGoogle As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsSearchVirusTotal As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents NsGroupBoxOptions As Typhon.NSGroupBox
     Friend WithEvents pnlOptions As System.Windows.Forms.Panel
     Friend WithEvents chkTemp As Typhon.NSCheckBox

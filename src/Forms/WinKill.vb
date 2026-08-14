@@ -145,13 +145,12 @@ Public Class WinKill
         For Each pid As Integer In pidsToKill
             Try
                 Dim p As Process = Process.GetProcessById(pid)
-                p.Kill()
+                proc.SafeKillProcess(p)
                 killedCount += 1
             Catch ex As Exception
             End Try
         Next
 
-        WinMain.ShowNotification("~X:", "Killed " & killedCount & " processes")
         Me.Close()
     End Sub
 
@@ -214,5 +213,45 @@ Public Class WinKill
         My.Settings.IgnoreProcessList = WinMain.ProcessIgnoreList
         My.Settings.Save()
         Me.Close()
+    End Sub
+
+    Private Sub SearchGoogleToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchGoogleToolStripMenuItem.Click
+        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+            For Each selectedItem As NSListView.NSListViewItem In NsListView1.SelectedItems
+                Dim procName As String = ""
+                If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
+                    procName = DirectCast(selectedItem.Tag, proc.ProcessGroupItem).ProcessName
+                ElseIf TypeOf selectedItem.Tag Is proc.ProcessInstanceItem Then
+                    procName = DirectCast(selectedItem.Tag, proc.ProcessInstanceItem).ProcessName
+                Else
+                    procName = selectedItem.Text
+                End If
+
+                If Not String.IsNullOrEmpty(procName) Then
+                    Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(procName)
+                    Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+                End If
+            Next
+        End If
+    End Sub
+
+    Private Sub SearchVirusTotalToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchVirusTotalToolStripMenuItem.Click
+        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+            For Each selectedItem As NSListView.NSListViewItem In NsListView1.SelectedItems
+                Dim procName As String = ""
+                If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
+                    procName = DirectCast(selectedItem.Tag, proc.ProcessGroupItem).ProcessName
+                ElseIf TypeOf selectedItem.Tag Is proc.ProcessInstanceItem Then
+                    procName = DirectCast(selectedItem.Tag, proc.ProcessInstanceItem).ProcessName
+                Else
+                    procName = selectedItem.Text
+                End If
+
+                If Not String.IsNullOrEmpty(procName) Then
+                    Dim url As String = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(procName)
+                    Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
+                End If
+            Next
+        End If
     End Sub
 End Class

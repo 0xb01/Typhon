@@ -34,6 +34,8 @@ Partial Class WinKill
         Me.SelectAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DeselectAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AddToIgnoreListToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SearchGoogleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SearchVirusTotalToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsTheme1.SuspendLayout()
         Me.NsContextMenu1.SuspendLayout()
@@ -125,9 +127,9 @@ Partial Class WinKill
         'NsContextMenu1
         '
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
-        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectAllToolStripMenuItem, Me.DeselectAllToolStripMenuItem, Me.AddToIgnoreListToolStripMenuItem})
+        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectAllToolStripMenuItem, Me.DeselectAllToolStripMenuItem, Me.AddToIgnoreListToolStripMenuItem, Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 70)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 114)
         '
         'SelectAllToolStripMenuItem
         '
@@ -146,6 +148,18 @@ Partial Class WinKill
         Me.AddToIgnoreListToolStripMenuItem.Name = "AddToIgnoreListToolStripMenuItem"
         Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
         Me.AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
+        '
+        'SearchGoogleToolStripMenuItem
+        '
+        Me.SearchGoogleToolStripMenuItem.Name = "SearchGoogleToolStripMenuItem"
+        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchGoogleToolStripMenuItem.Text = "Search in Google"
+        '
+        'SearchVirusTotalToolStripMenuItem
+        '
+        Me.SearchVirusTotalToolStripMenuItem.Name = "SearchVirusTotalToolStripMenuItem"
+        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal"
         '
         'NsControlButton1
         '
@@ -186,4 +200,6 @@ Partial Class WinKill
     Friend WithEvents SelectAllToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents DeselectAllToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents AddToIgnoreListToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents SearchGoogleToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents SearchVirusTotalToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 End Class
