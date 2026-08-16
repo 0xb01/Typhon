@@ -17,6 +17,7 @@ Partial Class WinDiskSelector
 
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(WinDiskSelector))
         Me.NsTheme1 = New Typhon.NSTheme()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.lstDrives = New Typhon.NSListView()
@@ -90,6 +91,7 @@ Partial Class WinDiskSelector
         Me.ControlBox = False
         Me.Controls.Add(Me.NsTheme1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "WinDiskSelector"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Disk Selector"

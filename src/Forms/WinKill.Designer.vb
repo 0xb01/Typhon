@@ -65,7 +65,7 @@ Partial Class WinKill
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.NsTheme1.TabIndex = 0
-        Me.NsTheme1.Text = "Typhon: Process Killer"
+        Me.NsTheme1.Text = "Process Killer"
         Me.NsTheme1.TransparencyKey = System.Drawing.Color.Empty
         Me.NsTheme1.Transparent = False
         '
@@ -129,36 +129,36 @@ Partial Class WinKill
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectAllToolStripMenuItem, Me.DeselectAllToolStripMenuItem, Me.AddToIgnoreListToolStripMenuItem, Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 114)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(178, 114)
         '
         'SelectAllToolStripMenuItem
         '
         Me.SelectAllToolStripMenuItem.Name = "SelectAllToolStripMenuItem"
-        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SelectAllToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.SelectAllToolStripMenuItem.Text = "Select All"
         '
         'DeselectAllToolStripMenuItem
         '
         Me.DeselectAllToolStripMenuItem.Name = "DeselectAllToolStripMenuItem"
-        Me.DeselectAllToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.DeselectAllToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.DeselectAllToolStripMenuItem.Text = "Deselect All"
         '
         'AddToIgnoreListToolStripMenuItem
         '
         Me.AddToIgnoreListToolStripMenuItem.Name = "AddToIgnoreListToolStripMenuItem"
-        Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.AddToIgnoreListToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
         '
         'SearchGoogleToolStripMenuItem
         '
         Me.SearchGoogleToolStripMenuItem.Name = "SearchGoogleToolStripMenuItem"
-        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.SearchGoogleToolStripMenuItem.Text = "Search in Google"
         '
         'SearchVirusTotalToolStripMenuItem
         '
         Me.SearchVirusTotalToolStripMenuItem.Name = "SearchVirusTotalToolStripMenuItem"
-        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal"
         '
         'NsControlButton1

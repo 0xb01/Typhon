@@ -2554,6 +2554,27 @@ Class NSTextBox
         End Set
     End Property
 
+    Private _Watermark As String = ""
+    Property Watermark() As String
+        Get
+            Return _Watermark
+        End Get
+        Set(ByVal value As String)
+            _Watermark = value
+            UpdateWatermark()
+        End Set
+    End Property
+
+    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)> _
+    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As String) As Int32
+    End Function
+
+    Private Sub UpdateWatermark()
+        If Base IsNot Nothing AndAlso Base.IsHandleCreated Then
+            SendMessage(Base.Handle, &H1501, 1, _Watermark)
+        End If
+    End Sub
+
     Overrides Property Text As String
         Get
             Return MyBase.Text
@@ -2589,7 +2610,12 @@ Class NSTextBox
             Controls.Add(Base)
         End If
 
+        UpdateWatermark()
         MyBase.OnHandleCreated(e)
+    End Sub
+
+    Private Sub Base_HandleCreated(ByVal s As Object, ByVal e As EventArgs)
+        UpdateWatermark()
     End Sub
 
     Private Base As TextBox
@@ -2623,6 +2649,7 @@ Class NSTextBox
 
         AddHandler Base.TextChanged, AddressOf OnBaseTextChanged
         AddHandler Base.KeyDown, AddressOf OnBaseKeyDown
+        AddHandler Base.HandleCreated, AddressOf Base_HandleCreated
 
         P1 = New Pen(Color.FromArgb(24, 24, 24))
         P2 = New Pen(Color.FromArgb(55, 55, 55))
@@ -4864,6 +4891,22 @@ Class NSListView
         End Get
     End Property
 
+    Public Sub SelectItem(ByVal item As NSListViewItem)
+        _SelectedItems.Clear()
+        If item IsNot Nothing AndAlso _Items.Contains(item) Then
+            _SelectedItems.Add(item)
+        End If
+        Invalidate()
+    End Sub
+
+    Public Sub SelectIndex(ByVal index As Integer)
+        _SelectedItems.Clear()
+        If index >= 0 AndAlso index < _Items.Count Then
+            _SelectedItems.Add(_Items(index))
+        End If
+        Invalidate()
+    End Sub
+
     Private _Columns As New List(Of NSListViewColumnHeader)
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Content)> _
     Public Property Columns() As NSListViewColumnHeader()
@@ -5096,6 +5139,13 @@ Class NSListView
         End If
 
         _Items.Sort(Function(a, b)
+                        ' Always pin "../" or parent directory entry at the very top
+                        Dim aIsParent As Boolean = (a.Text = "../" OrElse Equals(a.Tag, "PARENT_DIRECTORY"))
+                        Dim bIsParent As Boolean = (b.Text = "../" OrElse Equals(b.Tag, "PARENT_DIRECTORY"))
+                        If aIsParent AndAlso bIsParent Then Return 0
+                        If aIsParent Then Return -1
+                        If bIsParent Then Return 1
+
                         Dim strA As String = GetItemColumnText(a, columnIndex)
                         Dim strB As String = GetItemColumnText(b, columnIndex)
 
@@ -5230,6 +5280,12 @@ Class NSListView
                         _SelectedItems.Clear()
                         _SelectedItems.Add(_Items(Index))
                     End If
+                    Invalidate()
+                Else
+                    If Not (ModifierKeys = Keys.Control AndAlso _MultiSelect) Then
+                        _SelectedItems.Clear()
+                        Invalidate()
+                    End If
                 End If
 
             End If
@@ -5239,11 +5295,9 @@ Class NSListView
                 Dim Index As Integer = ((e.Y + Offset - ItemHeight) \ ItemHeight)
 
                 If Index >= 0 AndAlso Index < _Items.Count Then
-                    If Not _SelectedItems.Contains(_Items(Index)) Then
-                        _SelectedItems.Clear()
-                        _SelectedItems.Add(_Items(Index))
-                        Invalidate()
-                    End If
+                    _SelectedItems.Clear()
+                    _SelectedItems.Add(_Items(Index))
+                    Invalidate()
                 End If
             End If
         End If

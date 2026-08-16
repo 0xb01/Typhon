@@ -18,15 +18,17 @@ Partial Class WinExceptions
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim NsListViewColumnHeader1 As Typhon.NSListView.NSListViewColumnHeader = New Typhon.NSListView.NSListViewColumnHeader()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(WinExceptions))
         Me.NsTheme1 = New Typhon.NSTheme()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsListView1 = New Typhon.NSListView()
-        Me.txtExeName = New Typhon.NSTextBox()
-        Me.btnAdd = New Typhon.NSButton()
-        Me.btnRemove = New Typhon.NSButton()
         Me.NsContextMenu1 = New Typhon.NSContextMenu()
         Me.SearchGoogleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SearchVirusTotalToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.cboProcesses = New Typhon.NSComboBox()
+        Me.txtCustomExe = New Typhon.NSTextBox()
+        Me.btnAdd = New Typhon.NSButton()
+        Me.btnRemove = New Typhon.NSButton()
         Me.NsTheme1.SuspendLayout()
         Me.NsContextMenu1.SuspendLayout()
         Me.SuspendLayout()
@@ -39,7 +41,8 @@ Partial Class WinExceptions
         Me.NsTheme1.Colors = New Typhon.Bloom(-1) {}
         Me.NsTheme1.Controls.Add(Me.NsControlButton1)
         Me.NsTheme1.Controls.Add(Me.NsListView1)
-        Me.NsTheme1.Controls.Add(Me.txtExeName)
+        Me.NsTheme1.Controls.Add(Me.cboProcesses)
+        Me.NsTheme1.Controls.Add(Me.txtCustomExe)
         Me.NsTheme1.Controls.Add(Me.btnAdd)
         Me.NsTheme1.Controls.Add(Me.btnRemove)
         Me.NsTheme1.Customization = ""
@@ -51,7 +54,7 @@ Partial Class WinExceptions
         Me.NsTheme1.Name = "NsTheme1"
         Me.NsTheme1.NoRounding = False
         Me.NsTheme1.Sizable = False
-        Me.NsTheme1.Size = New System.Drawing.Size(320, 360)
+        Me.NsTheme1.Size = New System.Drawing.Size(340, 395)
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.NsTheme1.TabIndex = 0
@@ -63,7 +66,7 @@ Partial Class WinExceptions
         '
         Me.NsControlButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton1.ControlButton = Typhon.NSControlButton.Button.Close
-        Me.NsControlButton1.Location = New System.Drawing.Point(295, 5)
+        Me.NsControlButton1.Location = New System.Drawing.Point(315, 5)
         Me.NsControlButton1.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton1.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton1.MinimumSize = New System.Drawing.Size(18, 20)
@@ -79,14 +82,14 @@ Partial Class WinExceptions
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsListView1.CheckBoxes = False
         NsListViewColumnHeader1.Text = "Executable Name"
-        NsListViewColumnHeader1.Width = 270
+        NsListViewColumnHeader1.Width = 290
         Me.NsListView1.Columns = New Typhon.NSListView.NSListViewColumnHeader() {NsListViewColumnHeader1}
         Me.NsListView1.ContextMenuStrip = Me.NsContextMenu1
         Me.NsListView1.Items = New Typhon.NSListView.NSListViewItem(-1) {}
         Me.NsListView1.Location = New System.Drawing.Point(12, 40)
         Me.NsListView1.MultiSelect = True
         Me.NsListView1.Name = "NsListView1"
-        Me.NsListView1.Size = New System.Drawing.Size(296, 260)
+        Me.NsListView1.Size = New System.Drawing.Size(316, 265)
         Me.NsListView1.TabIndex = 1
         Me.NsListView1.Text = "NsListView1"
         '
@@ -95,59 +98,77 @@ Partial Class WinExceptions
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(170, 48)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(178, 48)
         '
         'SearchGoogleToolStripMenuItem
         '
         Me.SearchGoogleToolStripMenuItem.Name = "SearchGoogleToolStripMenuItem"
-        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.SearchGoogleToolStripMenuItem.Text = "Search in Google"
         '
         'SearchVirusTotalToolStripMenuItem
         '
         Me.SearchVirusTotalToolStripMenuItem.Name = "SearchVirusTotalToolStripMenuItem"
-        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(169, 22)
+        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal"
         '
-        'txtExeName
+        'cboProcesses
         '
-        Me.txtExeName.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.txtExeName.Location = New System.Drawing.Point(12, 315)
-        Me.txtExeName.MaxLength = 32767
-        Me.txtExeName.Multiline = False
-        Me.txtExeName.Name = "txtExeName"
-        Me.txtExeName.ReadOnly = False
-        Me.txtExeName.Size = New System.Drawing.Size(140, 23)
-        Me.txtExeName.TabIndex = 2
-        Me.txtExeName.Text = ""
-        Me.txtExeName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left
-        Me.txtExeName.UseSystemPasswordChar = False
+        Me.cboProcesses.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cboProcesses.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.cboProcesses.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+        Me.cboProcesses.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboProcesses.Font = New System.Drawing.Font("Verdana", 8.0!)
+        Me.cboProcesses.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.cboProcesses.FormattingEnabled = True
+        Me.cboProcesses.Location = New System.Drawing.Point(12, 318)
+        Me.cboProcesses.Name = "cboProcesses"
+        Me.cboProcesses.Size = New System.Drawing.Size(160, 21)
+        Me.cboProcesses.TabIndex = 2
+        '
+        'txtCustomExe
+        '
+        Me.txtCustomExe.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtCustomExe.Cursor = System.Windows.Forms.Cursors.IBeam
+        Me.txtCustomExe.Location = New System.Drawing.Point(12, 350)
+        Me.txtCustomExe.MaxLength = 32767
+        Me.txtCustomExe.Multiline = False
+        Me.txtCustomExe.Name = "txtCustomExe"
+        Me.txtCustomExe.ReadOnly = False
+        Me.txtCustomExe.Size = New System.Drawing.Size(160, 23)
+        Me.txtCustomExe.TabIndex = 3
+        Me.txtCustomExe.TextAlign = System.Windows.Forms.HorizontalAlignment.Left
+        Me.txtCustomExe.UseSystemPasswordChar = False
+        Me.txtCustomExe.Watermark = "e.g. game.exe"
         '
         'btnAdd
         '
-        Me.btnAdd.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.btnAdd.Location = New System.Drawing.Point(158, 315)
+        Me.btnAdd.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnAdd.Location = New System.Drawing.Point(180, 318)
         Me.btnAdd.Name = "btnAdd"
-        Me.btnAdd.Size = New System.Drawing.Size(70, 23)
-        Me.btnAdd.TabIndex = 3
+        Me.btnAdd.Size = New System.Drawing.Size(70, 55)
+        Me.btnAdd.TabIndex = 4
         Me.btnAdd.Text = "Add"
         '
         'btnRemove
         '
         Me.btnRemove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnRemove.Location = New System.Drawing.Point(238, 315)
+        Me.btnRemove.Location = New System.Drawing.Point(258, 318)
         Me.btnRemove.Name = "btnRemove"
-        Me.btnRemove.Size = New System.Drawing.Size(70, 23)
-        Me.btnRemove.TabIndex = 4
+        Me.btnRemove.Size = New System.Drawing.Size(70, 55)
+        Me.btnRemove.TabIndex = 5
         Me.btnRemove.Text = "Remove"
         '
         'WinExceptions
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(320, 360)
+        Me.ClientSize = New System.Drawing.Size(340, 395)
         Me.Controls.Add(Me.NsTheme1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "WinExceptions"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Process Exceptions"
@@ -160,7 +181,8 @@ Partial Class WinExceptions
     Friend WithEvents NsTheme1 As Typhon.NSTheme
     Friend WithEvents NsControlButton1 As Typhon.NSControlButton
     Friend WithEvents NsListView1 As Typhon.NSListView
-    Friend WithEvents txtExeName As Typhon.NSTextBox
+    Friend WithEvents cboProcesses As Typhon.NSComboBox
+    Friend WithEvents txtCustomExe As Typhon.NSTextBox
     Friend WithEvents btnAdd As Typhon.NSButton
     Friend WithEvents btnRemove As Typhon.NSButton
     Friend WithEvents NsContextMenu1 As Typhon.NSContextMenu

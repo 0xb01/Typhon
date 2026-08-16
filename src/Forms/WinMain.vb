@@ -82,10 +82,8 @@ Public Class WinMain
             NsComboBox1.SelectedIndex = 0
         End If
 
-        Dim isAutostartRegistryEnabled As Boolean = IsBootAutostartEnabled()
-        If My.Settings.AutoStartOnBoot <> isAutostartRegistryEnabled Then
-            My.Settings.AutoStartOnBoot = isAutostartRegistryEnabled
-            My.Settings.Save()
+        If My.Settings.AutoStartOnBoot Then
+            SetBootAutostart(True)
         End If
         NsOnOffBox2.Checked = My.Settings.AutoStartOnBoot
         NsOnOffBox3.Checked = My.Settings.MinimizeToTray
@@ -96,7 +94,7 @@ Public Class WinMain
             notifIcon.Icon = Me.Icon
         End If
 
-        If Environment.GetCommandLineArgs().Contains("/minimized", StringComparer.OrdinalIgnoreCase) OrElse (My.Settings.StartMinimizedOnBoot AndAlso isAutostartRegistryEnabled) Then
+        If Environment.GetCommandLineArgs().Contains("/minimized", StringComparer.OrdinalIgnoreCase) OrElse (My.Settings.StartMinimizedOnBoot AndAlso My.Settings.AutoStartOnBoot) Then
             Me.WindowState = FormWindowState.Minimized
             Me.Hide()
             notifIcon.Visible = True
@@ -239,6 +237,11 @@ Public Class WinMain
         If NsTabControl1.SelectedTab Is TabPage3 Then
             NsTabControl1.SelectedTab = TabPage1
             Using dlg As New WinCleaner()
+                dlg.ShowDialog(Me)
+            End Using
+        ElseIf NsTabControl1.SelectedTab Is TabPageSpaceLens Then
+            NsTabControl1.SelectedTab = TabPage1
+            Using dlg As New WinSight()
                 dlg.ShowDialog(Me)
             End Using
         ElseIf NsTabControl1.SelectedTab Is TabPage6 Then

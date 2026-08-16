@@ -44,6 +44,7 @@ Partial Class WinMain
         Me.NsLabel7 = New Typhon.NSLabel()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.TabPageSpaceLens = New System.Windows.Forms.TabPage()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.NsGroupBox2 = New Typhon.NSGroupBox()
         Me.NsLabel4 = New Typhon.NSLabel()
@@ -141,6 +142,7 @@ Partial Class WinMain
         Me.NsTabControl1.Controls.Add(Me.TabPage1)
         Me.NsTabControl1.Controls.Add(Me.TabPage4)
         Me.NsTabControl1.Controls.Add(Me.TabPage3)
+        Me.NsTabControl1.Controls.Add(Me.TabPageSpaceLens)
         Me.NsTabControl1.Controls.Add(Me.TabPage2)
         Me.NsTabControl1.Controls.Add(Me.TabPage6)
         Me.NsTabControl1.Controls.Add(Me.TabPage5)
@@ -343,6 +345,16 @@ Partial Class WinMain
         Me.TabPage3.Size = New System.Drawing.Size(353, 232)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Cleaner"
+        '
+        'TabPageSpaceLens
+        '
+        Me.TabPageSpaceLens.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.TabPageSpaceLens.Location = New System.Drawing.Point(119, 4)
+        Me.TabPageSpaceLens.Name = "TabPageSpaceLens"
+        Me.TabPageSpaceLens.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPageSpaceLens.Size = New System.Drawing.Size(353, 232)
+        Me.TabPageSpaceLens.TabIndex = 6
+        Me.TabPageSpaceLens.Text = "Sight"
         '
         'TabPage2
         '
@@ -742,6 +754,7 @@ Partial Class WinMain
     Friend WithEvents NsLabel6 As Typhon.NSLabel
     Friend WithEvents NsOnOffBox2 As Typhon.NSOnOffBox
     Friend WithEvents TabPage3 As System.Windows.Forms.TabPage
+    Friend WithEvents TabPageSpaceLens As System.Windows.Forms.TabPage
     Friend WithEvents TabPage4 As System.Windows.Forms.TabPage
     Friend WithEvents Chart1 As System.Windows.Forms.DataVisualization.Charting.Chart
     Friend WithEvents graphTimer As System.Windows.Forms.Timer

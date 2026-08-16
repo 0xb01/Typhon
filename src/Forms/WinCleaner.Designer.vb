@@ -17,6 +17,7 @@ Partial Class WinCleaner
 
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(WinCleaner))
         Me.NsTheme1 = New Typhon.NSTheme()
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsLabelStatus = New Typhon.NSLabel()
@@ -77,7 +78,7 @@ Partial Class WinCleaner
         Me.NsTheme1.Name = "NsTheme1"
         Me.NsTheme1.NoRounding = False
         Me.NsTheme1.Padding = New System.Windows.Forms.Padding(0, 28, 0, 0)
-        Me.NsTheme1.Sizable = True
+        Me.NsTheme1.Sizable = False
         Me.NsTheme1.Size = New System.Drawing.Size(720, 548)
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
@@ -143,30 +144,30 @@ Partial Class WinCleaner
         Me.ctxListView.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.ctxListView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCopyPath, Me.tsOpenFileLocation, Me.tsSearchGoogle, Me.tsSearchVirusTotal})
         Me.ctxListView.Name = "ctxListView"
-        Me.ctxListView.Size = New System.Drawing.Size(174, 92)
+        Me.ctxListView.Size = New System.Drawing.Size(178, 92)
         '
         'tsCopyPath
         '
         Me.tsCopyPath.Name = "tsCopyPath"
-        Me.tsCopyPath.Size = New System.Drawing.Size(173, 22)
+        Me.tsCopyPath.Size = New System.Drawing.Size(177, 22)
         Me.tsCopyPath.Text = "Copy Path"
         '
         'tsOpenFileLocation
         '
         Me.tsOpenFileLocation.Name = "tsOpenFileLocation"
-        Me.tsOpenFileLocation.Size = New System.Drawing.Size(173, 22)
+        Me.tsOpenFileLocation.Size = New System.Drawing.Size(177, 22)
         Me.tsOpenFileLocation.Text = "Open File Location"
         '
         'tsSearchGoogle
         '
         Me.tsSearchGoogle.Name = "tsSearchGoogle"
-        Me.tsSearchGoogle.Size = New System.Drawing.Size(173, 22)
+        Me.tsSearchGoogle.Size = New System.Drawing.Size(177, 22)
         Me.tsSearchGoogle.Text = "Search in Google"
         '
         'tsSearchVirusTotal
         '
         Me.tsSearchVirusTotal.Name = "tsSearchVirusTotal"
-        Me.tsSearchVirusTotal.Size = New System.Drawing.Size(173, 22)
+        Me.tsSearchVirusTotal.Size = New System.Drawing.Size(177, 22)
         Me.tsSearchVirusTotal.Text = "Search in VirusTotal"
         '
         'NsGroupBoxOptions
@@ -406,6 +407,7 @@ Partial Class WinCleaner
         Me.ClientSize = New System.Drawing.Size(720, 548)
         Me.Controls.Add(Me.NsTheme1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "WinCleaner"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "System Cleaner"

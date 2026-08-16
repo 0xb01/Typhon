@@ -137,21 +137,12 @@
     <Compile Include="Forms\WinKill.Designer.vb">
       <DependentUpon>WinKill.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\WinKill.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\WinKill.vb" />
     <Compile Include="Forms\WinMain.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\WinMain.Designer.vb">
       <DependentUpon>WinMain.vb</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\WinOptions.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\WinOptions.Designer.vb">
-      <DependentUpon>WinOptions.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\WinDiskSelector.vb">
@@ -175,6 +166,17 @@
       <DependentUpon>WinCleaner.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\WinSight.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinSight.Designer.vb">
+      <DependentUpon>WinSight.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\SpaceLensTreemap.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helpers\DiskTreeScanner.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -205,11 +207,17 @@
     <EmbeddedResource Include="Forms\WinDiskSelector.resx">
       <DependentUpon>WinDiskSelector.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WinExceptions.resx">
+      <DependentUpon>WinExceptions.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinKill.resx">
       <DependentUpon>WinKill.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinMain.resx">
       <DependentUpon>WinMain.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WinSight.resx">
+      <DependentUpon>WinSight.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
