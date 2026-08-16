@@ -23,48 +23,95 @@ Namespace Controls
         Public Event NodeHovered As Action(Of SpaceNode)
         Public Event NodeDoubleClicked As Action(Of SpaceNode)
 
-        ' Toned-down, refined color palette for file types
-        Private ReadOnly _categoryColors As New Dictionary(Of String, Color)(StringComparer.OrdinalIgnoreCase) From {
-            {".exe", Color.FromArgb(170, 70, 70)},
-            {".dll", Color.FromArgb(150, 75, 70)},
-            {".sys", Color.FromArgb(140, 50, 50)},
-            {".zip", Color.FromArgb(180, 120, 50)},
-            {".rar", Color.FromArgb(180, 120, 50)},
-            {".7z", Color.FromArgb(180, 120, 50)},
-            {".tar", Color.FromArgb(180, 120, 50)},
-            {".gz", Color.FromArgb(180, 120, 50)},
-            {".iso", Color.FromArgb(190, 90, 50)},
-            {".mp4", Color.FromArgb(75, 95, 160)},
-            {".mkv", Color.FromArgb(75, 95, 160)},
-            {".avi", Color.FromArgb(75, 95, 160)},
-            {".mov", Color.FromArgb(65, 80, 150)},
-            {".mp3", Color.FromArgb(135, 75, 155)},
-            {".flac", Color.FromArgb(135, 75, 155)},
-            {".wav", Color.FromArgb(120, 70, 140)},
-            {".jpg", Color.FromArgb(45, 135, 135)},
-            {".jpeg", Color.FromArgb(45, 135, 135)},
-            {".png", Color.FromArgb(45, 135, 135)},
-            {".gif", Color.FromArgb(40, 100, 120)},
-            {".psd", Color.FromArgb(35, 110, 130)},
-            {".doc", Color.FromArgb(50, 125, 170)},
-            {".docx", Color.FromArgb(50, 125, 170)},
-            {".pdf", Color.FromArgb(185, 70, 70)},
-            {".txt", Color.FromArgb(80, 85, 95)},
-            {".log", Color.FromArgb(90, 95, 105)},
-            {".vmdk", Color.FromArgb(70, 75, 155)},
-            {".vhdx", Color.FromArgb(70, 75, 155)},
-            {".mdf", Color.FromArgb(50, 145, 95)},
-            {".ldf", Color.FromArgb(45, 130, 85)}
-        }
+        ' Comprehensive, distinct aesthetic color palette for popular file formats
+        Private Shared ReadOnly _categoryColors As Dictionary(Of String, Color) = InitializeCategoryColors()
 
-        Private ReadOnly _folderColors() As Color = {
-            Color.FromArgb(45, 85, 125),
-            Color.FromArgb(45, 115, 85),
-            Color.FromArgb(105, 65, 125),
-            Color.FromArgb(145, 85, 45),
-            Color.FromArgb(35, 115, 105),
-            Color.FromArgb(135, 55, 55),
-            Color.FromArgb(55, 65, 80)
+        Private Shared Function InitializeCategoryColors() As Dictionary(Of String, Color)
+            Dim dict As New Dictionary(Of String, Color)(StringComparer.OrdinalIgnoreCase)
+            ' Executables & Binaries (Crimson / Coral / Ruby)
+            dict.Add(".exe", Color.FromArgb(235, 95, 95))
+            dict.Add(".dll", Color.FromArgb(220, 110, 110))
+            dict.Add(".sys", Color.FromArgb(205, 80, 80))
+            dict.Add(".msi", Color.FromArgb(230, 105, 120))
+            dict.Add(".bat", Color.FromArgb(215, 120, 95))
+            dict.Add(".cmd", Color.FromArgb(215, 120, 95))
+            dict.Add(".ps1", Color.FromArgb(200, 130, 80))
+            ' Archives & Compressed (Amber / Orange / Ochre)
+            dict.Add(".zip", Color.FromArgb(240, 165, 60))
+            dict.Add(".rar", Color.FromArgb(235, 150, 50))
+            dict.Add(".7z", Color.FromArgb(245, 175, 70))
+            dict.Add(".tar", Color.FromArgb(225, 140, 55))
+            dict.Add(".gz", Color.FromArgb(215, 135, 60))
+            dict.Add(".iso", Color.FromArgb(250, 130, 70))
+            dict.Add(".cab", Color.FromArgb(220, 155, 65))
+            ' Video (Sapphire / Indigo / Sky)
+            dict.Add(".mp4", Color.FromArgb(90, 160, 245))
+            dict.Add(".mkv", Color.FromArgb(80, 145, 235))
+            dict.Add(".avi", Color.FromArgb(100, 170, 250))
+            dict.Add(".mov", Color.FromArgb(70, 130, 220))
+            dict.Add(".wmv", Color.FromArgb(95, 155, 230))
+            dict.Add(".flv", Color.FromArgb(110, 165, 235))
+            dict.Add(".webm", Color.FromArgb(85, 175, 240))
+            ' Audio (Violet / Lavender / Magenta)
+            dict.Add(".mp3", Color.FromArgb(190, 115, 235))
+            dict.Add(".flac", Color.FromArgb(175, 100, 225))
+            dict.Add(".wav", Color.FromArgb(160, 90, 210))
+            dict.Add(".m4a", Color.FromArgb(200, 130, 240))
+            dict.Add(".ogg", Color.FromArgb(165, 105, 215))
+            dict.Add(".aac", Color.FromArgb(180, 110, 230))
+            ' Images (Emerald / Mint / Turquoise)
+            dict.Add(".jpg", Color.FromArgb(65, 195, 165))
+            dict.Add(".jpeg", Color.FromArgb(65, 195, 165))
+            dict.Add(".png", Color.FromArgb(55, 185, 155))
+            dict.Add(".gif", Color.FromArgb(75, 205, 180))
+            dict.Add(".bmp", Color.FromArgb(85, 190, 150))
+            dict.Add(".webp", Color.FromArgb(70, 200, 170))
+            dict.Add(".svg", Color.FromArgb(90, 210, 160))
+            dict.Add(".ico", Color.FromArgb(80, 180, 140))
+            dict.Add(".psd", Color.FromArgb(60, 165, 190))
+            ' Documents & Books (Blue / Teal / Cyan)
+            dict.Add(".pdf", Color.FromArgb(240, 85, 95))
+            dict.Add(".doc", Color.FromArgb(75, 150, 215))
+            dict.Add(".docx", Color.FromArgb(75, 150, 215))
+            dict.Add(".xls", Color.FromArgb(65, 175, 115))
+            dict.Add(".xlsx", Color.FromArgb(65, 175, 115))
+            dict.Add(".ppt", Color.FromArgb(235, 115, 75))
+            dict.Add(".pptx", Color.FromArgb(235, 115, 75))
+            dict.Add(".txt", Color.FromArgb(160, 170, 185))
+            dict.Add(".log", Color.FromArgb(150, 160, 175))
+            dict.Add(".md", Color.FromArgb(145, 180, 205))
+            ' Code & Config (Teal / Lime / Gold)
+            dict.Add(".vb", Color.FromArgb(120, 200, 110))
+            dict.Add(".cs", Color.FromArgb(140, 195, 95))
+            dict.Add(".cpp", Color.FromArgb(105, 185, 130))
+            dict.Add(".h", Color.FromArgb(100, 175, 120))
+            dict.Add(".py", Color.FromArgb(135, 210, 100))
+            dict.Add(".js", Color.FromArgb(235, 210, 80))
+            dict.Add(".ts", Color.FromArgb(85, 180, 230))
+            dict.Add(".html", Color.FromArgb(240, 130, 80))
+            dict.Add(".css", Color.FromArgb(90, 175, 235))
+            dict.Add(".json", Color.FromArgb(220, 190, 90))
+            dict.Add(".xml", Color.FromArgb(215, 160, 100))
+            dict.Add(".sql", Color.FromArgb(170, 140, 210))
+            ' Virtual Disks & Databases (Deep Slate / Plum)
+            dict.Add(".vmdk", Color.FromArgb(135, 125, 215))
+            dict.Add(".vhdx", Color.FromArgb(135, 125, 215))
+            dict.Add(".vdi", Color.FromArgb(125, 115, 205))
+            dict.Add(".mdf", Color.FromArgb(80, 185, 140))
+            dict.Add(".ldf", Color.FromArgb(70, 170, 130))
+            dict.Add(".db", Color.FromArgb(100, 180, 160))
+            dict.Add(".sqlite", Color.FromArgb(95, 175, 155))
+            Return dict
+        End Function
+
+        Private Shared ReadOnly _folderColors() As Color = {
+            Color.FromArgb(70, 130, 190),
+            Color.FromArgb(65, 160, 135),
+            Color.FromArgb(145, 105, 175),
+            Color.FromArgb(195, 130, 75),
+            Color.FromArgb(60, 155, 150),
+            Color.FromArgb(180, 95, 95),
+            Color.FromArgb(90, 115, 150)
         }
 
         Public Sub New()
@@ -335,17 +382,63 @@ Namespace Controls
             End If
         End Sub
 
-        Private Function GetNodeColor(node As SpaceNode) As Color
+        ''' <summary>
+        ''' Returns the distinct visual color for a folder or file node.
+        ''' </summary>
+        Public Shared Function GetNodeColor(node As SpaceNode) As Color
+            If node Is Nothing Then Return Color.FromArgb(170, 175, 185)
+
             If node.IsDirectory Then
-                Dim idx As Integer = Math.Abs(node.Name.GetHashCode()) Mod _folderColors.Length
+                Dim idx As Integer = Math.Abs(node.Name.ToLowerInvariant().GetHashCode()) Mod _folderColors.Length
                 Return _folderColors(idx)
             Else
-                Dim ext As String = Path.GetExtension(node.Name)
+                Dim ext As String = Path.GetExtension(node.Name).ToLowerInvariant()
                 If Not String.IsNullOrEmpty(ext) AndAlso _categoryColors.ContainsKey(ext) Then
                     Return _categoryColors(ext)
                 End If
-                Return Color.FromArgb(70, 75, 82)
+
+                ' Dynamic harmonious HSL generation for any unique/uncommon extension
+                If Not String.IsNullOrEmpty(ext) Then
+                    Dim hash As Integer = Math.Abs(ext.GetHashCode())
+                    Dim hue As Single = CSng((hash * 137.508) Mod 360.0) ' Golden angle distribution
+                    Dim sat As Single = 0.55!
+                    Dim lum As Single = 0.62!
+                    Return FromHsl(hue, sat, lum)
+                End If
+
+                Return Color.FromArgb(165, 170, 180)
             End If
+        End Function
+
+        ''' <summary>
+        ''' Converts HSL values to a System.Drawing.Color.
+        ''' </summary>
+        Private Shared Function FromHsl(h As Single, s As Single, l As Single) As Color
+            Dim r, g, b As Single
+            If s = 0 Then
+                r = l : g = l : b = l
+            Else
+                Dim q As Single = If(l < 0.5!, l * (1.0! + s), (l + s) - (l * s))
+                Dim p As Single = (2.0! * l) - q
+                Dim hk As Single = h / 360.0!
+
+                r = HueToRgb(p, q, hk + (1.0! / 3.0!))
+                g = HueToRgb(p, q, hk)
+                b = HueToRgb(p, q, hk - (1.0! / 3.0!))
+            End If
+
+            Return Color.FromArgb(CInt(Math.Max(0, Math.Min(255, r * 255.0!))),
+                                  CInt(Math.Max(0, Math.Min(255, g * 255.0!))),
+                                  CInt(Math.Max(0, Math.Min(255, b * 255.0!))))
+        End Function
+
+        Private Shared Function HueToRgb(p As Single, q As Single, tc As Single) As Single
+            If tc < 0 Then tc += 1.0!
+            If tc > 1 Then tc -= 1.0!
+            If (6.0! * tc) < 1.0! Then Return p + ((q - p) * 6.0! * tc)
+            If (2.0! * tc) < 1.0! Then Return q
+            If (3.0! * tc) < 2.0! Then Return p + ((q - p) * ((2.0! / 3.0!) - tc) * 6.0!)
+            Return p
         End Function
 
         Protected Overrides Sub OnMouseMove(e As MouseEventArgs)

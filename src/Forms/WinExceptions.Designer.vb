@@ -23,6 +23,8 @@ Partial Class WinExceptions
         Me.NsControlButton1 = New Typhon.NSControlButton()
         Me.NsListView1 = New Typhon.NSListView()
         Me.NsContextMenu1 = New Typhon.NSContextMenu()
+        Me.RemoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.SearchGoogleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SearchVirusTotalToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.cboProcesses = New Typhon.NSComboBox()
@@ -96,20 +98,31 @@ Partial Class WinExceptions
         'NsContextMenu1
         '
         Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
-        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
+        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.RemoveToolStripMenuItem, Me.ToolStripSeparator1, Me.SearchGoogleToolStripMenuItem, Me.SearchVirusTotalToolStripMenuItem})
         Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(178, 48)
+        Me.NsContextMenu1.Size = New System.Drawing.Size(185, 76)
+        '
+        'RemoveToolStripMenuItem
+        '
+        Me.RemoveToolStripMenuItem.Name = "RemoveToolStripMenuItem"
+        Me.RemoveToolStripMenuItem.Size = New System.Drawing.Size(184, 22)
+        Me.RemoveToolStripMenuItem.Text = "Remove: {filename}"
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(181, 6)
         '
         'SearchGoogleToolStripMenuItem
         '
         Me.SearchGoogleToolStripMenuItem.Name = "SearchGoogleToolStripMenuItem"
-        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
+        Me.SearchGoogleToolStripMenuItem.Size = New System.Drawing.Size(184, 22)
         Me.SearchGoogleToolStripMenuItem.Text = "Search in Google"
         '
         'SearchVirusTotalToolStripMenuItem
         '
         Me.SearchVirusTotalToolStripMenuItem.Name = "SearchVirusTotalToolStripMenuItem"
-        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
+        Me.SearchVirusTotalToolStripMenuItem.Size = New System.Drawing.Size(184, 22)
         Me.SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal"
         '
         'cboProcesses
@@ -186,6 +199,8 @@ Partial Class WinExceptions
     Friend WithEvents btnAdd As Typhon.NSButton
     Friend WithEvents btnRemove As Typhon.NSButton
     Friend WithEvents NsContextMenu1 As Typhon.NSContextMenu
+    Friend WithEvents RemoveToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SearchGoogleToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SearchVirusTotalToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
 End Class

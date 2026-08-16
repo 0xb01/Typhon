@@ -4832,6 +4832,7 @@ Class NSListView
         Property Tag As Object
         Property Checked As Boolean = False
         Property Icon As Image = Nothing
+        Property TextColor As Color = Color.Empty
         <DesignerSerializationVisibility(DesignerSerializationVisibility.Content)> _
         Property SubItems As New List(Of NSListViewSubItem)
 
@@ -4857,6 +4858,7 @@ Class NSListView
 
     Class NSListViewSubItem
         Property Text As String
+        Property TextColor As Color = Color.Empty
 
         Public Overrides Function ToString() As String
             Return Text
@@ -5380,7 +5382,13 @@ Class NSListView
             End If
 
             G.DrawString(CI.Text, Font, Brushes.Black, X + 1, Y + 1)
-            G.DrawString(CI.Text, Font, Brushes.WhiteSmoke, X, Y)
+            If CI.TextColor <> Color.Empty Then
+                Using customBrush As New SolidBrush(CI.TextColor)
+                    G.DrawString(CI.Text, Font, customBrush, X, Y)
+                End Using
+            Else
+                G.DrawString(CI.Text, Font, Brushes.WhiteSmoke, X, Y)
+            End If
 
             If CI.SubItems IsNot Nothing Then
                 For I2 As Integer = 0 To Math.Min(CI.SubItems.Count, _Columns.Count - 1) - 1
@@ -5390,8 +5398,19 @@ Class NSListView
                     R1.Width = Columns(I2 + 1).Width
                     G.SetClip(R1)
 
-                    G.DrawString(CI.SubItems(I2).Text, Font, Brushes.Black, X + 1, Y + 1)
-                    G.DrawString(CI.SubItems(I2).Text, Font, Brushes.WhiteSmoke, X, Y)
+                    Dim subItm = CI.SubItems(I2)
+                    G.DrawString(subItm.Text, Font, Brushes.Black, X + 1, Y + 1)
+                    If subItm.TextColor <> Color.Empty Then
+                        Using customSubBrush As New SolidBrush(subItm.TextColor)
+                            G.DrawString(subItm.Text, Font, customSubBrush, X, Y)
+                        End Using
+                    ElseIf CI.TextColor <> Color.Empty Then
+                        Using customSubBrush As New SolidBrush(CI.TextColor)
+                            G.DrawString(subItm.Text, Font, customSubBrush, X, Y)
+                        End Using
+                    Else
+                        G.DrawString(subItm.Text, Font, Brushes.WhiteSmoke, X, Y)
+                    End If
                 Next
             End If
 

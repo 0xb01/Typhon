@@ -31,6 +31,7 @@ Partial Class WinSight
         Me.lvFiles = New Typhon.NSListView()
         Me.ctxTreemap = New Typhon.NSContextMenu()
         Me.tsOpenFile = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsAddToExceptions = New System.Windows.Forms.ToolStripMenuItem()
         Me.tsSearchGoogle = New System.Windows.Forms.ToolStripMenuItem()
         Me.tsCheckVirusTotal = New System.Windows.Forms.ToolStripMenuItem()
         Me.tsSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -74,13 +75,12 @@ Partial Class WinSight
         Me.NsTheme1.Movable = True
         Me.NsTheme1.Name = "NsTheme1"
         Me.NsTheme1.NoRounding = False
-        Me.NsTheme1.Padding = New System.Windows.Forms.Padding(0, 28, 0, 0)
         Me.NsTheme1.Sizable = True
         Me.NsTheme1.Size = New System.Drawing.Size(960, 680)
         Me.NsTheme1.SmartBounds = True
         Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.NsTheme1.TabIndex = 0
-        Me.NsTheme1.Text = "Sight - Storage Visualizer"
+        Me.NsTheme1.Text = "Typhon Sight - Storage Visualizer"
         Me.NsTheme1.TransparencyKey = System.Drawing.Color.Empty
         Me.NsTheme1.Transparent = False
         '
@@ -88,20 +88,20 @@ Partial Class WinSight
         '
         Me.NsControlButton3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton3.ControlButton = Typhon.NSControlButton.Button.Minimize
-        Me.NsControlButton3.Location = New System.Drawing.Point(898, 5)
+        Me.NsControlButton3.Location = New System.Drawing.Point(899, 4)
         Me.NsControlButton3.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton3.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton3.MinimumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton3.Name = "NsControlButton3"
         Me.NsControlButton3.Size = New System.Drawing.Size(18, 20)
-        Me.NsControlButton3.TabIndex = 12
+        Me.NsControlButton3.TabIndex = 0
         Me.NsControlButton3.Text = "NsControlButton3"
         '
         'NsControlButton1
         '
         Me.NsControlButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton1.ControlButton = Typhon.NSControlButton.Button.Close
-        Me.NsControlButton1.Location = New System.Drawing.Point(934, 5)
+        Me.NsControlButton1.Location = New System.Drawing.Point(935, 4)
         Me.NsControlButton1.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton1.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton1.MinimumSize = New System.Drawing.Size(18, 20)
@@ -114,7 +114,7 @@ Partial Class WinSight
         '
         Me.NsControlButton2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.NsControlButton2.ControlButton = Typhon.NSControlButton.Button.MaximizeRestore
-        Me.NsControlButton2.Location = New System.Drawing.Point(916, 5)
+        Me.NsControlButton2.Location = New System.Drawing.Point(917, 4)
         Me.NsControlButton2.Margin = New System.Windows.Forms.Padding(0)
         Me.NsControlButton2.MaximumSize = New System.Drawing.Size(18, 20)
         Me.NsControlButton2.MinimumSize = New System.Drawing.Size(18, 20)
@@ -130,55 +130,54 @@ Partial Class WinSight
         Me.cboDrives.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboDrives.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
         Me.cboDrives.FormattingEnabled = True
-        Me.cboDrives.Location = New System.Drawing.Point(12, 36)
+        Me.cboDrives.Location = New System.Drawing.Point(12, 38)
         Me.cboDrives.Name = "cboDrives"
-        Me.cboDrives.Size = New System.Drawing.Size(300, 21)
+        Me.cboDrives.Size = New System.Drawing.Size(306, 21)
         Me.cboDrives.TabIndex = 2
         '
         'btnScan
         '
-        Me.btnScan.Location = New System.Drawing.Point(318, 35)
+        Me.btnScan.Location = New System.Drawing.Point(324, 37)
         Me.btnScan.Name = "btnScan"
-        Me.btnScan.Size = New System.Drawing.Size(95, 23)
+        Me.btnScan.Size = New System.Drawing.Size(100, 23)
         Me.btnScan.TabIndex = 3
-        Me.btnScan.Text = "Scan Space"
+        Me.btnScan.Text = "Start Sight"
         '
         'lblPath
         '
         Me.lblPath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblPath.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPath.Location = New System.Drawing.Point(420, 36)
+        Me.lblPath.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.lblPath.Location = New System.Drawing.Point(430, 37)
         Me.lblPath.Name = "lblPath"
-        Me.lblPath.Size = New System.Drawing.Size(528, 21)
-        Me.lblPath.TabIndex = 4
-        Me.lblPath.Text = "Current: "
-        Me.lblPath.Value1 = "Location: "
-        Me.lblPath.Value2 = "-"
+        Me.lblPath.Size = New System.Drawing.Size(518, 23)
+        Me.lblPath.TabIndex = 5
+        Me.lblPath.Text = "Current Path"
+        Me.lblPath.Value1 = "Path: "
+        Me.lblPath.Value2 = " -"
         '
         'lblCapacity
         '
-        Me.lblCapacity.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblCapacity.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.lblCapacity.Location = New System.Drawing.Point(12, 64)
+        Me.lblCapacity.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblCapacity.Location = New System.Drawing.Point(14, 65)
         Me.lblCapacity.Name = "lblCapacity"
-        Me.lblCapacity.Size = New System.Drawing.Size(936, 18)
+        Me.lblCapacity.Size = New System.Drawing.Size(460, 15)
         Me.lblCapacity.TabIndex = 7
-        Me.lblCapacity.Text = "Drive Info"
-        Me.lblCapacity.Value1 = "Drive Capacity: "
-        Me.lblCapacity.Value2 = "Ready"
+        Me.lblCapacity.Text = "Capacity"
+        Me.lblCapacity.Value1 = "Drive Usage: "
+        Me.lblCapacity.Value2 = " -"
         '
         'LensProgressBar
         '
         Me.LensProgressBar.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.LensProgressBar.Location = New System.Drawing.Point(12, 85)
+        Me.LensProgressBar.Location = New System.Drawing.Point(12, 82)
         Me.LensProgressBar.Maximum = 100
         Me.LensProgressBar.Minimum = 0
         Me.LensProgressBar.Name = "LensProgressBar"
-        Me.LensProgressBar.Size = New System.Drawing.Size(936, 6)
+        Me.LensProgressBar.Size = New System.Drawing.Size(936, 10)
         Me.LensProgressBar.TabIndex = 8
+        Me.LensProgressBar.Text = "NsProgressBar1"
         Me.LensProgressBar.Value = 0
         '
         'SplitMain
@@ -186,7 +185,6 @@ Partial Class WinSight
         Me.SplitMain.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.SplitMain.BackColor = System.Drawing.Color.FromArgb(CType(CType(45, Byte), Integer), CType(CType(45, Byte), Integer), CType(CType(45, Byte), Integer))
         Me.SplitMain.Location = New System.Drawing.Point(12, 98)
         Me.SplitMain.Name = "SplitMain"
         '
@@ -219,55 +217,61 @@ Partial Class WinSight
         'ctxTreemap
         '
         Me.ctxTreemap.ForeColor = System.Drawing.Color.White
-        Me.ctxTreemap.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsOpenFile, Me.tsSearchGoogle, Me.tsCheckVirusTotal, Me.tsSeparator1, Me.tsOpenInExplorer, Me.tsCopyPath, Me.tsSeparator2, Me.tsDeleteFile})
+        Me.ctxTreemap.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsOpenFile, Me.tsAddToExceptions, Me.tsSearchGoogle, Me.tsCheckVirusTotal, Me.tsSeparator1, Me.tsOpenInExplorer, Me.tsCopyPath, Me.tsSeparator2, Me.tsDeleteFile})
         Me.ctxTreemap.Name = "ctxTreemap"
-        Me.ctxTreemap.Size = New System.Drawing.Size(224, 148)
+        Me.ctxTreemap.Size = New System.Drawing.Size(225, 170)
         '
         'tsOpenFile
         '
         Me.tsOpenFile.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.tsOpenFile.Name = "tsOpenFile"
-        Me.tsOpenFile.Size = New System.Drawing.Size(223, 22)
+        Me.tsOpenFile.Size = New System.Drawing.Size(224, 22)
         Me.tsOpenFile.Text = "Open {filename}"
+        '
+        'tsAddToExceptions
+        '
+        Me.tsAddToExceptions.Name = "tsAddToExceptions"
+        Me.tsAddToExceptions.Size = New System.Drawing.Size(224, 22)
+        Me.tsAddToExceptions.Text = "Add to Exception: {filename}"
         '
         'tsSearchGoogle
         '
         Me.tsSearchGoogle.Name = "tsSearchGoogle"
-        Me.tsSearchGoogle.Size = New System.Drawing.Size(223, 22)
+        Me.tsSearchGoogle.Size = New System.Drawing.Size(224, 22)
         Me.tsSearchGoogle.Text = "Search in Google: {filename}"
         '
         'tsCheckVirusTotal
         '
         Me.tsCheckVirusTotal.Name = "tsCheckVirusTotal"
-        Me.tsCheckVirusTotal.Size = New System.Drawing.Size(223, 22)
+        Me.tsCheckVirusTotal.Size = New System.Drawing.Size(224, 22)
         Me.tsCheckVirusTotal.Text = "Check VirusTotal: {filename}"
         '
         'tsSeparator1
         '
         Me.tsSeparator1.Name = "tsSeparator1"
-        Me.tsSeparator1.Size = New System.Drawing.Size(220, 6)
+        Me.tsSeparator1.Size = New System.Drawing.Size(221, 6)
         '
         'tsOpenInExplorer
         '
         Me.tsOpenInExplorer.Name = "tsOpenInExplorer"
-        Me.tsOpenInExplorer.Size = New System.Drawing.Size(223, 22)
+        Me.tsOpenInExplorer.Size = New System.Drawing.Size(224, 22)
         Me.tsOpenInExplorer.Text = "Open in Explorer"
         '
         'tsCopyPath
         '
         Me.tsCopyPath.Name = "tsCopyPath"
-        Me.tsCopyPath.Size = New System.Drawing.Size(223, 22)
+        Me.tsCopyPath.Size = New System.Drawing.Size(224, 22)
         Me.tsCopyPath.Text = "Copy Full Path"
         '
         'tsSeparator2
         '
         Me.tsSeparator2.Name = "tsSeparator2"
-        Me.tsSeparator2.Size = New System.Drawing.Size(220, 6)
+        Me.tsSeparator2.Size = New System.Drawing.Size(221, 6)
         '
         'tsDeleteFile
         '
         Me.tsDeleteFile.Name = "tsDeleteFile"
-        Me.tsDeleteFile.Size = New System.Drawing.Size(223, 22)
+        Me.tsDeleteFile.Size = New System.Drawing.Size(224, 22)
         Me.tsDeleteFile.Text = "Delete (Recycle Bin)"
         '
         'TreemapCanvas
@@ -296,7 +300,7 @@ Partial Class WinSight
         Me.lblHoverInfo.TabIndex = 10
         Me.lblHoverInfo.Text = "Target"
         Me.lblHoverInfo.Value1 = "Selected: "
-        Me.lblHoverInfo.Value2 = "Hover or click a block/item to inspect."
+        Me.lblHoverInfo.Value2 = " Hover or click a block/item to inspect."
         '
         'btnOpenExplorer
         '
@@ -343,6 +347,7 @@ Partial Class WinSight
     Friend WithEvents btnOpenExplorer As Typhon.NSButton
     Friend WithEvents ctxTreemap As Typhon.NSContextMenu
     Friend WithEvents tsOpenFile As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsAddToExceptions As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsSearchGoogle As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsCheckVirusTotal As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tsSeparator1 As System.Windows.Forms.ToolStripSeparator

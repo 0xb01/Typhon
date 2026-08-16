@@ -53,6 +53,9 @@ Public Class WinSight
             tsOpenFile.Visible = True
             tsOpenFile.Text = "Open " & target.Name
 
+            tsAddToExceptions.Visible = True
+            tsAddToExceptions.Text = "Add to Exception: " & target.Name
+
             tsSearchGoogle.Visible = True
             tsCheckVirusTotal.Visible = True
             tsSeparator1.Visible = True
@@ -60,9 +63,33 @@ Public Class WinSight
             tsCheckVirusTotal.Text = "Check VirusTotal: " & target.Name
         Else
             tsOpenFile.Visible = False
+            tsAddToExceptions.Visible = False
             tsSearchGoogle.Visible = False
             tsCheckVirusTotal.Visible = False
             tsSeparator1.Visible = False
+        End If
+    End Sub
+
+    Private Sub tsAddToExceptions_Click(sender As Object, e As EventArgs) Handles tsAddToExceptions.Click
+        Dim target As SpaceNode = GetCurrentActionTarget()
+        If target IsNot Nothing AndAlso Not target.IsDirectory Then
+            Dim exeName As String = target.Name.Trim()
+            If Not exeName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) Then
+                exeName &= ".exe"
+            End If
+
+            If WinMain.ProcessIgnoreList Is Nothing Then
+                WinMain.ProcessIgnoreList = New Collections.Specialized.StringCollection()
+            End If
+
+            If Not WinMain.ProcessIgnoreList.Contains(exeName) Then
+                WinMain.ProcessIgnoreList.Add(exeName)
+                My.Settings.IgnoreProcessList = WinMain.ProcessIgnoreList
+                My.Settings.Save()
+                lblHoverInfo.Value2 = String.Format(" Added '{0}' to process kill exceptions.", exeName)
+            Else
+                lblHoverInfo.Value2 = String.Format(" '{0}' is already in process kill exceptions.", exeName)
+            End If
         End If
     End Sub
 
@@ -223,7 +250,7 @@ Public Class WinSight
         End If
 
         _isScanning = True
-        btnScan.Text = "Stop Scan"
+        btnScan.Text = "Stop Sight"
         cboDrives.Enabled = False
         LensProgressBar.Value = 1
         lblPath.Value2 = targetPath
@@ -237,7 +264,8 @@ Public Class WinSight
         AddHandler scanner.ProgressChanged, Sub(p As ScanProgress)
                                                 If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
                                                 Me.BeginInvoke(Sub()
-                                                                   lblHoverInfo.Value2 = String.Format(" Scanning: {0:N0} files, {1:N0} folders ({2}) - {3}", p.FilesScanned, p.FoldersScanned, SpaceNode.FormatBytes(p.TotalBytes), p.CurrentPath)
+                                                                   lblHoverInfo.Value1 = "Scanning:"
+                                                                   lblHoverInfo.Value2 = String.Format(" {0:N0} files, {1:N0} folders ({2}) - {3}", p.FilesScanned, p.FoldersScanned, SpaceNode.FormatBytes(p.TotalBytes), p.CurrentPath)
                                                                    LensProgressBar.Value = Math.Max(1, Math.Min(100, p.EstimatedPercent))
                                                                End Sub)
                                             End Sub
@@ -249,6 +277,7 @@ Public Class WinSight
             LensProgressBar.Value = 100
             PopulateListView(resultRoot)
             UpdatePathLabel()
+            lblHoverInfo.Value1 = "Status:"
             lblHoverInfo.Value2 = String.Format(" Scan complete. {0:N0} items total ({1}).", resultRoot.Children.Count, resultRoot.FormattedSize)
         Catch ex As OperationCanceledException
             lblHoverInfo.Value2 = " Scan canceled by user."
@@ -259,7 +288,7 @@ Public Class WinSight
             LensProgressBar.Value = 0
         Finally
             _isScanning = False
-            btnScan.Text = "Scan Space"
+            btnScan.Text = "Start Sight"
             btnScan.Enabled = True
             cboDrives.Enabled = True
             If _cts IsNot Nothing Then
@@ -284,6 +313,7 @@ Public Class WinSight
             Dim upItm As New NSListViewItem()
             upItm.Text = "../"
             upItm.Tag = "PARENT_DIRECTORY"
+            upItm.Icon = GetNodeIcon(parentNode.Parent)
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "-"})
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "Parent Folder"})
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "-"})
@@ -302,13 +332,18 @@ Public Class WinSight
                 Dim typeStr As String = If(child.IsDirectory, "Folder (" & child.Children.Count & " items)", If(Path.GetExtension(child.Name).ToUpper(), "File"))
                 If String.IsNullOrEmpty(typeStr) Then typeStr = "File"
 
+                Dim nodeColor As Color = Global.Typhon.Controls.SpaceLensTreemap.GetNodeColor(child)
+                Dim itemIcon As Image = GetNodeIcon(child)
+
                 Dim itm As New NSListViewItem()
                 itm.Text = child.Name
                 itm.Tag = child
-                itm.SubItems.Add(New NSListViewSubItem() With {.Text = child.FormattedSize})
-                itm.SubItems.Add(New NSListViewSubItem() With {.Text = typeStr})
-                itm.SubItems.Add(New NSListViewSubItem() With {.Text = String.Format("{0:0.#}%", pct)})
-                itm.SubItems.Add(New NSListViewSubItem() With {.Text = child.FullPath})
+                itm.Icon = itemIcon
+                itm.TextColor = nodeColor
+                itm.SubItems.Add(New NSListViewSubItem() With {.Text = child.FormattedSize, .TextColor = nodeColor})
+                itm.SubItems.Add(New NSListViewSubItem() With {.Text = typeStr, .TextColor = nodeColor})
+                itm.SubItems.Add(New NSListViewSubItem() With {.Text = String.Format("{0:0.#}%", pct), .TextColor = nodeColor})
+                itm.SubItems.Add(New NSListViewSubItem() With {.Text = child.FullPath, .TextColor = nodeColor})
 
                 listItems.Add(itm)
             Next
@@ -322,14 +357,15 @@ Public Class WinSight
             Dim typeStr As String = If(node.IsDirectory, "Folder (" & node.Children.Count & " items)", "File")
             lblHoverInfo.Value2 = String.Format(" {0} [{1}] - {2} ({3})", node.Name, typeStr, node.FormattedSize, node.FullPath)
         ElseIf _currentSelectedNode IsNot Nothing Then
-            lblHoverInfo.Value2 = String.Format(" Selected: {0} ({1}) - {2}", _currentSelectedNode.Name, _currentSelectedNode.FormattedSize, _currentSelectedNode.FullPath)
+            lblHoverInfo.Value2 = String.Format(" {0} ({1}) - {2}", _currentSelectedNode.Name, _currentSelectedNode.FormattedSize, _currentSelectedNode.FullPath)
         End If
     End Sub
 
     Private Sub OnTreemapNodeSelected(node As SpaceNode)
         _currentSelectedNode = node
         If node IsNot Nothing Then
-            lblHoverInfo.Value2 = String.Format(" Selected: {0} ({1}) - {2}", node.Name, node.FormattedSize, node.FullPath)
+            lblHoverInfo.Value1 = "Selected:"
+            lblHoverInfo.Value2 = String.Format(" {0} ({1}) - {2}", node.Name, node.FormattedSize, node.FullPath)
 
             ' Sync selection with NSListView
             If Not _isSyncingSelection Then
@@ -356,7 +392,7 @@ Public Class WinSight
             Dim selectedItm = lvFiles.SelectedItems(0)
             If Equals(selectedItm.Tag, "PARENT_DIRECTORY") Then
                 _currentSelectedNode = Nothing
-                lblHoverInfo.Value2 = " Selected: Parent Directory [../]"
+                lblHoverInfo.Value2 = " Parent Directory [../]"
                 TreemapCanvas.SelectedNode = Nothing
                 Return
             End If
@@ -364,7 +400,8 @@ Public Class WinSight
             Dim node = TryCast(selectedItm.Tag, SpaceNode)
             If node IsNot Nothing Then
                 _currentSelectedNode = node
-                lblHoverInfo.Value2 = String.Format(" Selected: {0} ({1}) - {2}", node.Name, node.FormattedSize, node.FullPath)
+                lblHoverInfo.Value1 = "Selected:"
+                lblHoverInfo.Value2 = String.Format(" {0} ({1}) - {2}", node.Name, node.FormattedSize, node.FullPath)
 
                 _isSyncingSelection = True
                 TreemapCanvas.SelectedNode = node
@@ -393,10 +430,22 @@ Public Class WinSight
                 PopulateListView(node)
                 UpdatePathLabel()
             ElseIf node IsNot Nothing Then
-                ' Open file or select in explorer
-                OpenInExplorer(node.FullPath, True)
+                ' Open/launch file directly with default handler
+                OpenFileDirectly(node.FullPath)
             End If
         End If
+    End Sub
+
+    Private Sub OpenFileDirectly(filePath As String)
+        Try
+            If File.Exists(filePath) Then
+                Process.Start(New ProcessStartInfo(filePath) With {.UseShellExecute = True})
+            ElseIf Directory.Exists(filePath) Then
+                Process.Start("explorer.exe", """" & filePath & """")
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Could not open file: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub UpdatePathLabel()
@@ -449,7 +498,8 @@ Public Class WinSight
                     TreemapCanvas.Invalidate()
                     PopulateListView(target.Parent)
                 End If
-                lblHoverInfo.Value2 = " Deleted: " & target.FullPath
+                lblHoverInfo.Value1 = "Deleted:"
+                lblHoverInfo.Value2 = $" {target.FullPath}"
             Catch ex As Exception
                 MessageBox.Show("Failed to delete: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
@@ -477,5 +527,83 @@ Public Class WinSight
             MessageBox.Show("Could not open path: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    Private Shared _nodeIconCache As New Dictionary(Of String, Image)(StringComparer.OrdinalIgnoreCase)
+    Private Shared _folderIcon As Image = Nothing
+
+    <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
+    Private Structure SHFILEINFO
+        Public hIcon As IntPtr
+        Public iIcon As Integer
+        Public dwAttributes As UInteger
+        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)>
+        Public szDisplayName As String
+        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=80)>
+        Public szTypeName As String
+    End Structure
+
+    <System.Runtime.InteropServices.DllImport("shell32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    Private Shared Function SHGetFileInfo(ByVal pszPath As String, ByVal dwFileAttributes As UInteger, ByRef psfi As SHFILEINFO, ByVal cbFileInfo As UInteger, ByVal uFlags As UInteger) As IntPtr
+    End Function
+
+    <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
+    Private Shared Function DestroyIcon(ByVal hIcon As IntPtr) As Boolean
+    End Function
+
+    Private Const SHGFI_ICON As UInteger = &H100
+    Private Const SHGFI_SMALLICON As UInteger = &H1
+    Private Const SHGFI_USEFILEATTRIBUTES As UInteger = &H10
+    Private Const FILE_ATTRIBUTE_DIRECTORY As UInteger = &H10
+    Private Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80
+
+    Private Shared Function GetNodeIcon(node As SpaceNode) As Image
+        If node Is Nothing Then Return Nothing
+
+        If node.IsDirectory Then
+            If _folderIcon IsNot Nothing Then Return _folderIcon
+
+            Dim shinfo As New SHFILEINFO()
+            Dim res As IntPtr = SHGetFileInfo("dummy", FILE_ATTRIBUTE_DIRECTORY, shinfo, CUInt(System.Runtime.InteropServices.Marshal.SizeOf(shinfo)), SHGFI_ICON Or SHGFI_SMALLICON Or SHGFI_USEFILEATTRIBUTES)
+            If res <> IntPtr.Zero AndAlso shinfo.hIcon <> IntPtr.Zero Then
+                Using ico = Icon.FromHandle(shinfo.hIcon)
+                    _folderIcon = CType(ico.ToBitmap().Clone(), Image)
+                End Using
+                DestroyIcon(shinfo.hIcon)
+                Return _folderIcon
+            End If
+            Return Nothing
+        Else
+            Dim ext As String = Path.GetExtension(node.Name).ToLowerInvariant()
+            If String.IsNullOrEmpty(ext) Then ext = ".unknown"
+
+            If _nodeIconCache.ContainsKey(ext) Then
+                Return _nodeIconCache(ext)
+            End If
+
+            ' For common binary executable/dll files with custom icons, try reading actual file icon if accessible
+            If (ext = ".exe" OrElse ext = ".ico") AndAlso File.Exists(node.FullPath) Then
+                Dim img As Image = proc.GetProcessIcon(node.FullPath)
+                If img IsNot Nothing Then
+                    Return img
+                End If
+            End If
+
+            ' Shell extension association icon
+            Dim shinfo As New SHFILEINFO()
+            Dim res As IntPtr = SHGetFileInfo(ext, FILE_ATTRIBUTE_NORMAL, shinfo, CUInt(System.Runtime.InteropServices.Marshal.SizeOf(shinfo)), SHGFI_ICON Or SHGFI_SMALLICON Or SHGFI_USEFILEATTRIBUTES)
+            If res <> IntPtr.Zero AndAlso shinfo.hIcon <> IntPtr.Zero Then
+                Dim bmp As Image = Nothing
+                Using ico = Icon.FromHandle(shinfo.hIcon)
+                    bmp = CType(ico.ToBitmap().Clone(), Image)
+                End Using
+                DestroyIcon(shinfo.hIcon)
+                _nodeIconCache(ext) = bmp
+                Return bmp
+            End If
+
+            _nodeIconCache(ext) = Nothing
+            Return Nothing
+        End If
+    End Function
 
 End Class

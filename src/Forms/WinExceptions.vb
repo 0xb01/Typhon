@@ -141,6 +141,23 @@ Public Class WinExceptions
         Me.Close()
     End Sub
 
+    Private Sub NsContextMenu1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles NsContextMenu1.Opening
+        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
+            Dim selectedExe As String = NsListView1.SelectedItems(0).Text
+            RemoveToolStripMenuItem.Visible = True
+            RemoveToolStripMenuItem.Text = "Remove: " & selectedExe
+            ToolStripSeparator1.Visible = True
+            SearchGoogleToolStripMenuItem.Text = "Search in Google: " & selectedExe
+            SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal: " & selectedExe
+        Else
+            e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub RemoveToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RemoveToolStripMenuItem.Click
+        btnRemove_Click(sender, e)
+    End Sub
+
     Private Sub SearchGoogleToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchGoogleToolStripMenuItem.Click
         If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
             For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
