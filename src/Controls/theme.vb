@@ -68,10 +68,7 @@ MustInherit Class ThemeContainer154
             If _IsParentForm Then
                 ParentForm.FormBorderStyle = _BorderStyle
                 ParentForm.TransparencyKey = _TransparencyKey
-
-                If Not DesignMode Then
-                    AddHandler ParentForm.Shown, AddressOf FormShown
-                End If
+                ParentForm.StartPosition = _StartPosition
             End If
 
             Parent.BackColor = BackColor
@@ -104,19 +101,6 @@ MustInherit Class ThemeContainer154
     Protected Overrides Sub OnHandleDestroyed(ByVal e As EventArgs)
         RemoveAnimationCallback(AddressOf DoAnimation)
         MyBase.OnHandleDestroyed(e)
-    End Sub
-
-    Private HasShown As Boolean
-    Private Sub FormShown(ByVal sender As Object, ByVal e As EventArgs)
-        If _ControlMode OrElse HasShown Then Return
-
-        If _StartPosition = FormStartPosition.CenterParent OrElse _StartPosition = FormStartPosition.CenterScreen Then
-            Dim SB As Rectangle = Screen.PrimaryScreen.Bounds
-            Dim CB As Rectangle = ParentForm.Bounds
-            ParentForm.Location = New Point(SB.Width \ 2 - CB.Width \ 2, SB.Height \ 2 - CB.Height \ 2)
-        End If
-
-        HasShown = True
     End Sub
 
 
