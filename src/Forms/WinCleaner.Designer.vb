@@ -217,7 +217,7 @@ Partial Class WinCleaner
         Me.chkTemp.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkTemp.Location = New System.Drawing.Point(4, 370)
         Me.chkTemp.Name = "chkTemp"
-        Me.chkTemp.Size = New System.Drawing.Size(155, 23)
+        Me.chkTemp.Size = New System.Drawing.Size(172, 23)
         Me.chkTemp.TabIndex = 0
         Me.chkTemp.Text = "Temporary Files"
         '
@@ -227,7 +227,7 @@ Partial Class WinCleaner
         Me.chkRecycle.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkRecycle.Location = New System.Drawing.Point(4, 347)
         Me.chkRecycle.Name = "chkRecycle"
-        Me.chkRecycle.Size = New System.Drawing.Size(155, 23)
+        Me.chkRecycle.Size = New System.Drawing.Size(172, 23)
         Me.chkRecycle.TabIndex = 1
         Me.chkRecycle.Text = "Recycle Bin"
         '
@@ -237,7 +237,7 @@ Partial Class WinCleaner
         Me.chkIncompat.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkIncompat.Location = New System.Drawing.Point(4, 324)
         Me.chkIncompat.Name = "chkIncompat"
-        Me.chkIncompat.Size = New System.Drawing.Size(155, 23)
+        Me.chkIncompat.Size = New System.Drawing.Size(172, 23)
         Me.chkIncompat.TabIndex = 2
         Me.chkIncompat.Text = "Incompatible Files"
         '
@@ -247,7 +247,7 @@ Partial Class WinCleaner
         Me.chkThumb.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkThumb.Location = New System.Drawing.Point(4, 301)
         Me.chkThumb.Name = "chkThumb"
-        Me.chkThumb.Size = New System.Drawing.Size(155, 23)
+        Me.chkThumb.Size = New System.Drawing.Size(172, 23)
         Me.chkThumb.TabIndex = 3
         Me.chkThumb.Text = "Thumbnail Caches"
         '
@@ -257,7 +257,7 @@ Partial Class WinCleaner
         Me.chkGames.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkGames.Location = New System.Drawing.Point(4, 278)
         Me.chkGames.Name = "chkGames"
-        Me.chkGames.Size = New System.Drawing.Size(155, 23)
+        Me.chkGames.Size = New System.Drawing.Size(172, 23)
         Me.chkGames.TabIndex = 4
         Me.chkGames.Text = "Game Caches"
         '
@@ -267,7 +267,7 @@ Partial Class WinCleaner
         Me.chkFolderCfg.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkFolderCfg.Location = New System.Drawing.Point(4, 255)
         Me.chkFolderCfg.Name = "chkFolderCfg"
-        Me.chkFolderCfg.Size = New System.Drawing.Size(155, 23)
+        Me.chkFolderCfg.Size = New System.Drawing.Size(172, 23)
         Me.chkFolderCfg.TabIndex = 5
         Me.chkFolderCfg.Text = "Folder Config Files"
         '
@@ -277,7 +277,7 @@ Partial Class WinCleaner
         Me.chkCookies.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkCookies.Location = New System.Drawing.Point(4, 232)
         Me.chkCookies.Name = "chkCookies"
-        Me.chkCookies.Size = New System.Drawing.Size(155, 23)
+        Me.chkCookies.Size = New System.Drawing.Size(172, 23)
         Me.chkCookies.TabIndex = 6
         Me.chkCookies.Text = "Internet Cookies"
         '
@@ -287,7 +287,7 @@ Partial Class WinCleaner
         Me.chkCache.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkCache.Location = New System.Drawing.Point(4, 209)
         Me.chkCache.Name = "chkCache"
-        Me.chkCache.Size = New System.Drawing.Size(155, 23)
+        Me.chkCache.Size = New System.Drawing.Size(172, 23)
         Me.chkCache.TabIndex = 7
         Me.chkCache.Text = "Internet Cache"
         '
@@ -297,7 +297,7 @@ Partial Class WinCleaner
         Me.chkHistory.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkHistory.Location = New System.Drawing.Point(4, 186)
         Me.chkHistory.Name = "chkHistory"
-        Me.chkHistory.Size = New System.Drawing.Size(155, 23)
+        Me.chkHistory.Size = New System.Drawing.Size(172, 23)
         Me.chkHistory.TabIndex = 8
         Me.chkHistory.Text = "Internet History"
         '
@@ -307,7 +307,7 @@ Partial Class WinCleaner
         Me.chkLogs.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkLogs.Location = New System.Drawing.Point(4, 163)
         Me.chkLogs.Name = "chkLogs"
-        Me.chkLogs.Size = New System.Drawing.Size(155, 23)
+        Me.chkLogs.Size = New System.Drawing.Size(172, 23)
         Me.chkLogs.TabIndex = 9
         Me.chkLogs.Text = "Windows Logs"
         '
@@ -317,7 +317,7 @@ Partial Class WinCleaner
         Me.chkDumps.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkDumps.Location = New System.Drawing.Point(4, 140)
         Me.chkDumps.Name = "chkDumps"
-        Me.chkDumps.Size = New System.Drawing.Size(155, 23)
+        Me.chkDumps.Size = New System.Drawing.Size(172, 23)
         Me.chkDumps.TabIndex = 10
         Me.chkDumps.Text = "Memory Dumps"
         '
@@ -327,7 +327,7 @@ Partial Class WinCleaner
         Me.chkRecent.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkRecent.Location = New System.Drawing.Point(4, 117)
         Me.chkRecent.Name = "chkRecent"
-        Me.chkRecent.Size = New System.Drawing.Size(155, 23)
+        Me.chkRecent.Size = New System.Drawing.Size(172, 23)
         Me.chkRecent.TabIndex = 11
         Me.chkRecent.Text = "Recent Files"
         '
@@ -337,7 +337,7 @@ Partial Class WinCleaner
         Me.chkAppCache.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkAppCache.Location = New System.Drawing.Point(4, 94)
         Me.chkAppCache.Name = "chkAppCache"
-        Me.chkAppCache.Size = New System.Drawing.Size(155, 23)
+        Me.chkAppCache.Size = New System.Drawing.Size(172, 23)
         Me.chkAppCache.TabIndex = 12
         Me.chkAppCache.Text = "Application Caches"
         '
@@ -347,7 +347,7 @@ Partial Class WinCleaner
         Me.chkWinUpdate.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkWinUpdate.Location = New System.Drawing.Point(4, 71)
         Me.chkWinUpdate.Name = "chkWinUpdate"
-        Me.chkWinUpdate.Size = New System.Drawing.Size(155, 23)
+        Me.chkWinUpdate.Size = New System.Drawing.Size(172, 23)
         Me.chkWinUpdate.TabIndex = 13
         Me.chkWinUpdate.Text = "Windows Update Cache"
         '
@@ -357,7 +357,7 @@ Partial Class WinCleaner
         Me.chkDriverCache.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkDriverCache.Location = New System.Drawing.Point(4, 48)
         Me.chkDriverCache.Name = "chkDriverCache"
-        Me.chkDriverCache.Size = New System.Drawing.Size(155, 23)
+        Me.chkDriverCache.Size = New System.Drawing.Size(172, 23)
         Me.chkDriverCache.TabIndex = 14
         Me.chkDriverCache.Text = "GPU Driver Cache"
         '
@@ -367,7 +367,7 @@ Partial Class WinCleaner
         Me.chkPkgCache.Dock = System.Windows.Forms.DockStyle.Top
         Me.chkPkgCache.Location = New System.Drawing.Point(4, 25)
         Me.chkPkgCache.Name = "chkPkgCache"
-        Me.chkPkgCache.Size = New System.Drawing.Size(155, 23)
+        Me.chkPkgCache.Size = New System.Drawing.Size(172, 23)
         Me.chkPkgCache.TabIndex = 15
         Me.chkPkgCache.Text = "Dev Package Caches"
         '

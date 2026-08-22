@@ -25,7 +25,6 @@ Partial Class WinSight
         Me.cboDrives = New Typhon.NSComboBox()
         Me.btnScan = New Typhon.NSButton()
         Me.lblPath = New Typhon.NSLabel()
-        Me.lblCapacity = New Typhon.NSLabel()
         Me.pbScanProgress = New Typhon.NSProgressBar()
         Me.splitStorageViews = New System.Windows.Forms.SplitContainer()
         Me.lvFiles = New Typhon.NSListView()
@@ -62,7 +61,6 @@ Partial Class WinSight
         Me.themeContainer.Controls.Add(Me.cboDrives)
         Me.themeContainer.Controls.Add(Me.btnScan)
         Me.themeContainer.Controls.Add(Me.lblPath)
-        Me.themeContainer.Controls.Add(Me.lblCapacity)
         Me.themeContainer.Controls.Add(Me.pbScanProgress)
         Me.themeContainer.Controls.Add(Me.splitStorageViews)
         Me.themeContainer.Controls.Add(Me.lblHoverInfo)
@@ -80,7 +78,7 @@ Partial Class WinSight
         Me.themeContainer.SmartBounds = True
         Me.themeContainer.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.themeContainer.TabIndex = 0
-        Me.themeContainer.Text = "Typhon Sight - Storage Visualizer"
+        Me.themeContainer.Text = "Sight"
         Me.themeContainer.TransparencyKey = System.Drawing.Color.Empty
         Me.themeContainer.Transparent = False
         '
@@ -132,12 +130,12 @@ Partial Class WinSight
         Me.cboDrives.FormattingEnabled = True
         Me.cboDrives.Location = New System.Drawing.Point(12, 38)
         Me.cboDrives.Name = "cboDrives"
-        Me.cboDrives.Size = New System.Drawing.Size(180, 21)
+        Me.cboDrives.Size = New System.Drawing.Size(206, 21)
         Me.cboDrives.TabIndex = 2
         '
         'btnScan
         '
-        Me.btnScan.Location = New System.Drawing.Point(198, 37)
+        Me.btnScan.Location = New System.Drawing.Point(224, 37)
         Me.btnScan.Name = "btnScan"
         Me.btnScan.Size = New System.Drawing.Size(90, 23)
         Me.btnScan.TabIndex = 3
@@ -148,25 +146,13 @@ Partial Class WinSight
         Me.lblPath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblPath.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPath.Location = New System.Drawing.Point(294, 38)
+        Me.lblPath.Location = New System.Drawing.Point(320, 37)
         Me.lblPath.Name = "lblPath"
-        Me.lblPath.Size = New System.Drawing.Size(350, 23)
+        Me.lblPath.Size = New System.Drawing.Size(510, 23)
         Me.lblPath.TabIndex = 4
         Me.lblPath.Text = "lblPath"
         Me.lblPath.Value1 = "Path:"
         Me.lblPath.Value2 = " Select Drive"
-        '
-        'lblCapacity
-        '
-        Me.lblCapacity.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblCapacity.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblCapacity.Location = New System.Drawing.Point(650, 38)
-        Me.lblCapacity.Name = "lblCapacity"
-        Me.lblCapacity.Size = New System.Drawing.Size(180, 23)
-        Me.lblCapacity.TabIndex = 5
-        Me.lblCapacity.Text = "lblCapacity"
-        Me.lblCapacity.Value1 = "Capacity:"
-        Me.lblCapacity.Value2 = " -- / --"
         '
         'pbScanProgress
         '
@@ -296,7 +282,7 @@ Partial Class WinSight
         Me.lblHoverInfo.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblHoverInfo.Location = New System.Drawing.Point(12, 649)
         Me.lblHoverInfo.Name = "lblHoverInfo"
-        Me.lblHoverInfo.Size = New System.Drawing.Size(818, 23)
+        Me.lblHoverInfo.Size = New System.Drawing.Size(936, 23)
         Me.lblHoverInfo.TabIndex = 8
         Me.lblHoverInfo.Text = "lblHoverInfo"
         Me.lblHoverInfo.Value1 = "Hover:"
@@ -339,7 +325,6 @@ Partial Class WinSight
     Friend WithEvents cboDrives As Typhon.NSComboBox
     Friend WithEvents btnScan As Typhon.NSButton
     Friend WithEvents lblPath As Typhon.NSLabel
-    Friend WithEvents lblCapacity As Typhon.NSLabel
     Friend WithEvents pbScanProgress As Typhon.NSProgressBar
     Friend WithEvents splitStorageViews As System.Windows.Forms.SplitContainer
     Friend WithEvents lvFiles As Typhon.NSListView

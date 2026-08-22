@@ -202,7 +202,10 @@ Public Class WinSight
                     cboDrives.Items.Insert(1, customItem)
                     cboDrives.SelectedItem = customItem
                     _previousSelectedIndex = cboDrives.SelectedIndex
-                    lblCapacity.Value2 = "Custom Directory: " & fbd.SelectedPath
+                    Dim folderTitle As String = "Sight - " & fbd.SelectedPath
+                    themeContainer.Text = folderTitle
+                    Me.Text = folderTitle
+                    lblPath.Value2 = " " & fbd.SelectedPath
                     Return
                 Else
                     ' Revert to previous item if canceled
@@ -220,9 +223,15 @@ Public Class WinSight
             Dim usedGB As Double = (d.TotalSize - d.TotalFreeSpace) / (1024.0 ^ 3)
             Dim totalGB As Double = d.TotalSize / (1024.0 ^ 3)
             Dim pct As Integer = CInt(Math.Round((usedGB / totalGB) * 100.0))
-            lblCapacity.Value2 = String.Format("{0:0.#} GB used of {1:0.#} GB ({2}%) - Format: {3}", usedGB, totalGB, pct, d.DriveFormat)
+            Dim driveTitle As String = String.Format("Sight - [{0}] {1:0.#} GB / {2:0.#} GB ({3}% used, {4})", d.Name.TrimEnd("\"c), usedGB, totalGB, pct, d.DriveFormat)
+            themeContainer.Text = driveTitle
+            Me.Text = driveTitle
+            lblPath.Value2 = " " & item.Path
         Else
-            lblCapacity.Value2 = "Custom Directory: " & item.Path
+            Dim customTitle As String = "Sight - " & item.Path
+            themeContainer.Text = customTitle
+            Me.Text = customTitle
+            lblPath.Value2 = " " & item.Path
         End If
     End Sub
 
@@ -317,7 +326,7 @@ Public Class WinSight
             upItm.Tag = "PARENT_DIRECTORY"
             upItm.Icon = GetNodeIcon(parentNode.Parent)
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "-"})
-            upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "Parent Folder"})
+            upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "-"})
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = "-"})
             upItm.SubItems.Add(New NSListViewSubItem() With {.Text = parentNode.Parent.FullPath})
             listItems.Add(upItm)
