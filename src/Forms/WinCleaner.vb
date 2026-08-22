@@ -9,6 +9,7 @@ Public Class WinCleaner
 
     Private ScannedCleanItems As New List(Of cleaner.CleanItem)()
     Private IsScanning As Boolean = False
+    Private IsCleaning As Boolean = False
     Private CancelScanRequested As Boolean = False
     Private TargetDrives As List(Of String) = Nothing
 
@@ -241,70 +242,75 @@ Public Class WinCleaner
     End Sub
 
     Private Sub btnClean_Click(sender As Object, e As EventArgs) Handles btnClean.Click
+        If IsScanning OrElse IsCleaning Then Return
         If ScannedCleanItems.Count = 0 Then Return
 
+        IsCleaning = True
         btnScan.Enabled = False
         btnClean.Enabled = False
         CleanerProgressBar.Value = 0
         CleanerProgressBar.Visible = True
 
-        Application.DoEvents()
+        Try
+            Application.DoEvents()
 
-        ' Build lookup mapping file paths to NSListViewItem objects for live removal
-        Dim itemMap As New Dictionary(Of String, NSListViewItem)(StringComparer.OrdinalIgnoreCase)
-        If NsListView1.Items IsNot Nothing Then
-            For Each nsItem As NSListViewItem In NsListView1.Items
-                If nsItem.SubItems IsNot Nothing AndAlso nsItem.SubItems.Count >= 3 Then
-                    Dim pathStr As String = nsItem.SubItems(2).Text
-                    If Not String.IsNullOrEmpty(pathStr) AndAlso Not itemMap.ContainsKey(pathStr) Then
-                        itemMap(pathStr) = nsItem
+            ' Build lookup mapping file paths to NSListViewItem objects for live removal
+            Dim itemMap As New Dictionary(Of String, NSListViewItem)(StringComparer.OrdinalIgnoreCase)
+            If NsListView1.Items IsNot Nothing Then
+                For Each nsItem As NSListViewItem In NsListView1.Items
+                    If nsItem.SubItems IsNot Nothing AndAlso nsItem.SubItems.Count >= 3 Then
+                        Dim pathStr As String = nsItem.SubItems(2).Text
+                        If Not String.IsNullOrEmpty(pathStr) AndAlso Not itemMap.ContainsKey(pathStr) Then
+                            itemMap(pathStr) = nsItem
+                        End If
                     End If
-                End If
-            Next
-        End If
+                Next
+            End If
 
-        Dim removeBatch As New List(Of NSListViewItem)()
+            Dim removeBatch As New List(Of NSListViewItem)()
 
-        Dim cleanedCount As Integer = cleaner.CleanDetailedFiles(ScannedCleanItems,
-            Sub(current, total, status)
-                Dim pct As Integer = CInt((current / CDbl(total)) * 100)
-                CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
-                NsLabelStatus.Value1 = "Cleaning:"
-                NsLabelStatus.Value2 = " " & status
-                Application.DoEvents()
-            End Sub,
-            Sub(item, wasCleaned)
-                If wasCleaned AndAlso itemMap.ContainsKey(item.FilePath) Then
-                    Dim nsItem As NSListViewItem = itemMap(item.FilePath)
-                    removeBatch.Add(nsItem)
-                    If removeBatch.Count >= 5 Then
-                        NsListView1.RemoveItems(removeBatch.ToArray())
-                        removeBatch.Clear()
-                        Application.DoEvents()
+            Dim cleanedCount As Integer = cleaner.CleanDetailedFiles(ScannedCleanItems,
+                Sub(current, total, status)
+                    Dim pct As Integer = CInt((current / CDbl(total)) * 100)
+                    CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
+                    NsLabelStatus.Value1 = "Cleaning:"
+                    NsLabelStatus.Value2 = " " & status
+                    Application.DoEvents()
+                End Sub,
+                Sub(item, wasCleaned)
+                    If wasCleaned AndAlso itemMap.ContainsKey(item.FilePath) Then
+                        Dim nsItem As NSListViewItem = itemMap(item.FilePath)
+                        removeBatch.Add(nsItem)
+                        If removeBatch.Count >= 5 Then
+                            NsListView1.RemoveItems(removeBatch.ToArray())
+                            removeBatch.Clear()
+                            Application.DoEvents()
+                        End If
                     End If
-                End If
-            End Sub)
+                End Sub)
 
-        If removeBatch.Count > 0 Then
-            NsListView1.RemoveItems(removeBatch.ToArray())
-            removeBatch.Clear()
-        End If
+            If removeBatch.Count > 0 Then
+                NsListView1.RemoveItems(removeBatch.ToArray())
+                removeBatch.Clear()
+            End If
 
-        CleanerProgressBar.Value = 100
-        CleanerProgressBar.Visible = False
+            CleanerProgressBar.Value = 100
+            CleanerProgressBar.Visible = False
 
-        Dim totalCount As Integer = ScannedCleanItems.Count
-        NsLabelStatus.Value1 = "Clean Complete:"
-        If cleanedCount >= totalCount Then
-            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " files"
-            NsListView1.Clear()
-            ScannedCleanItems.Clear()
-        Else
-            NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " in-use)"
-        End If
-
-        btnScan.Enabled = True
-        btnClean.Enabled = (NsListView1.Items.Length > 0)
+            Dim totalCount As Integer = ScannedCleanItems.Count
+            NsLabelStatus.Value1 = "Clean Complete:"
+            If cleanedCount >= totalCount Then
+                NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " files"
+                NsListView1.Clear()
+                ScannedCleanItems.Clear()
+            Else
+                NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " in-use)"
+            End If
+        Finally
+            IsCleaning = False
+            btnScan.Enabled = True
+            btnClean.Enabled = (NsListView1.Items.Length > 0)
+        End Try
     End Sub
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click

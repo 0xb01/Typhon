@@ -273,6 +273,8 @@ Public Class WinSight
         Try
             Dim resultRoot As SpaceNode = Await Task.Run(Function() scanner.ScanDirectory(targetPath, token), token)
 
+            If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
+
             TreemapCanvas.RootNode = resultRoot
             LensProgressBar.Value = 100
             PopulateListView(resultRoot)

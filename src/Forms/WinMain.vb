@@ -220,7 +220,9 @@ Public Class WinMain
     ''' Click event handler opening the WinKill process manager window.
     ''' </summary>
     Private Sub NsButton2_Click(sender As System.Object, e As System.EventArgs) Handles NsButton2.Click
-        WinKill.Show(Me)
+        Using dlg As New WinKill()
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
     ''' <summary>
@@ -267,20 +269,28 @@ Public Class WinMain
         NsLabel7.Value2 = " RAM: " & ramPct & "% | Peak: " & peakRAMPct & "% | CPU: " & cpuPct & "% | GPU: " & gpuPct & "%"
     End Sub
 
+    Private _isSwitchingTab As Boolean = False
+
     Private Sub NsTabControl1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles NsTabControl1.SelectedIndexChanged
-        If NsTabControl1.SelectedTab Is TabPage3 Then
-            NsTabControl1.SelectedTab = TabPage1
-            Using dlg As New WinCleaner()
-                dlg.ShowDialog(Me)
-            End Using
-        ElseIf NsTabControl1.SelectedTab Is TabPageSpaceLens Then
-            NsTabControl1.SelectedTab = TabPage1
-            Using dlg As New WinSight()
-                dlg.ShowDialog(Me)
-            End Using
-        ElseIf NsTabControl1.SelectedTab Is TabPage6 Then
-            RefreshSpecsList()
-        End If
+        If _isSwitchingTab Then Return
+        _isSwitchingTab = True
+        Try
+            If NsTabControl1.SelectedTab Is TabPage3 Then
+                NsTabControl1.SelectedTab = TabPage1
+                Using dlg As New WinCleaner()
+                    dlg.ShowDialog(Me)
+                End Using
+            ElseIf NsTabControl1.SelectedTab Is TabPageSpaceLens Then
+                NsTabControl1.SelectedTab = TabPage1
+                Using dlg As New WinSight()
+                    dlg.ShowDialog(Me)
+                End Using
+            ElseIf NsTabControl1.SelectedTab Is TabPage6 Then
+                RefreshSpecsList()
+            End If
+        Finally
+            _isSwitchingTab = False
+        End Try
     End Sub
 
     ''' <summary>

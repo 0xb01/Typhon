@@ -2,10 +2,9 @@ Imports System.Drawing
 Imports System.Windows.Forms
 
 ''' <summary>
-''' Themed dark modal confirmation and message dialog matching the Typhon NSTheme interface.
+''' Themed dark modal confirmation and message dialog matching the Typhon NSTheme interface with full Windows Form Designer integration.
 ''' </summary>
 Public Class DarkMessageBox
-    Inherits Form
 
     ''' <summary>
     ''' Displays a dark themed message box with the specified owner, message, title, and buttons.
@@ -27,100 +26,72 @@ Public Class DarkMessageBox
         Return Show(Nothing, message, title, buttons)
     End Function
 
+    Private _buttons As MessageBoxButtons
+
+    Public Sub New()
+        InitializeComponent()
+    End Sub
+
     Public Sub New(message As String, title As String, buttons As MessageBoxButtons)
-        Me.FormBorderStyle = FormBorderStyle.None
-        Me.StartPosition = FormStartPosition.CenterParent
-        Me.ClientSize = New Size(340, 160)
-        Me.ShowInTaskbar = False
-        Me.DoubleBuffered = True
-
-        Dim theme As New NSTheme() With {
-            .Text = title,
-            .Dock = DockStyle.Fill,
-            .StartPosition = FormStartPosition.CenterParent,
-            .Sizable = False,
-            .Movable = True
-        }
-
-        Dim closeBtn As New NSControlButton() With {
-            .ControlButton = NSControlButton.Button.Close,
-            .Location = New Point(317, 5),
-            .Size = New Size(18, 20)
-        }
-        AddHandler closeBtn.Click, Sub(s, e)
-                                       Me.DialogResult = If(buttons = MessageBoxButtons.YesNo, DialogResult.No, DialogResult.Cancel)
-                                       Me.Close()
-                                   End Sub
-        theme.Controls.Add(closeBtn)
-
-        Dim lblMsg As New Label() With {
-            .Text = message,
-            .ForeColor = Color.White,
-            .Font = New Font("Verdana", 8.25!, FontStyle.Regular),
-            .Location = New Point(16, 38),
-            .Size = New Size(308, 70),
-            .TextAlign = ContentAlignment.MiddleLeft
-        }
-        theme.Controls.Add(lblMsg)
+        Me.New()
+        _buttons = buttons
+        NsTheme1.Text = title
+        Me.Text = title
+        lblMessage.Text = message
 
         If buttons = MessageBoxButtons.YesNo Then
-            Dim btnYes As New NSButton() With {
-                .Text = "Yes();",
-                .Location = New Point(125, 118),
-                .Size = New Size(95, 26)
-            }
-            AddHandler btnYes.Click, Sub(s, e)
-                                         Me.DialogResult = DialogResult.Yes
-                                         Me.Close()
-                                     End Sub
-            theme.Controls.Add(btnYes)
+            btnOption1.Text = "Yes();"
+            btnOption1.Visible = True
+            btnOption1.Location = New Point(125, 118)
 
-            Dim btnNo As New NSButton() With {
-                .Text = "No();",
-                .Location = New Point(230, 118),
-                .Size = New Size(95, 26)
-            }
-            AddHandler btnNo.Click, Sub(s, e)
-                                        Me.DialogResult = DialogResult.No
-                                        Me.Close()
-                                    End Sub
-            theme.Controls.Add(btnNo)
+            btnOption2.Text = "No();"
+            btnOption2.Visible = True
+            btnOption2.Location = New Point(230, 118)
         ElseIf buttons = MessageBoxButtons.OKCancel Then
-            Dim btnOk As New NSButton() With {
-                .Text = "OK();",
-                .Location = New Point(125, 118),
-                .Size = New Size(95, 26)
-            }
-            AddHandler btnOk.Click, Sub(s, e)
-                                        Me.DialogResult = DialogResult.OK
-                                        Me.Close()
-                                    End Sub
-            theme.Controls.Add(btnOk)
+            btnOption1.Text = "OK();"
+            btnOption1.Visible = True
+            btnOption1.Location = New Point(125, 118)
 
-            Dim btnCancel As New NSButton() With {
-                .Text = "Cancel();",
-                .Location = New Point(230, 118),
-                .Size = New Size(95, 26)
-            }
-            AddHandler btnCancel.Click, Sub(s, e)
-                                            Me.DialogResult = DialogResult.Cancel
-                                            Me.Close()
-                                        End Sub
-            theme.Controls.Add(btnCancel)
+            btnOption2.Text = "Cancel();"
+            btnOption2.Visible = True
+            btnOption2.Location = New Point(230, 118)
         Else
-            Dim btnOk As New NSButton() With {
-                .Text = "OK();",
-                .Location = New Point(230, 118),
-                .Size = New Size(95, 26)
-            }
-            AddHandler btnOk.Click, Sub(s, e)
-                                        Me.DialogResult = DialogResult.OK
-                                        Me.Close()
-                                    End Sub
-            theme.Controls.Add(btnOk)
+            btnOption1.Visible = False
+            btnOption2.Text = "OK();"
+            btnOption2.Visible = True
+            btnOption2.Location = New Point(230, 118)
         End If
+    End Sub
 
-        Me.Controls.Add(theme)
+    Private Sub btnOption1_Click(sender As Object, e As EventArgs) Handles btnOption1.Click
+        If _buttons = MessageBoxButtons.YesNo Then
+            Me.DialogResult = DialogResult.Yes
+        Else
+            Me.DialogResult = DialogResult.OK
+        End If
+        Me.Close()
+    End Sub
+
+    Private Sub btnOption2_Click(sender As Object, e As EventArgs) Handles btnOption2.Click
+        If _buttons = MessageBoxButtons.YesNo Then
+            Me.DialogResult = DialogResult.No
+        ElseIf _buttons = MessageBoxButtons.OKCancel Then
+            Me.DialogResult = DialogResult.Cancel
+        Else
+            Me.DialogResult = DialogResult.OK
+        End If
+        Me.Close()
+    End Sub
+
+    Private Sub NsControlButton1_Click(sender As Object, e As EventArgs) Handles NsControlButton1.Click
+        If _buttons = MessageBoxButtons.YesNo Then
+            Me.DialogResult = DialogResult.No
+        ElseIf _buttons = MessageBoxButtons.OKCancel Then
+            Me.DialogResult = DialogResult.Cancel
+        Else
+            Me.DialogResult = DialogResult.OK
+        End If
+        Me.Close()
     End Sub
 
 End Class
