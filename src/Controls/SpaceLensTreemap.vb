@@ -114,6 +114,9 @@ Namespace Controls
             Color.FromArgb(90, 115, 150)
         }
 
+        Private ReadOnly _boldFont As New Font("Segoe UI", 8.0!, FontStyle.Bold)
+        Private ReadOnly _regularFont As New Font("Segoe UI", 7.5!, FontStyle.Regular)
+
         Public Sub New()
             SetStyle(ControlStyles.AllPaintingInWmPaint Or
                      ControlStyles.UserPaint Or
@@ -359,25 +362,21 @@ Namespace Controls
 
                 Dim textRect As New Rectangle(rect.X + 4, rect.Y + 3, rect.Width - 8, rect.Height - 6)
                 Using sf As New StringFormat() With {.Trimming = StringTrimming.EllipsisCharacter, .LineAlignment = StringAlignment.Near}
-                    Using boldFont As New Font("Segoe UI", 8.0!, FontStyle.Bold)
-                        Using regularFont As New Font("Segoe UI", 7.5!, FontStyle.Regular)
-                            ' Drop shadow for name
-                            Using shadowBrush As New SolidBrush(Color.FromArgb(160, 0, 0, 0))
-                                g.DrawString(displayText, boldFont, shadowBrush, New RectangleF(textRect.X + 1, textRect.Y + 1, textRect.Width, 16), sf)
-                            End Using
-                            ' Highlight bold name
-                            Using tb As New SolidBrush(Color.FromArgb(255, 255, 255))
-                                g.DrawString(displayText, boldFont, tb, New RectangleF(textRect.X, textRect.Y, textRect.Width, 16), sf)
-                            End Using
-
-                            ' Regular unbolded size text
-                            If rect.Height > 36 Then
-                                Using dimBrush As New SolidBrush(Color.FromArgb(210, 210, 210))
-                                    g.DrawString(sizeText, regularFont, dimBrush, New PointF(textRect.X, textRect.Y + 16))
-                                End Using
-                            End If
-                        End Using
+                    ' Drop shadow for name
+                    Using shadowBrush As New SolidBrush(Color.FromArgb(160, 0, 0, 0))
+                        g.DrawString(displayText, _boldFont, shadowBrush, New RectangleF(textRect.X + 1, textRect.Y + 1, textRect.Width, 16), sf)
                     End Using
+                    ' Highlight bold name
+                    Using tb As New SolidBrush(Color.FromArgb(255, 255, 255))
+                        g.DrawString(displayText, _boldFont, tb, New RectangleF(textRect.X, textRect.Y, textRect.Width, 16), sf)
+                    End Using
+
+                    ' Regular unbolded size text
+                    If rect.Height > 36 Then
+                        Using dimBrush As New SolidBrush(Color.FromArgb(210, 210, 210))
+                            g.DrawString(sizeText, _regularFont, dimBrush, New PointF(textRect.X, textRect.Y + 16))
+                        End Using
+                    End If
                 End Using
             End If
         End Sub
@@ -493,6 +492,14 @@ Namespace Controls
             Next
             Return Nothing
         End Function
+
+        Protected Overrides Sub Dispose(disposing As Boolean)
+            If disposing Then
+                _boldFont.Dispose()
+                _regularFont.Dispose()
+            End If
+            MyBase.Dispose(disposing)
+        End Sub
 
     End Class
 

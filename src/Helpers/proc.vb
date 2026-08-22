@@ -6,6 +6,7 @@ Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Collections.Specialized
 Imports System.Collections.Generic
+Imports System.Threading.Tasks
 
 ''' <summary>
 ''' Provides process management, memory optimization, and native Win32 P/Invoke functions.
@@ -311,6 +312,13 @@ Public Class proc
         End If
 
         Return res
+    End Function
+
+    ''' <summary>
+    ''' Asynchronously trims process working sets in a background thread to prevent UI thread blockage.
+    ''' </summary>
+    Public Function FreeProcessesAsync() As Task(Of FreeMemoryResult)
+        Return Task.Run(Function() FreeProcesses())
     End Function
 
     ''' <summary>

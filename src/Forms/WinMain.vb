@@ -1,4 +1,5 @@
 Imports System.Collections.Specialized
+Imports System.Threading.Tasks
 Imports Microsoft.Win32
 
 ''' <summary>
@@ -12,6 +13,9 @@ Public Class WinMain
     Dim cycles As Integer = 300
     Dim init As Boolean = True
     Dim autoFreeCounter As Integer = 0
+    Private _deviceChangeTimer As System.Windows.Forms.Timer = Nothing
+    Private _isSpecsLoading As Boolean = False
+    Private _isFreeingMemory As Boolean = False
 
     ''' <summary>
     ''' Collection of process executable names excluded from process termination operations.
@@ -43,20 +47,35 @@ Public Class WinMain
         If infoProcessor IsNot Nothing Then infoProcessor = infoProcessor.Trim()
 
         Dim osName As String = _func.GetOS()
-        Dim gpuName As String = _func.GetGPUName()
         Dim ramSize As String = _func.GetTotalRAM()
 
         ' Uppercase computer name in brackets
         NsGroupBox1.Title = "[" & Environment.MachineName.ToUpper() & "]"
 
-        ' Subtitle: OS, CPU, GPU (if any), RAM without indicators
+        ' Subtitle: OS, CPU, RAM without waiting for WMI GPU query
         Dim subTitleParts As New List(Of String)()
         If Not String.IsNullOrEmpty(osName) Then subTitleParts.Add(osName)
         If Not String.IsNullOrEmpty(infoProcessor) Then subTitleParts.Add(infoProcessor)
-        If Not String.IsNullOrEmpty(gpuName) Then subTitleParts.Add(gpuName)
         If Not String.IsNullOrEmpty(ramSize) Then subTitleParts.Add(ramSize)
 
         NsGroupBox1.SubTitle = String.Join(vbNewLine, subTitleParts.ToArray())
+
+        ' Asynchronously resolve GPU name in background to prevent startup freeze
+        Task.Run(Sub()
+                     Dim gpuName As String = _func.GetGPUName()
+                     If Not String.IsNullOrEmpty(gpuName) AndAlso Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                         Me.BeginInvoke(Sub()
+                                            If Not Me.IsDisposed Then
+                                                Dim updatedParts As New List(Of String)()
+                                                If Not String.IsNullOrEmpty(osName) Then updatedParts.Add(osName)
+                                                If Not String.IsNullOrEmpty(infoProcessor) Then updatedParts.Add(infoProcessor)
+                                                updatedParts.Add(gpuName)
+                                                If Not String.IsNullOrEmpty(ramSize) Then updatedParts.Add(ramSize)
+                                                NsGroupBox1.SubTitle = String.Join(vbNewLine, updatedParts.ToArray())
+                                            End If
+                                        End Sub)
+                     End If
+                 End Sub)
 
         ' Dynamic version from assembly build properties: v<Major>.<Minor>-<Build>
         Dim ver As Version = My.Application.Info.Version
@@ -142,36 +161,51 @@ Public Class WinMain
                 Case 1 ' Every 1 minute
                     If autoFreeCounter >= 60 Then
                         autoFreeCounter = 0
-                        _proc.FreeProcesses()
+                        Task.Run(Sub() _proc.FreeProcesses())
                     End If
 
                 Case 2 ' Every 5 minutes
                     If autoFreeCounter >= 300 Then
                         autoFreeCounter = 0
-                        _proc.FreeProcesses()
+                        Task.Run(Sub() _proc.FreeProcesses())
                     End If
 
                 Case 3 ' Every 10 minutes
                     If autoFreeCounter >= 600 Then
                         autoFreeCounter = 0
-                        _proc.FreeProcesses()
+                        Task.Run(Sub() _proc.FreeProcesses())
                     End If
 
                 Case 4 ' When reaching 80% RAM
                     Dim currentRAMPct As Integer = _proc.GetRAMPercentage()
                     If currentRAMPct >= 80 AndAlso autoFreeCounter >= 30 Then
                         autoFreeCounter = 0
-                        _proc.FreeProcesses()
+                        Task.Run(Sub() _proc.FreeProcesses())
                     End If
             End Select
         End If
     End Sub
 
     ''' <summary>
-    ''' Click event handler triggering memory working set release for all processes.
+    ''' Click event handler triggering memory working set release for all processes asynchronously.
     ''' </summary>
-    Private Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
-        _proc.FreeProcesses()
+    Private Async Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
+        If _isFreeingMemory Then Return
+        _isFreeingMemory = True
+        NsButton1.Enabled = False
+        ShowNotification("RAM:", "Optimizing system memory...")
+
+        Dim res As proc.FreeMemoryResult = Await _proc.FreeProcessesAsync()
+        Dim freedMB As Double = res.ReleasedBytes / (1024.0 * 1024.0)
+
+        If freedMB > 0.5 Then
+            ShowNotification("RAM:", "Released " & freedMB.ToString("N1") & " MB across " & res.ProcessCount & " processes")
+        Else
+            ShowNotification("RAM:", "Trimmed working sets for " & res.ProcessCount & " processes")
+        End If
+
+        NsButton1.Enabled = True
+        _isFreeingMemory = False
     End Sub
 
     ''' <summary>
@@ -410,25 +444,53 @@ Public Class WinMain
     End Sub
 
     ''' <summary>
-    ''' Re-queries system specifications and hardware peripherals and updates NsListView2.
+    ''' Re-queries system specifications and hardware peripherals and updates NsListView2 asynchronously.
     ''' </summary>
-    Public Sub RefreshSpecsList()
-        _func.ClearSpecsCache()
+    Public Sub RefreshSpecsList(Optional force As Boolean = False)
+        If _isSpecsLoading Then Return
+        _isSpecsLoading = True
+
         NsListView2.Columns = New NSListView.NSListViewColumnHeader() {
             New NSListView.NSListViewColumnHeader() With {.Text = "Component", .Width = 110},
             New NSListView.NSListViewColumnHeader() With {.Text = "Details", .Width = 500}
         }
 
-        Dim specList As List(Of func.SpecItem) = _func.GetStructuredSpecs()
-        Dim specItems As New List(Of NSListView.NSListViewItem)()
+        If force Then _func.ClearSpecsCache()
 
-        For Each s As func.SpecItem In specList
-            Dim item As New NSListView.NSListViewItem() With {.Text = s.Category, .Tag = s}
-            item.SubItems.Add(New NSListView.NSListViewSubItem() With {.Text = s.Value})
-            specItems.Add(item)
-        Next
+        Task.Run(Sub()
+                     Dim specList As List(Of func.SpecItem) = _func.GetStructuredSpecs()
+                     Dim specItems As New List(Of NSListView.NSListViewItem)()
 
-        NsListView2.Items = specItems.ToArray()
+                     For Each s As func.SpecItem In specList
+                         Dim item As New NSListView.NSListViewItem() With {.Text = s.Category, .Tag = s}
+                         item.SubItems.Add(New NSListView.NSListViewSubItem() With {.Text = s.Value})
+                         specItems.Add(item)
+                     Next
+
+                     If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                         Me.BeginInvoke(Sub()
+                                            If Not Me.IsDisposed Then
+                                                NsListView2.Items = specItems.ToArray()
+                                                _isSpecsLoading = False
+                                            End If
+                                        End Sub)
+                     Else
+                         _isSpecsLoading = False
+                     End If
+                 End Sub)
+    End Sub
+
+    Private Sub OnDeviceChangeDebounced()
+        If _deviceChangeTimer Is Nothing Then
+            _deviceChangeTimer = New System.Windows.Forms.Timer()
+            _deviceChangeTimer.Interval = 500
+            AddHandler _deviceChangeTimer.Tick, Sub(s, e)
+                                                    _deviceChangeTimer.Stop()
+                                                    RefreshSpecsList(True)
+                                                End Sub
+        End If
+        _deviceChangeTimer.Stop()
+        _deviceChangeTimer.Start()
     End Sub
 
     ''' <summary>
@@ -437,7 +499,7 @@ Public Class WinMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         Const WM_DEVICECHANGE As Integer = &H219
         If m.Msg = WM_DEVICECHANGE Then
-            RefreshSpecsList()
+            OnDeviceChangeDebounced()
         End If
         MyBase.WndProc(m)
     End Sub

@@ -261,14 +261,11 @@ MustInherit Class ThemeContainer154
         Dim X As Integer = Parent.Location.X
         Dim Y As Integer = Parent.Location.Y
 
-        If X < bounds.X Then X = bounds.X
-        If Y < bounds.Y Then Y = bounds.Y
+        If X < bounds.Left Then X = bounds.Left
+        If Y < bounds.Top Then Y = bounds.Top
 
-        Dim Width As Integer = bounds.X + bounds.Width
-        Dim Height As Integer = bounds.Y + bounds.Height
-
-        If X + Parent.Width > Width Then X = Width - Parent.Width
-        If Y + Parent.Height > Height Then Y = Height - Parent.Height
+        If X + Parent.Width > bounds.Right Then X = bounds.Right - Parent.Width
+        If Y + Parent.Height > bounds.Bottom Then Y = bounds.Bottom - Parent.Height
 
         Parent.Location = New Point(X, Y)
     End Sub
@@ -802,22 +799,19 @@ MustInherit Class ThemeContainer154
 
 #Region " DrawPixel "
 
-    Private DrawPixelBrush As SolidBrush
-
     Protected Sub DrawPixel(ByVal c1 As Color, ByVal x As Integer, ByVal y As Integer)
         If _Transparent Then
             B.SetPixel(x, y, c1)
         Else
-            DrawPixelBrush = New SolidBrush(c1)
-            G.FillRectangle(DrawPixelBrush, x, y, 1, 1)
+            Using b As New SolidBrush(c1)
+                G.FillRectangle(b, x, y, 1, 1)
+            End Using
         End If
     End Sub
 
 #End Region
 
 #Region " DrawCorners "
-
-    Private DrawCornersBrush As SolidBrush
 
     Protected Sub DrawCorners(ByVal c1 As Color, ByVal offset As Integer)
         DrawCorners(c1, 0, 0, Width, Height, offset)
@@ -844,11 +838,12 @@ MustInherit Class ThemeContainer154
             B.SetPixel(x, y + (height - 1), c1)
             B.SetPixel(x + (width - 1), y + (height - 1), c1)
         Else
-            DrawCornersBrush = New SolidBrush(c1)
-            G.FillRectangle(DrawCornersBrush, x, y, 1, 1)
-            G.FillRectangle(DrawCornersBrush, x + (width - 1), y, 1, 1)
-            G.FillRectangle(DrawCornersBrush, x, y + (height - 1), 1, 1)
-            G.FillRectangle(DrawCornersBrush, x + (width - 1), y + (height - 1), 1, 1)
+            Using b As New SolidBrush(c1)
+                G.FillRectangle(b, x, y, 1, 1)
+                G.FillRectangle(b, x + (width - 1), y, 1, 1)
+                G.FillRectangle(b, x, y + (height - 1), 1, 1)
+                G.FillRectangle(b, x + (width - 1), y + (height - 1), 1, 1)
+            End Using
         End If
     End Sub
 
@@ -1571,22 +1566,19 @@ MustInherit Class ThemeControl154
 
 #Region " DrawPixel "
 
-    Private DrawPixelBrush As SolidBrush
-
     Protected Sub DrawPixel(ByVal c1 As Color, ByVal x As Integer, ByVal y As Integer)
         If _Transparent Then
             B.SetPixel(x, y, c1)
         Else
-            DrawPixelBrush = New SolidBrush(c1)
-            G.FillRectangle(DrawPixelBrush, x, y, 1, 1)
+            Using b As New SolidBrush(c1)
+                G.FillRectangle(b, x, y, 1, 1)
+            End Using
         End If
     End Sub
 
 #End Region
 
 #Region " DrawCorners "
-
-    Private DrawCornersBrush As SolidBrush
 
     Protected Sub DrawCorners(ByVal c1 As Color, ByVal offset As Integer)
         DrawCorners(c1, 0, 0, Width, Height, offset)
@@ -1613,11 +1605,12 @@ MustInherit Class ThemeControl154
             B.SetPixel(x, y + (height - 1), c1)
             B.SetPixel(x + (width - 1), y + (height - 1), c1)
         Else
-            DrawCornersBrush = New SolidBrush(c1)
-            G.FillRectangle(DrawCornersBrush, x, y, 1, 1)
-            G.FillRectangle(DrawCornersBrush, x + (width - 1), y, 1, 1)
-            G.FillRectangle(DrawCornersBrush, x, y + (height - 1), 1, 1)
-            G.FillRectangle(DrawCornersBrush, x + (width - 1), y + (height - 1), 1, 1)
+            Using b As New SolidBrush(c1)
+                G.FillRectangle(b, x, y, 1, 1)
+                G.FillRectangle(b, x + (width - 1), y, 1, 1)
+                G.FillRectangle(b, x, y + (height - 1), 1, 1)
+                G.FillRectangle(b, x + (width - 1), y + (height - 1), 1, 1)
+            End Using
         End If
     End Sub
 
@@ -2179,23 +2172,26 @@ Class NSButton
         G.Clear(BackColor)
         G.SmoothingMode = SmoothingMode.AntiAlias
 
-        GP1 = CreateRound(0, 0, Width - 1, Height - 1, 7)
-        GP2 = CreateRound(1, 1, Width - 3, Height - 3, 7)
+        Using gp1 As GraphicsPath = CreateRound(0, 0, Width - 1, Height - 1, 7),
+              gp2 As GraphicsPath = CreateRound(1, 1, Width - 3, Height - 3, 7)
 
-        If IsMouseDown Then
-            PB1 = New PathGradientBrush(GP1)
-            PB1.CenterColor = Color.FromArgb(60, 60, 60)
-            PB1.SurroundColors = {Color.FromArgb(55, 55, 55)}
-            PB1.FocusScales = New PointF(0.8F, 0.5F)
+            If IsMouseDown Then
+                Using pb1 As New PathGradientBrush(gp1)
+                    pb1.CenterColor = Color.FromArgb(60, 60, 60)
+                    pb1.SurroundColors = {Color.FromArgb(55, 55, 55)}
+                    pb1.FocusScales = New PointF(0.8F, 0.5F)
 
-            G.FillPath(PB1, GP1)
-        Else
-            GB1 = New LinearGradientBrush(ClientRectangle, Color.FromArgb(60, 60, 60), Color.FromArgb(55, 55, 55), 90.0F)
-            G.FillPath(GB1, GP1)
-        End If
+                    G.FillPath(pb1, gp1)
+                End Using
+            Else
+                Using gb1 As New LinearGradientBrush(ClientRectangle, Color.FromArgb(60, 60, 60), Color.FromArgb(55, 55, 55), 90.0F)
+                    G.FillPath(gb1, gp1)
+                End Using
+            End If
 
-        G.DrawPath(P1, GP1)
-        G.DrawPath(P2, GP2)
+            G.DrawPath(P1, gp1)
+            G.DrawPath(P2, gp2)
+        End Using
 
         SZ1 = G.MeasureString(Text, Font)
         PT1 = New PointF((Width / 2.0F) - (SZ1.Width / 2.0F), (Height / 2.0F) - (SZ1.Height / 2.0F))
@@ -5403,8 +5399,9 @@ Class NSListView
 
         R1 = New Rectangle(0, 0, Width, ItemHeight)
 
-        GB1 = New LinearGradientBrush(R1, Color.FromArgb(60, 60, 60), Color.FromArgb(55, 55, 55), 90.0F)
-        G.FillRectangle(GB1, R1)
+        Using gbHeader As New LinearGradientBrush(R1, Color.FromArgb(60, 60, 60), Color.FromArgb(55, 55, 55), 90.0F)
+            G.FillRectangle(gbHeader, R1)
+        End Using
         G.DrawRectangle(P3, 1, 1, Width - 22, ItemHeight - 2)
 
         Dim LH As Integer = Math.Min(VS.Maximum + ItemHeight - Offset, Height)
