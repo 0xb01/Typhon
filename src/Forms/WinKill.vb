@@ -22,8 +22,8 @@ Public Class WinKill
         _isKilling = False
         _cancelRequested = False
         _hasCompleted = False
-        NsButton1.Text = "Kill();"
-        Label1.Text = "Killable parent and child processes have been listed, these processes will be killed to improve performance." & vbCrLf & vbCrLf & "Please save any important documents before proceeding!"
+        btnAction.Text = "Terminate"
+        lblDescription.Text = "Select background and child processes to terminate to recover system resources." & vbCrLf & vbCrLf & "Please save any unsaved work before proceeding."
         _groups = _proc.GetKillableProcessGroups(WinMain.ProcessIgnoreList)
         RenderListView()
     End Sub
@@ -102,18 +102,18 @@ Public Class WinKill
             End If
         Next
 
-        NsListView1.Items = itemList.ToArray()
+        lvProcesses.Items = itemList.ToArray()
 
         If Not _isKilling AndAlso Not _hasCompleted Then
-            NsLabel1.Value1 = "Summary:"
-            NsLabel1.Value2 = Space(1) & totalProcesses & " processes (" & cleaner.FormatBytes(totalBytes) & ")" & If(exemptCount > 0, " | " & exemptCount & " exempt", "")
+            lblSummary.Value1 = "Summary:"
+            lblSummary.Value2 = Space(1) & totalProcesses & " processes (" & cleaner.FormatBytes(totalBytes) & ")" & If(exemptCount > 0, " | " & exemptCount & " exempt", "")
         End If
     End Sub
 
     ''' <summary>
     ''' Column click handler toggling sort direction by Process Name or RAM footprint.
     ''' </summary>
-    Private Sub NsListView1_ColumnClick(sender As Object, columnIndex As Integer) Handles NsListView1.ColumnClick
+    Private Sub lvProcesses_ColumnClick(sender As Object, columnIndex As Integer) Handles lvProcesses.ColumnClick
         If _isKilling Then Return
         If _sortColumn = columnIndex Then
             _sortAscending = Not _sortAscending
@@ -127,11 +127,11 @@ Public Class WinKill
     ''' <summary>
     ''' Handles expansion toggling and checkbox state synchronization with Typhon protection.
     ''' </summary>
-    Private Sub NsListView1_MouseDown(sender As Object, e As MouseEventArgs) Handles NsListView1.MouseDown
+    Private Sub lvProcesses_MouseDown(sender As Object, e As MouseEventArgs) Handles lvProcesses.MouseDown
         If _isKilling Then Return
         If e.Button = Windows.Forms.MouseButtons.Left Then
-            If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-                Dim selectedItem As NSListView.NSListViewItem = NsListView1.SelectedItems(0)
+            If lvProcesses.SelectedItems IsNot Nothing AndAlso lvProcesses.SelectedItems.Length > 0 Then
+                Dim selectedItem As NSListView.NSListViewItem = lvProcesses.SelectedItems(0)
 
                 If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
                     Dim grp As proc.ProcessGroupItem = DirectCast(selectedItem.Tag, proc.ProcessGroupItem)
@@ -181,7 +181,7 @@ Public Class WinKill
     ''' <summary>
     ''' Click event handler initiating confirmation dialog and asynchronous process termination.
     ''' </summary>
-    Private Async Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
+    Private Async Sub btnAction_Click(sender As System.Object, e As System.EventArgs) Handles btnAction.Click
         If _hasCompleted Then
             Me.Close()
             Return
@@ -189,7 +189,7 @@ Public Class WinKill
 
         If _isKilling Then
             _cancelRequested = True
-            Label1.Text = "Cancelling..."
+            lblDescription.Text = "Cancelling..."
             Return
         End If
 
@@ -205,19 +205,19 @@ Public Class WinKill
         Next
 
         If targets.Count = 0 Then
-            DarkMessageBox.Show(Me, "No processes selected to terminate.", "Notice", MessageBoxButtons.OK)
+            DialogMessage.Show(Me, "No processes selected to terminate.", "Notice", MessageBoxButtons.OK)
             Return
         End If
 
         Dim confirmMsg As String = "Are you sure you want to terminate " & targets.Count & " selected process(es)?" & vbCrLf & vbCrLf & "Any unsaved data in these processes will be lost."
-        If DarkMessageBox.Show(Me, confirmMsg, "Confirm Termination", MessageBoxButtons.YesNo) <> DialogResult.Yes Then
+        If DialogMessage.Show(Me, confirmMsg, "Confirm Termination", MessageBoxButtons.YesNo) <> DialogResult.Yes Then
             Return
         End If
 
         _isKilling = True
         _cancelRequested = False
         _hasCompleted = False
-        NsButton1.Text = "Cancel();"
+        btnAction.Text = "Cancel"
 
         Dim killedCount As Integer = 0
         Dim failedCount As Integer = 0
@@ -226,7 +226,7 @@ Public Class WinKill
         For Each inst As proc.ProcessInstanceItem In targets
             If _cancelRequested Then Exit For
 
-            Label1.Text = "Killing process: " & inst.ProcessName & " (" & inst.ProcessId & ")"
+            lblDescription.Text = "Terminating: " & inst.ProcessName & " (" & inst.ProcessId & ")"
             Dim pid As Integer = inst.ProcessId
 
             Dim success As Boolean = Await Task.Run(Function()
@@ -262,21 +262,21 @@ Public Class WinKill
         _hasCompleted = True
 
         If _cancelRequested Then
-            Label1.Text = "Cancelled"
+            lblDescription.Text = "Cancelled"
         Else
-            Label1.Text = "Completed"
+            lblDescription.Text = "Completed"
         End If
 
-        NsLabel1.Value1 = "Summary:"
-        NsLabel1.Value2 = Space(1) & "Killed " & killedCount & " of " & totalChecked & " process" & If(totalChecked = 1, "", "es") & If(failedCount > 0, " (" & failedCount & " locked/failed)", "")
+        lblSummary.Value1 = "Summary:"
+        lblSummary.Value2 = Space(1) & "Terminated " & killedCount & " of " & totalChecked & " process" & If(totalChecked = 1, "", "es") & If(failedCount > 0, " (" & failedCount & " locked/in-use)", "")
 
-        NsButton1.Text = "Close();"
+        btnAction.Text = "Close"
     End Sub
 
     ''' <summary>
     ''' Context menu handler selecting all non-ignored and non-self process groups and instances.
     ''' </summary>
-    Private Sub SelectAllToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles SelectAllToolStripMenuItem.Click
+    Private Sub menuSelectAll_Click(sender As System.Object, e As System.EventArgs) Handles menuSelectAll.Click
         If _isKilling Then Return
         For Each grp As proc.ProcessGroupItem In _groups
             If Not grp.IsIgnored AndAlso Not grp.IsSelf Then
@@ -294,7 +294,7 @@ Public Class WinKill
     ''' <summary>
     ''' Context menu handler deselecting all process groups and instances.
     ''' </summary>
-    Private Sub DeselectAllToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles DeselectAllToolStripMenuItem.Click
+    Private Sub menuDeselectAll_Click(sender As System.Object, e As System.EventArgs) Handles menuDeselectAll.Click
         If _isKilling Then Return
         For Each grp As proc.ProcessGroupItem In _groups
             grp.Checked = False
@@ -308,14 +308,14 @@ Public Class WinKill
     ''' <summary>
     ''' Dynamic context menu opening handler configuring exception toggle text and Typhon protection state.
     ''' </summary>
-    Private Sub NsContextMenu1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles NsContextMenu1.Opening
+    Private Sub ctxProcessMenu_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ctxProcessMenu.Opening
         If _isKilling Then
             e.Cancel = True
             Return
         End If
 
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            Dim selectedItem As NSListView.NSListViewItem = NsListView1.SelectedItems(0)
+        If lvProcesses.SelectedItems IsNot Nothing AndAlso lvProcesses.SelectedItems.Length > 0 Then
+            Dim selectedItem As NSListView.NSListViewItem = lvProcesses.SelectedItems(0)
             Dim isSelf As Boolean = False
             Dim isIgnored As Boolean = False
 
@@ -324,34 +324,34 @@ Public Class WinKill
                 isSelf = grp.IsSelf
                 isIgnored = grp.IsIgnored
             ElseIf TypeOf selectedItem.Tag Is proc.ProcessInstanceItem Then
-                Dim inst As proc.ProcessInstanceItem = DirectCast(selectedItem.Tag, proc.ProcessInstanceItem)
+                Dim inst = DirectCast(selectedItem.Tag, proc.ProcessInstanceItem)
                 isSelf = inst.IsSelf
                 isIgnored = inst.IsIgnored
             End If
 
             If isSelf Then
-                AddToIgnoreListToolStripMenuItem.Text = "Protected (Typhon)"
-                AddToIgnoreListToolStripMenuItem.Enabled = False
+                menuToggleException.Text = "Protected (Typhon)"
+                menuToggleException.Enabled = False
             ElseIf isIgnored Then
-                AddToIgnoreListToolStripMenuItem.Text = "Remove from Exceptions"
-                AddToIgnoreListToolStripMenuItem.Enabled = True
+                menuToggleException.Text = "Remove from Exceptions"
+                menuToggleException.Enabled = True
             Else
-                AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
-                AddToIgnoreListToolStripMenuItem.Enabled = True
+                menuToggleException.Text = "Add to Exceptions"
+                menuToggleException.Enabled = True
             End If
         Else
-            AddToIgnoreListToolStripMenuItem.Text = "Add to Exceptions"
-            AddToIgnoreListToolStripMenuItem.Enabled = False
+            menuToggleException.Text = "Add to Exceptions"
+            menuToggleException.Enabled = False
         End If
     End Sub
 
     ''' <summary>
     ''' Context menu handler toggling exception ignore status for selected process executable.
     ''' </summary>
-    Private Sub AddToIgnoreListToolStripMenuItem_Click(sender As System.Object, e As System.EventArgs) Handles AddToIgnoreListToolStripMenuItem.Click
+    Private Sub menuToggleException_Click(sender As System.Object, e As System.EventArgs) Handles menuToggleException.Click
         If _isKilling Then Return
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each selectedItem As NSListView.NSListViewItem In NsListView1.SelectedItems
+        If lvProcesses.SelectedItems IsNot Nothing AndAlso lvProcesses.SelectedItems.Length > 0 Then
+            For Each selectedItem As NSListView.NSListViewItem In lvProcesses.SelectedItems
                 Dim procName As String = ""
                 Dim isSelf As Boolean = False
                 Dim isIgnored As Boolean = False
@@ -401,7 +401,7 @@ Public Class WinKill
     ''' <summary>
     ''' Control button click handler saving current process ignore list settings to application configuration.
     ''' </summary>
-    Private Sub NsControlButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsControlButton1.Click
+    Private Sub btnControlClose_Click(sender As System.Object, e As System.EventArgs) Handles btnControlClose.Click
         If _isKilling Then
             _cancelRequested = True
         End If
@@ -416,10 +416,10 @@ Public Class WinKill
         End If
     End Sub
 
-    Private Sub SearchGoogleToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchGoogleToolStripMenuItem.Click
+    Private Sub menuSearchGoogle_Click(sender As Object, e As EventArgs) Handles menuSearchGoogle.Click
         If _isKilling Then Return
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each selectedItem As NSListView.NSListViewItem In NsListView1.SelectedItems
+        If lvProcesses.SelectedItems IsNot Nothing AndAlso lvProcesses.SelectedItems.Length > 0 Then
+            For Each selectedItem As NSListView.NSListViewItem In lvProcesses.SelectedItems
                 Dim procName As String = ""
                 If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
                     procName = DirectCast(selectedItem.Tag, proc.ProcessGroupItem).ProcessName
@@ -437,10 +437,10 @@ Public Class WinKill
         End If
     End Sub
 
-    Private Sub SearchVirusTotalToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchVirusTotalToolStripMenuItem.Click
+    Private Sub menuSearchVirusTotal_Click(sender As Object, e As EventArgs) Handles menuSearchVirusTotal.Click
         If _isKilling Then Return
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each selectedItem As NSListView.NSListViewItem In NsListView1.SelectedItems
+        If lvProcesses.SelectedItems IsNot Nothing AndAlso lvProcesses.SelectedItems.Length > 0 Then
+            For Each selectedItem As NSListView.NSListViewItem In lvProcesses.SelectedItems
                 Dim procName As String = ""
                 If TypeOf selectedItem.Tag Is proc.ProcessGroupItem Then
                     procName = DirectCast(selectedItem.Tag, proc.ProcessGroupItem).ProcessName

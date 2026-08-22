@@ -32,9 +32,9 @@ Public Class WinSight
 
         LoadDrives()
 
-        AddHandler TreemapCanvas.NodeHovered, AddressOf OnNodeHovered
-        AddHandler TreemapCanvas.NodeSelected, AddressOf OnTreemapNodeSelected
-        AddHandler TreemapCanvas.NodeDoubleClicked, AddressOf OnTreemapNodeDoubleClicked
+        AddHandler treemapSpaceLens.NodeHovered, AddressOf OnNodeHovered
+        AddHandler treemapSpaceLens.NodeSelected, AddressOf OnTreemapNodeSelected
+        AddHandler treemapSpaceLens.NodeDoubleClicked, AddressOf OnTreemapNodeDoubleClicked
 
         AddHandler lvFiles.MouseDown, AddressOf OnListViewMouseDown
         AddHandler lvFiles.DoubleClick, AddressOf OnListViewDoubleClick
@@ -252,7 +252,7 @@ Public Class WinSight
         _isScanning = True
         btnScan.Text = "Stop Sight"
         cboDrives.Enabled = False
-        LensProgressBar.Value = 1
+        pbScanProgress.Value = 1
         lblPath.Value2 = targetPath
         lblHoverInfo.Value2 = " Scanning files and calculating sizes..."
         lvFiles.Clear()
@@ -266,7 +266,7 @@ Public Class WinSight
                                                 Me.BeginInvoke(Sub()
                                                                    lblHoverInfo.Value1 = "Scanning:"
                                                                    lblHoverInfo.Value2 = String.Format(" {0:N0} files, {1:N0} folders ({2}) - {3}", p.FilesScanned, p.FoldersScanned, SpaceNode.FormatBytes(p.TotalBytes), p.CurrentPath)
-                                                                   LensProgressBar.Value = Math.Max(1, Math.Min(100, p.EstimatedPercent))
+                                                                   pbScanProgress.Value = Math.Max(1, Math.Min(100, p.EstimatedPercent))
                                                                End Sub)
                                             End Sub
 
@@ -275,19 +275,19 @@ Public Class WinSight
 
             If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
 
-            TreemapCanvas.RootNode = resultRoot
-            LensProgressBar.Value = 100
+            treemapSpaceLens.RootNode = resultRoot
+            pbScanProgress.Value = 100
             PopulateListView(resultRoot)
             UpdatePathLabel()
             lblHoverInfo.Value1 = "Status:"
             lblHoverInfo.Value2 = String.Format(" Scan complete. {0:N0} items total ({1}).", resultRoot.Children.Count, resultRoot.FormattedSize)
         Catch ex As OperationCanceledException
             lblHoverInfo.Value2 = " Scan canceled by user."
-            LensProgressBar.Value = 0
+            pbScanProgress.Value = 0
         Catch ex As Exception
             MessageBox.Show("Error scanning folder: " & ex.Message, "Scan Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             lblHoverInfo.Value2 = " Scan failed: " & ex.Message
-            LensProgressBar.Value = 0
+            pbScanProgress.Value = 0
         Finally
             _isScanning = False
             btnScan.Text = "Start Sight"
@@ -384,7 +384,7 @@ Public Class WinSight
     End Sub
 
     Private Sub OnTreemapNodeDoubleClicked(node As SpaceNode)
-        PopulateListView(TreemapCanvas.CurrentNode)
+        PopulateListView(treemapSpaceLens.CurrentNode)
         UpdatePathLabel()
     End Sub
 
@@ -395,7 +395,7 @@ Public Class WinSight
             If Equals(selectedItm.Tag, "PARENT_DIRECTORY") Then
                 _currentSelectedNode = Nothing
                 lblHoverInfo.Value2 = " Parent Directory [../]"
-                TreemapCanvas.SelectedNode = Nothing
+                treemapSpaceLens.SelectedNode = Nothing
                 Return
             End If
 
@@ -406,7 +406,7 @@ Public Class WinSight
                 lblHoverInfo.Value2 = String.Format(" {0} ({1}) - {2}", node.Name, node.FormattedSize, node.FullPath)
 
                 _isSyncingSelection = True
-                TreemapCanvas.SelectedNode = node
+                treemapSpaceLens.SelectedNode = node
                 _isSyncingSelection = False
             End If
         End If
@@ -418,8 +418,8 @@ Public Class WinSight
 
             ' Handle "../" navigation
             If Equals(selectedItm.Tag, "PARENT_DIRECTORY") Then
-                If TreemapCanvas.NavigateUp() Then
-                    PopulateListView(TreemapCanvas.CurrentNode)
+                If treemapSpaceLens.NavigateUp() Then
+                    PopulateListView(treemapSpaceLens.CurrentNode)
                     UpdatePathLabel()
                 End If
                 Return
@@ -428,7 +428,7 @@ Public Class WinSight
             Dim node = TryCast(selectedItm.Tag, SpaceNode)
             If node IsNot Nothing AndAlso node.IsDirectory Then
                 ' Drill into folder
-                TreemapCanvas.CurrentNode = node
+                treemapSpaceLens.CurrentNode = node
                 PopulateListView(node)
                 UpdatePathLabel()
             ElseIf node IsNot Nothing Then
@@ -451,13 +451,13 @@ Public Class WinSight
     End Sub
 
     Private Sub UpdatePathLabel()
-        If TreemapCanvas.CurrentNode IsNot Nothing Then
-            lblPath.Value2 = TreemapCanvas.CurrentNode.FullPath & " (" & TreemapCanvas.CurrentNode.FormattedSize & ")"
+        If treemapSpaceLens.CurrentNode IsNot Nothing Then
+            lblPath.Value2 = treemapSpaceLens.CurrentNode.FullPath & " (" & treemapSpaceLens.CurrentNode.FormattedSize & ")"
         End If
     End Sub
 
     Private Sub btnOpenExplorer_Click(sender As Object, e As EventArgs) Handles btnOpenExplorer.Click
-        Dim target As SpaceNode = If(_currentSelectedNode, TreemapCanvas.CurrentNode)
+        Dim target As SpaceNode = If(_currentSelectedNode, treemapSpaceLens.CurrentNode)
         If target IsNot Nothing AndAlso Not String.IsNullOrEmpty(target.FullPath) Then
             OpenInExplorer(target.FullPath, Not target.IsDirectory)
         End If
@@ -496,8 +496,8 @@ Public Class WinSight
                 If target.Parent IsNot Nothing Then
                     target.Parent.Children.Remove(target)
                     target.Parent.Size -= target.Size
-                    TreemapCanvas.RecalculateLayout()
-                    TreemapCanvas.Invalidate()
+                    treemapSpaceLens.RecalculateLayout()
+                    treemapSpaceLens.Invalidate()
                     PopulateListView(target.Parent)
                 End If
                 lblHoverInfo.Value1 = "Deleted:"
@@ -509,8 +509,8 @@ Public Class WinSight
     End Sub
 
     Private Function GetCurrentActionTarget() As SpaceNode
-        If TreemapCanvas.HoveredNode IsNot Nothing Then
-            Return TreemapCanvas.HoveredNode
+        If treemapSpaceLens.HoveredNode IsNot Nothing Then
+            Return treemapSpaceLens.HoveredNode
         End If
         If lvFiles.SelectedItems.Length > 0 Then
             Return TryCast(lvFiles.SelectedItems(0).Tag, SpaceNode)

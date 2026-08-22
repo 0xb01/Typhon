@@ -22,249 +22,248 @@ Partial Class WinMain
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
         Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
         Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
         Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(WinMain))
-        Me.realTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.cooldownTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.graphTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.NsTheme1 = New Typhon.NSTheme()
-        Me.NsTabControl1 = New Typhon.NSTabControl()
-        Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.NsGroupBox1 = New Typhon.NSGroupBox()
-        Me.NsProgressBar1 = New Typhon.NSProgressBar()
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.NsLabel2 = New Typhon.NSLabel()
-        Me.NsLabel1 = New Typhon.NSLabel()
-        Me.TabPage4 = New System.Windows.Forms.TabPage()
-        Me.NsLabel7 = New Typhon.NSLabel()
-        Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
-        Me.TabPage3 = New System.Windows.Forms.TabPage()
-        Me.TabPageSpaceLens = New System.Windows.Forms.TabPage()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
-        Me.NsGroupBox2 = New Typhon.NSGroupBox()
-        Me.NsLabel4 = New Typhon.NSLabel()
-        Me.NsComboBox1 = New Typhon.NSComboBox()
-        Me.NsLabel6 = New Typhon.NSLabel()
-        Me.NsOnOffBox2 = New Typhon.NSOnOffBox()
-        Me.NsLabel11 = New Typhon.NSLabel()
-        Me.NsOnOffBox6 = New Typhon.NSOnOffBox()
-        Me.NsLabel12 = New Typhon.NSLabel()
-        Me.NsOnOffBox3 = New Typhon.NSOnOffBox()
-        Me.NsLabel9 = New Typhon.NSLabel()
-        Me.NsOnOffBox4 = New Typhon.NSOnOffBox()
-        Me.NsLabel5 = New Typhon.NSLabel()
-        Me.NsButton3 = New Typhon.NSButton()
-        Me.TabPage6 = New System.Windows.Forms.TabPage()
-        Me.NsListView2 = New Typhon.NSListView()
-        Me.NsButton5 = New Typhon.NSButton()
-        Me.NsButton4 = New Typhon.NSButton()
-        Me.TabPage5 = New System.Windows.Forms.TabPage()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.NsButton2 = New Typhon.NSButton()
-        Me.NsLabel3 = New Typhon.NSLabel()
-        Me.NsButton1 = New Typhon.NSButton()
-        Me.NsControlButton2 = New Typhon.NSControlButton()
-        Me.NsControlButton1 = New Typhon.NSControlButton()
-        Me.notifIcon = New System.Windows.Forms.NotifyIcon(Me.components)
-        Me.NsContextMenu1 = New Typhon.NSContextMenu()
-        Me.OpenTyphonToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.NsTheme1.SuspendLayout()
-        Me.NsTabControl1.SuspendLayout()
-        Me.TabPage1.SuspendLayout()
-        Me.NsGroupBox1.SuspendLayout()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabPage4.SuspendLayout()
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabPage2.SuspendLayout()
-        Me.NsGroupBox2.SuspendLayout()
-        Me.TabPage6.SuspendLayout()
-        Me.TabPage5.SuspendLayout()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.NsContextMenu1.SuspendLayout()
+        Me.timerRealtimeRAM = New System.Windows.Forms.Timer()
+        Me.timerNotificationCooldown = New System.Windows.Forms.Timer()
+        Me.timerGraph = New System.Windows.Forms.Timer()
+        Me.themeContainer = New Typhon.NSTheme()
+        Me.tabMain = New Typhon.NSTabControl()
+        Me.tabOverview = New System.Windows.Forms.TabPage()
+        Me.gbRAMOverview = New Typhon.NSGroupBox()
+        Me.pbRAMUsage = New Typhon.NSProgressBar()
+        Me.picMemoryIcon = New System.Windows.Forms.PictureBox()
+        Me.lblRAMUsage = New Typhon.NSLabel()
+        Me.lblProcessCount = New Typhon.NSLabel()
+        Me.tabPerformance = New System.Windows.Forms.TabPage()
+        Me.lblLivePerformanceStats = New Typhon.NSLabel()
+        Me.chartPerformance = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.tabCleaner = New System.Windows.Forms.TabPage()
+        Me.tabSpaceLens = New System.Windows.Forms.TabPage()
+        Me.tabSettings = New System.Windows.Forms.TabPage()
+        Me.gbAutomationSettings = New Typhon.NSGroupBox()
+        Me.lblAutoOptimizeRAM = New Typhon.NSLabel()
+        Me.cboAutoFreeRAM = New Typhon.NSComboBox()
+        Me.lblAutoStartOnBoot = New Typhon.NSLabel()
+        Me.toggleAutoStartOnBoot = New Typhon.NSOnOffBox()
+        Me.lblStartMinimizedOnBoot = New Typhon.NSLabel()
+        Me.toggleStartMinimizedOnBoot = New Typhon.NSOnOffBox()
+        Me.lblMinimizeToTray = New Typhon.NSLabel()
+        Me.toggleMinimizeToTray = New Typhon.NSOnOffBox()
+        Me.lblCloseToTray = New Typhon.NSLabel()
+        Me.toggleCloseToTray = New Typhon.NSOnOffBox()
+        Me.lblExceptionsManager = New Typhon.NSLabel()
+        Me.btnManageExceptions = New Typhon.NSButton()
+        Me.tabSpecs = New System.Windows.Forms.TabPage()
+        Me.lvSystemSpecs = New Typhon.NSListView()
+        Me.btnCheckGameBenchmark = New Typhon.NSButton()
+        Me.btnCopySpecs = New Typhon.NSButton()
+        Me.tabAbout = New System.Windows.Forms.TabPage()
+        Me.lblAboutAppDescription = New System.Windows.Forms.Label()
+        Me.lblAboutAppVersion = New System.Windows.Forms.Label()
+        Me.picAppLogo = New System.Windows.Forms.PictureBox()
+        Me.btnProcesses = New Typhon.NSButton()
+        Me.lblStatusMessage = New Typhon.NSLabel()
+        Me.btnFreeRAM = New Typhon.NSButton()
+        Me.btnControlMinimize = New Typhon.NSControlButton()
+        Me.btnControlClose = New Typhon.NSControlButton()
+        Me.notifTrayIcon = New System.Windows.Forms.NotifyIcon()
+        Me.ctxTrayMenu = New Typhon.NSContextMenu()
+        Me.menuOpenTyphon = New System.Windows.Forms.ToolStripMenuItem()
+        Me.menuExitTyphon = New System.Windows.Forms.ToolStripMenuItem()
+        Me.themeContainer.SuspendLayout()
+        Me.tabMain.SuspendLayout()
+        Me.tabOverview.SuspendLayout()
+        Me.gbRAMOverview.SuspendLayout()
+        CType(Me.picMemoryIcon, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tabPerformance.SuspendLayout()
+        CType(Me.chartPerformance, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tabSettings.SuspendLayout()
+        Me.gbAutomationSettings.SuspendLayout()
+        Me.tabSpecs.SuspendLayout()
+        Me.tabAbout.SuspendLayout()
+        CType(Me.picAppLogo, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.ctxTrayMenu.SuspendLayout()
         Me.SuspendLayout()
         '
-        'realTimer
+        'timerRealtimeRAM
         '
-        Me.realTimer.Interval = 1000
+        Me.timerRealtimeRAM.Interval = 1000
         '
-        'cooldownTimer
+        'timerNotificationCooldown
         '
-        Me.cooldownTimer.Interval = 5000
+        Me.timerNotificationCooldown.Interval = 5000
         '
-        'graphTimer
+        'timerGraph
         '
-        Me.graphTimer.Enabled = True
-        Me.graphTimer.Interval = 1000
+        Me.timerGraph.Enabled = True
+        Me.timerGraph.Interval = 1000
         '
-        'NsTheme1
+        'themeContainer
         '
-        Me.NsTheme1.AccentOffset = 42
-        Me.NsTheme1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.NsTheme1.BorderStyle = System.Windows.Forms.FormBorderStyle.None
-        Me.NsTheme1.Colors = New Typhon.Bloom(-1) {}
-        Me.NsTheme1.Controls.Add(Me.NsTabControl1)
-        Me.NsTheme1.Controls.Add(Me.NsButton2)
-        Me.NsTheme1.Controls.Add(Me.NsLabel3)
-        Me.NsTheme1.Controls.Add(Me.NsButton1)
-        Me.NsTheme1.Controls.Add(Me.NsControlButton2)
-        Me.NsTheme1.Controls.Add(Me.NsControlButton1)
-        Me.NsTheme1.Customization = ""
-        Me.NsTheme1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.NsTheme1.Font = New System.Drawing.Font("Verdana", 8.0!)
-        Me.NsTheme1.Image = Global.Typhon.My.Resources.Resources.typhon
-        Me.NsTheme1.Location = New System.Drawing.Point(0, 0)
-        Me.NsTheme1.Movable = True
-        Me.NsTheme1.Name = "NsTheme1"
-        Me.NsTheme1.NoRounding = False
-        Me.NsTheme1.Sizable = False
-        Me.NsTheme1.Size = New System.Drawing.Size(500, 321)
-        Me.NsTheme1.SmartBounds = True
-        Me.NsTheme1.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.NsTheme1.TabIndex = 0
-        Me.NsTheme1.Text = "Typhon: PC Booster"
-        Me.NsTheme1.TransparencyKey = System.Drawing.Color.Empty
-        Me.NsTheme1.Transparent = False
+        Me.themeContainer.AccentOffset = 42
+        Me.themeContainer.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.themeContainer.BorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.themeContainer.Colors = New Typhon.Bloom(-1) {}
+        Me.themeContainer.Controls.Add(Me.tabMain)
+        Me.themeContainer.Controls.Add(Me.btnProcesses)
+        Me.themeContainer.Controls.Add(Me.lblStatusMessage)
+        Me.themeContainer.Controls.Add(Me.btnFreeRAM)
+        Me.themeContainer.Controls.Add(Me.btnControlMinimize)
+        Me.themeContainer.Controls.Add(Me.btnControlClose)
+        Me.themeContainer.Customization = ""
+        Me.themeContainer.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.themeContainer.Font = New System.Drawing.Font("Verdana", 8.0!)
+        Me.themeContainer.Image = Global.Typhon.My.Resources.Resources.typhon
+        Me.themeContainer.Location = New System.Drawing.Point(0, 0)
+        Me.themeContainer.Movable = True
+        Me.themeContainer.Name = "themeContainer"
+        Me.themeContainer.NoRounding = False
+        Me.themeContainer.Sizable = False
+        Me.themeContainer.Size = New System.Drawing.Size(500, 321)
+        Me.themeContainer.SmartBounds = True
+        Me.themeContainer.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.themeContainer.TabIndex = 0
+        Me.themeContainer.Text = "Typhon: PC Booster"
+        Me.themeContainer.TransparencyKey = System.Drawing.Color.Empty
+        Me.themeContainer.Transparent = False
         '
-        'NsTabControl1
+        'tabMain
         '
-        Me.NsTabControl1.Alignment = System.Windows.Forms.TabAlignment.Left
-        Me.NsTabControl1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.tabMain.Alignment = System.Windows.Forms.TabAlignment.Left
+        Me.tabMain.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsTabControl1.Controls.Add(Me.TabPage1)
-        Me.NsTabControl1.Controls.Add(Me.TabPage4)
-        Me.NsTabControl1.Controls.Add(Me.TabPage3)
-        Me.NsTabControl1.Controls.Add(Me.TabPageSpaceLens)
-        Me.NsTabControl1.Controls.Add(Me.TabPage2)
-        Me.NsTabControl1.Controls.Add(Me.TabPage6)
-        Me.NsTabControl1.Controls.Add(Me.TabPage5)
-        Me.NsTabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed
-        Me.NsTabControl1.ItemSize = New System.Drawing.Size(28, 115)
-        Me.NsTabControl1.Location = New System.Drawing.Point(12, 40)
-        Me.NsTabControl1.Multiline = True
-        Me.NsTabControl1.Name = "NsTabControl1"
-        Me.NsTabControl1.SelectedIndex = 0
-        Me.NsTabControl1.Size = New System.Drawing.Size(476, 240)
-        Me.NsTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
-        Me.NsTabControl1.TabIndex = 6
+        Me.tabMain.Controls.Add(Me.tabOverview)
+        Me.tabMain.Controls.Add(Me.tabPerformance)
+        Me.tabMain.Controls.Add(Me.tabCleaner)
+        Me.tabMain.Controls.Add(Me.tabSpaceLens)
+        Me.tabMain.Controls.Add(Me.tabSettings)
+        Me.tabMain.Controls.Add(Me.tabSpecs)
+        Me.tabMain.Controls.Add(Me.tabAbout)
+        Me.tabMain.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed
+        Me.tabMain.ItemSize = New System.Drawing.Size(28, 115)
+        Me.tabMain.Location = New System.Drawing.Point(12, 40)
+        Me.tabMain.Multiline = True
+        Me.tabMain.Name = "tabMain"
+        Me.tabMain.SelectedIndex = 0
+        Me.tabMain.Size = New System.Drawing.Size(476, 240)
+        Me.tabMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed
+        Me.tabMain.TabIndex = 6
         '
-        'TabPage1
+        'tabOverview
         '
-        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage1.Controls.Add(Me.NsGroupBox1)
-        Me.TabPage1.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "Boost"
+        Me.tabOverview.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabOverview.Controls.Add(Me.gbRAMOverview)
+        Me.tabOverview.Location = New System.Drawing.Point(119, 4)
+        Me.tabOverview.Name = "tabOverview"
+        Me.tabOverview.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabOverview.Size = New System.Drawing.Size(353, 232)
+        Me.tabOverview.TabIndex = 0
+        Me.tabOverview.Text = "Boost"
         '
-        'NsGroupBox1
+        'gbRAMOverview
         '
-        Me.NsGroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.gbRAMOverview.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsGroupBox1.Controls.Add(Me.NsProgressBar1)
-        Me.NsGroupBox1.Controls.Add(Me.PictureBox1)
-        Me.NsGroupBox1.Controls.Add(Me.NsLabel2)
-        Me.NsGroupBox1.Controls.Add(Me.NsLabel1)
-        Me.NsGroupBox1.DrawSeperator = False
-        Me.NsGroupBox1.Location = New System.Drawing.Point(6, 6)
-        Me.NsGroupBox1.Name = "NsGroupBox1"
-        Me.NsGroupBox1.Size = New System.Drawing.Size(341, 220)
-        Me.NsGroupBox1.SubTitle = "-"
-        Me.NsGroupBox1.TabIndex = 2
-        Me.NsGroupBox1.Text = "NsGroupBox1"
-        Me.NsGroupBox1.Title = "[-]"
+        Me.gbRAMOverview.Controls.Add(Me.pbRAMUsage)
+        Me.gbRAMOverview.Controls.Add(Me.picMemoryIcon)
+        Me.gbRAMOverview.Controls.Add(Me.lblRAMUsage)
+        Me.gbRAMOverview.Controls.Add(Me.lblProcessCount)
+        Me.gbRAMOverview.DrawSeperator = False
+        Me.gbRAMOverview.Location = New System.Drawing.Point(6, 6)
+        Me.gbRAMOverview.Name = "gbRAMOverview"
+        Me.gbRAMOverview.Size = New System.Drawing.Size(341, 220)
+        Me.gbRAMOverview.SubTitle = "-"
+        Me.gbRAMOverview.TabIndex = 2
+        Me.gbRAMOverview.Text = "gbRAMOverview"
+        Me.gbRAMOverview.Title = "[-]"
         '
-        'NsProgressBar1
+        'pbRAMUsage
         '
-        Me.NsProgressBar1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.pbRAMUsage.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsProgressBar1.Location = New System.Drawing.Point(3, 204)
-        Me.NsProgressBar1.Maximum = 100
-        Me.NsProgressBar1.Minimum = 0
-        Me.NsProgressBar1.Name = "NsProgressBar1"
-        Me.NsProgressBar1.Size = New System.Drawing.Size(335, 10)
-        Me.NsProgressBar1.TabIndex = 3
-        Me.NsProgressBar1.Text = "NsProgressBar1"
-        Me.NsProgressBar1.Value = 0
+        Me.pbRAMUsage.Location = New System.Drawing.Point(3, 204)
+        Me.pbRAMUsage.Maximum = 100
+        Me.pbRAMUsage.Minimum = 0
+        Me.pbRAMUsage.Name = "pbRAMUsage"
+        Me.pbRAMUsage.Size = New System.Drawing.Size(335, 10)
+        Me.pbRAMUsage.TabIndex = 3
+        Me.pbRAMUsage.Text = "pbRAMUsage"
+        Me.pbRAMUsage.Value = 0
         '
-        'PictureBox1
+        'picMemoryIcon
         '
-        Me.PictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Right
-        Me.PictureBox1.Image = Global.Typhon.My.Resources.Resources.typhon
-        Me.PictureBox1.Location = New System.Drawing.Point(199, 76)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(139, 70)
-        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.PictureBox1.TabIndex = 3
-        Me.PictureBox1.TabStop = False
+        Me.picMemoryIcon.Anchor = System.Windows.Forms.AnchorStyles.Right
+        Me.picMemoryIcon.Image = Global.Typhon.My.Resources.Resources.typhon
+        Me.picMemoryIcon.Location = New System.Drawing.Point(199, 76)
+        Me.picMemoryIcon.Name = "picMemoryIcon"
+        Me.picMemoryIcon.Size = New System.Drawing.Size(139, 70)
+        Me.picMemoryIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.picMemoryIcon.TabIndex = 3
+        Me.picMemoryIcon.TabStop = False
         '
-        'NsLabel2
+        'lblRAMUsage
         '
-        Me.NsLabel2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.lblRAMUsage.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsLabel2.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel2.Location = New System.Drawing.Point(3, 178)
-        Me.NsLabel2.Name = "NsLabel2"
-        Me.NsLabel2.Size = New System.Drawing.Size(335, 23)
-        Me.NsLabel2.TabIndex = 4
-        Me.NsLabel2.Text = "NsLabel2"
-        Me.NsLabel2.Value1 = "Memory Usage:"
-        Me.NsLabel2.Value2 = "-"
+        Me.lblRAMUsage.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblRAMUsage.Location = New System.Drawing.Point(3, 178)
+        Me.lblRAMUsage.Name = "lblRAMUsage"
+        Me.lblRAMUsage.Size = New System.Drawing.Size(335, 23)
+        Me.lblRAMUsage.TabIndex = 4
+        Me.lblRAMUsage.Text = "lblRAMUsage"
+        Me.lblRAMUsage.Value1 = "Memory Usage:"
+        Me.lblRAMUsage.Value2 = "-"
         '
-        'NsLabel1
+        'lblProcessCount
         '
-        Me.NsLabel1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.lblProcessCount.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsLabel1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel1.Location = New System.Drawing.Point(3, 159)
-        Me.NsLabel1.Name = "NsLabel1"
-        Me.NsLabel1.Size = New System.Drawing.Size(190, 23)
-        Me.NsLabel1.TabIndex = 3
-        Me.NsLabel1.Text = "NsLabel1"
-        Me.NsLabel1.Value1 = "Active Processes:"
-        Me.NsLabel1.Value2 = "-"
+        Me.lblProcessCount.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblProcessCount.Location = New System.Drawing.Point(3, 159)
+        Me.lblProcessCount.Name = "lblProcessCount"
+        Me.lblProcessCount.Size = New System.Drawing.Size(190, 23)
+        Me.lblProcessCount.TabIndex = 3
+        Me.lblProcessCount.Text = "lblProcessCount"
+        Me.lblProcessCount.Value1 = "Active Processes:"
+        Me.lblProcessCount.Value2 = "-"
         '
-        'TabPage4
+        'tabPerformance
         '
-        Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage4.Controls.Add(Me.NsLabel7)
-        Me.TabPage4.Controls.Add(Me.Chart1)
-        Me.TabPage4.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage4.TabIndex = 3
-        Me.TabPage4.Text = "Graph"
+        Me.tabPerformance.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabPerformance.Controls.Add(Me.lblLivePerformanceStats)
+        Me.tabPerformance.Controls.Add(Me.chartPerformance)
+        Me.tabPerformance.Location = New System.Drawing.Point(119, 4)
+        Me.tabPerformance.Name = "tabPerformance"
+        Me.tabPerformance.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabPerformance.Size = New System.Drawing.Size(353, 232)
+        Me.tabPerformance.TabIndex = 3
+        Me.tabPerformance.Text = "Graph"
         '
-        'NsLabel7
+        'lblLivePerformanceStats
         '
-        Me.NsLabel7.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.lblLivePerformanceStats.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsLabel7.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel7.Location = New System.Drawing.Point(6, 6)
-        Me.NsLabel7.Name = "NsLabel7"
-        Me.NsLabel7.Size = New System.Drawing.Size(339, 23)
-        Me.NsLabel7.TabIndex = 11
-        Me.NsLabel7.Text = "Info:"
-        Me.NsLabel7.Value1 = "Info:"
-        Me.NsLabel7.Value2 = "-"
+        Me.lblLivePerformanceStats.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblLivePerformanceStats.Location = New System.Drawing.Point(6, 6)
+        Me.lblLivePerformanceStats.Name = "lblLivePerformanceStats"
+        Me.lblLivePerformanceStats.Size = New System.Drawing.Size(339, 23)
+        Me.lblLivePerformanceStats.TabIndex = 11
+        Me.lblLivePerformanceStats.Text = "Info:"
+        Me.lblLivePerformanceStats.Value1 = "Info:"
+        Me.lblLivePerformanceStats.Value2 = "-"
         '
-        'Chart1
+        'chartPerformance
         '
-        Me.Chart1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.chartPerformance.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Chart1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.chartPerformance.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         ChartArea1.AxisX.IsMarginVisible = False
         ChartArea1.AxisX.LabelStyle.Enabled = False
         ChartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(65, Byte), Integer))
@@ -283,16 +282,16 @@ Partial Class WinMain
         ChartArea1.Position.Height = 86.0!
         ChartArea1.Position.Width = 99.0!
         ChartArea1.Position.Y = 13.0!
-        Me.Chart1.ChartAreas.Add(ChartArea1)
+        Me.chartPerformance.ChartAreas.Add(ChartArea1)
         Legend1.Alignment = System.Drawing.StringAlignment.Far
         Legend1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
         Legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top
         Legend1.ForeColor = System.Drawing.Color.White
         Legend1.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend1)
-        Me.Chart1.Location = New System.Drawing.Point(3, 30)
-        Me.Chart1.Name = "Chart1"
-        Me.Chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent
+        Me.chartPerformance.Legends.Add(Legend1)
+        Me.chartPerformance.Location = New System.Drawing.Point(3, 30)
+        Me.chartPerformance.Name = "chartPerformance"
+        Me.chartPerformance.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent
         Series1.BorderColor = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(181, Byte), Integer), CType(CType(229, Byte), Integer))
         Series1.BorderWidth = 2
         Series1.ChartArea = "ChartArea1"
@@ -329,374 +328,374 @@ Partial Class WinMain
         Series3.Name = "Series3"
         Series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
         Series3.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32
-        Me.Chart1.Series.Add(Series1)
-        Me.Chart1.Series.Add(Series2)
-        Me.Chart1.Series.Add(Series3)
-        Me.Chart1.Size = New System.Drawing.Size(347, 198)
-        Me.Chart1.TabIndex = 2
-        Me.Chart1.Text = "Chart1"
+        Me.chartPerformance.Series.Add(Series1)
+        Me.chartPerformance.Series.Add(Series2)
+        Me.chartPerformance.Series.Add(Series3)
+        Me.chartPerformance.Size = New System.Drawing.Size(347, 198)
+        Me.chartPerformance.TabIndex = 2
+        Me.chartPerformance.Text = "chartPerformance"
         '
-        'TabPage3
+        'tabCleaner
         '
-        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage3.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Cleaner"
+        Me.tabCleaner.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabCleaner.Location = New System.Drawing.Point(119, 4)
+        Me.tabCleaner.Name = "tabCleaner"
+        Me.tabCleaner.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabCleaner.Size = New System.Drawing.Size(353, 232)
+        Me.tabCleaner.TabIndex = 2
+        Me.tabCleaner.Text = "Cleaner"
         '
-        'TabPageSpaceLens
+        'tabSpaceLens
         '
-        Me.TabPageSpaceLens.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPageSpaceLens.Location = New System.Drawing.Point(119, 4)
-        Me.TabPageSpaceLens.Name = "TabPageSpaceLens"
-        Me.TabPageSpaceLens.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPageSpaceLens.Size = New System.Drawing.Size(353, 232)
-        Me.TabPageSpaceLens.TabIndex = 6
-        Me.TabPageSpaceLens.Text = "Sight"
+        Me.tabSpaceLens.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabSpaceLens.Location = New System.Drawing.Point(119, 4)
+        Me.tabSpaceLens.Name = "tabSpaceLens"
+        Me.tabSpaceLens.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabSpaceLens.Size = New System.Drawing.Size(353, 232)
+        Me.tabSpaceLens.TabIndex = 6
+        Me.tabSpaceLens.Text = "Sight"
         '
-        'TabPage2
+        'tabSettings
         '
-        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage2.Controls.Add(Me.NsGroupBox2)
-        Me.TabPage2.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "Settings"
+        Me.tabSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabSettings.Controls.Add(Me.gbAutomationSettings)
+        Me.tabSettings.Location = New System.Drawing.Point(119, 4)
+        Me.tabSettings.Name = "tabSettings"
+        Me.tabSettings.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabSettings.Size = New System.Drawing.Size(353, 232)
+        Me.tabSettings.TabIndex = 1
+        Me.tabSettings.Text = "Settings"
         '
-        'NsGroupBox2
+        'gbAutomationSettings
         '
-        Me.NsGroupBox2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.gbAutomationSettings.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel4)
-        Me.NsGroupBox2.Controls.Add(Me.NsComboBox1)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel6)
-        Me.NsGroupBox2.Controls.Add(Me.NsOnOffBox2)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel11)
-        Me.NsGroupBox2.Controls.Add(Me.NsOnOffBox6)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel12)
-        Me.NsGroupBox2.Controls.Add(Me.NsOnOffBox3)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel9)
-        Me.NsGroupBox2.Controls.Add(Me.NsOnOffBox4)
-        Me.NsGroupBox2.Controls.Add(Me.NsLabel5)
-        Me.NsGroupBox2.Controls.Add(Me.NsButton3)
-        Me.NsGroupBox2.DrawSeperator = True
-        Me.NsGroupBox2.Location = New System.Drawing.Point(6, 4)
-        Me.NsGroupBox2.Name = "NsGroupBox2"
-        Me.NsGroupBox2.Size = New System.Drawing.Size(341, 225)
-        Me.NsGroupBox2.SubTitle = "System boot, memory, and tray behaviors"
-        Me.NsGroupBox2.TabIndex = 0
-        Me.NsGroupBox2.Title = "Settings & Preferences"
+        Me.gbAutomationSettings.Controls.Add(Me.lblAutoOptimizeRAM)
+        Me.gbAutomationSettings.Controls.Add(Me.cboAutoFreeRAM)
+        Me.gbAutomationSettings.Controls.Add(Me.lblAutoStartOnBoot)
+        Me.gbAutomationSettings.Controls.Add(Me.toggleAutoStartOnBoot)
+        Me.gbAutomationSettings.Controls.Add(Me.lblStartMinimizedOnBoot)
+        Me.gbAutomationSettings.Controls.Add(Me.toggleStartMinimizedOnBoot)
+        Me.gbAutomationSettings.Controls.Add(Me.lblMinimizeToTray)
+        Me.gbAutomationSettings.Controls.Add(Me.toggleMinimizeToTray)
+        Me.gbAutomationSettings.Controls.Add(Me.lblCloseToTray)
+        Me.gbAutomationSettings.Controls.Add(Me.toggleCloseToTray)
+        Me.gbAutomationSettings.Controls.Add(Me.lblExceptionsManager)
+        Me.gbAutomationSettings.Controls.Add(Me.btnManageExceptions)
+        Me.gbAutomationSettings.DrawSeperator = True
+        Me.gbAutomationSettings.Location = New System.Drawing.Point(6, 4)
+        Me.gbAutomationSettings.Name = "gbAutomationSettings"
+        Me.gbAutomationSettings.Size = New System.Drawing.Size(341, 225)
+        Me.gbAutomationSettings.SubTitle = "System boot, memory, and tray behaviors"
+        Me.gbAutomationSettings.TabIndex = 0
+        Me.gbAutomationSettings.Title = "Settings & Preferences"
         '
-        'NsLabel4
+        'lblAutoOptimizeRAM
         '
-        Me.NsLabel4.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel4.Location = New System.Drawing.Point(10, 46)
-        Me.NsLabel4.Name = "NsLabel4"
-        Me.NsLabel4.Size = New System.Drawing.Size(120, 20)
-        Me.NsLabel4.TabIndex = 1
-        Me.NsLabel4.Text = "NsLabel4"
-        Me.NsLabel4.Value1 = "Auto "
-        Me.NsLabel4.Value2 = "FreeRAM();"
+        Me.lblAutoOptimizeRAM.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAutoOptimizeRAM.Location = New System.Drawing.Point(10, 46)
+        Me.lblAutoOptimizeRAM.Name = "lblAutoOptimizeRAM"
+        Me.lblAutoOptimizeRAM.Size = New System.Drawing.Size(120, 20)
+        Me.lblAutoOptimizeRAM.TabIndex = 1
+        Me.lblAutoOptimizeRAM.Text = "lblAutoOptimizeRAM"
+        Me.lblAutoOptimizeRAM.Value1 = "Auto "
+        Me.lblAutoOptimizeRAM.Value2 = "Optimize RAM"
         '
-        'NsComboBox1
+        'cboAutoFreeRAM
         '
-        Me.NsComboBox1.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.NsComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
-        Me.NsComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.NsComboBox1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
-        Me.NsComboBox1.FormattingEnabled = True
-        Me.NsComboBox1.Items.AddRange(New Object() {"Disabled", "Every 1 minute", "Every 5 minutes", "Every 10 minutes", "When reaching 80% RAM"})
-        Me.NsComboBox1.Location = New System.Drawing.Point(135, 45)
-        Me.NsComboBox1.Name = "NsComboBox1"
-        Me.NsComboBox1.Size = New System.Drawing.Size(196, 21)
-        Me.NsComboBox1.TabIndex = 2
+        Me.cboAutoFreeRAM.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.cboAutoFreeRAM.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
+        Me.cboAutoFreeRAM.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboAutoFreeRAM.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.cboAutoFreeRAM.FormattingEnabled = True
+        Me.cboAutoFreeRAM.Items.AddRange(New Object() {"Disabled", "Every 1 minute", "Every 5 minutes", "Every 10 minutes", "When reaching 80% RAM"})
+        Me.cboAutoFreeRAM.Location = New System.Drawing.Point(135, 45)
+        Me.cboAutoFreeRAM.Name = "cboAutoFreeRAM"
+        Me.cboAutoFreeRAM.Size = New System.Drawing.Size(196, 21)
+        Me.cboAutoFreeRAM.TabIndex = 2
         '
-        'NsLabel6
+        'lblAutoStartOnBoot
         '
-        Me.NsLabel6.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel6.Location = New System.Drawing.Point(10, 75)
-        Me.NsLabel6.Name = "NsLabel6"
-        Me.NsLabel6.Size = New System.Drawing.Size(250, 20)
-        Me.NsLabel6.TabIndex = 3
-        Me.NsLabel6.Text = "NsLabel6"
-        Me.NsLabel6.Value1 = "Autostart on "
-        Me.NsLabel6.Value2 = "PC Boot"
+        Me.lblAutoStartOnBoot.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAutoStartOnBoot.Location = New System.Drawing.Point(10, 75)
+        Me.lblAutoStartOnBoot.Name = "lblAutoStartOnBoot"
+        Me.lblAutoStartOnBoot.Size = New System.Drawing.Size(250, 20)
+        Me.lblAutoStartOnBoot.TabIndex = 3
+        Me.lblAutoStartOnBoot.Text = "lblAutoStartOnBoot"
+        Me.lblAutoStartOnBoot.Value1 = "Autostart on "
+        Me.lblAutoStartOnBoot.Value2 = "PC Boot"
         '
-        'NsOnOffBox2
+        'toggleAutoStartOnBoot
         '
-        Me.NsOnOffBox2.Checked = False
-        Me.NsOnOffBox2.Location = New System.Drawing.Point(275, 73)
-        Me.NsOnOffBox2.MaximumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox2.MinimumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox2.Name = "NsOnOffBox2"
-        Me.NsOnOffBox2.Size = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox2.TabIndex = 4
-        Me.NsOnOffBox2.Text = "NsOnOffBox2"
+        Me.toggleAutoStartOnBoot.Checked = False
+        Me.toggleAutoStartOnBoot.Location = New System.Drawing.Point(275, 73)
+        Me.toggleAutoStartOnBoot.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.toggleAutoStartOnBoot.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.toggleAutoStartOnBoot.Name = "toggleAutoStartOnBoot"
+        Me.toggleAutoStartOnBoot.Size = New System.Drawing.Size(56, 24)
+        Me.toggleAutoStartOnBoot.TabIndex = 4
+        Me.toggleAutoStartOnBoot.Text = "toggleAutoStartOnBoot"
         '
-        'NsLabel11
+        'lblStartMinimizedOnBoot
         '
-        Me.NsLabel11.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel11.Location = New System.Drawing.Point(10, 103)
-        Me.NsLabel11.Name = "NsLabel11"
-        Me.NsLabel11.Size = New System.Drawing.Size(250, 20)
-        Me.NsLabel11.TabIndex = 5
-        Me.NsLabel11.Text = "NsLabel11"
-        Me.NsLabel11.Value1 = "Start Minimized "
-        Me.NsLabel11.Value2 = " on Boot"
+        Me.lblStartMinimizedOnBoot.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblStartMinimizedOnBoot.Location = New System.Drawing.Point(10, 103)
+        Me.lblStartMinimizedOnBoot.Name = "lblStartMinimizedOnBoot"
+        Me.lblStartMinimizedOnBoot.Size = New System.Drawing.Size(250, 20)
+        Me.lblStartMinimizedOnBoot.TabIndex = 5
+        Me.lblStartMinimizedOnBoot.Text = "lblStartMinimizedOnBoot"
+        Me.lblStartMinimizedOnBoot.Value1 = "Start Minimized "
+        Me.lblStartMinimizedOnBoot.Value2 = " on Boot"
         '
-        'NsOnOffBox6
+        'toggleStartMinimizedOnBoot
         '
-        Me.NsOnOffBox6.Checked = False
-        Me.NsOnOffBox6.Location = New System.Drawing.Point(275, 101)
-        Me.NsOnOffBox6.MaximumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox6.MinimumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox6.Name = "NsOnOffBox6"
-        Me.NsOnOffBox6.Size = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox6.TabIndex = 6
-        Me.NsOnOffBox6.Text = "NsOnOffBox6"
+        Me.toggleStartMinimizedOnBoot.Checked = False
+        Me.toggleStartMinimizedOnBoot.Location = New System.Drawing.Point(275, 101)
+        Me.toggleStartMinimizedOnBoot.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.toggleStartMinimizedOnBoot.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.toggleStartMinimizedOnBoot.Name = "toggleStartMinimizedOnBoot"
+        Me.toggleStartMinimizedOnBoot.Size = New System.Drawing.Size(56, 24)
+        Me.toggleStartMinimizedOnBoot.TabIndex = 6
+        Me.toggleStartMinimizedOnBoot.Text = "toggleStartMinimizedOnBoot"
         '
-        'NsLabel12
+        'lblMinimizeToTray
         '
-        Me.NsLabel12.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel12.Location = New System.Drawing.Point(10, 131)
-        Me.NsLabel12.Name = "NsLabel12"
-        Me.NsLabel12.Size = New System.Drawing.Size(250, 20)
-        Me.NsLabel12.TabIndex = 7
-        Me.NsLabel12.Text = "NsLabel12"
-        Me.NsLabel12.Value1 = "Minimize Window "
-        Me.NsLabel12.Value2 = "to System Tray"
+        Me.lblMinimizeToTray.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblMinimizeToTray.Location = New System.Drawing.Point(10, 131)
+        Me.lblMinimizeToTray.Name = "lblMinimizeToTray"
+        Me.lblMinimizeToTray.Size = New System.Drawing.Size(250, 20)
+        Me.lblMinimizeToTray.TabIndex = 7
+        Me.lblMinimizeToTray.Text = "lblMinimizeToTray"
+        Me.lblMinimizeToTray.Value1 = "Minimize Window "
+        Me.lblMinimizeToTray.Value2 = "to System Tray"
         '
-        'NsOnOffBox3
+        'toggleMinimizeToTray
         '
-        Me.NsOnOffBox3.Checked = False
-        Me.NsOnOffBox3.Location = New System.Drawing.Point(275, 129)
-        Me.NsOnOffBox3.MaximumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox3.MinimumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox3.Name = "NsOnOffBox3"
-        Me.NsOnOffBox3.Size = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox3.TabIndex = 8
-        Me.NsOnOffBox3.Text = "NsOnOffBox3"
+        Me.toggleMinimizeToTray.Checked = False
+        Me.toggleMinimizeToTray.Location = New System.Drawing.Point(275, 129)
+        Me.toggleMinimizeToTray.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.toggleMinimizeToTray.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.toggleMinimizeToTray.Name = "toggleMinimizeToTray"
+        Me.toggleMinimizeToTray.Size = New System.Drawing.Size(56, 24)
+        Me.toggleMinimizeToTray.TabIndex = 8
+        Me.toggleMinimizeToTray.Text = "toggleMinimizeToTray"
         '
-        'NsLabel9
+        'lblCloseToTray
         '
-        Me.NsLabel9.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel9.Location = New System.Drawing.Point(10, 159)
-        Me.NsLabel9.Name = "NsLabel9"
-        Me.NsLabel9.Size = New System.Drawing.Size(250, 20)
-        Me.NsLabel9.TabIndex = 9
-        Me.NsLabel9.Text = "NsLabel9"
-        Me.NsLabel9.Value1 = "Close [X] Button "
-        Me.NsLabel9.Value2 = " to System Tray"
+        Me.lblCloseToTray.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblCloseToTray.Location = New System.Drawing.Point(10, 159)
+        Me.lblCloseToTray.Name = "lblCloseToTray"
+        Me.lblCloseToTray.Size = New System.Drawing.Size(250, 20)
+        Me.lblCloseToTray.TabIndex = 9
+        Me.lblCloseToTray.Text = "lblCloseToTray"
+        Me.lblCloseToTray.Value1 = "Close [X] Button "
+        Me.lblCloseToTray.Value2 = " to System Tray"
         '
-        'NsOnOffBox4
+        'toggleCloseToTray
         '
-        Me.NsOnOffBox4.Checked = False
-        Me.NsOnOffBox4.Location = New System.Drawing.Point(275, 157)
-        Me.NsOnOffBox4.MaximumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox4.MinimumSize = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox4.Name = "NsOnOffBox4"
-        Me.NsOnOffBox4.Size = New System.Drawing.Size(56, 24)
-        Me.NsOnOffBox4.TabIndex = 10
-        Me.NsOnOffBox4.Text = "NsOnOffBox4"
+        Me.toggleCloseToTray.Checked = False
+        Me.toggleCloseToTray.Location = New System.Drawing.Point(275, 157)
+        Me.toggleCloseToTray.MaximumSize = New System.Drawing.Size(56, 24)
+        Me.toggleCloseToTray.MinimumSize = New System.Drawing.Size(56, 24)
+        Me.toggleCloseToTray.Name = "toggleCloseToTray"
+        Me.toggleCloseToTray.Size = New System.Drawing.Size(56, 24)
+        Me.toggleCloseToTray.TabIndex = 10
+        Me.toggleCloseToTray.Text = "toggleCloseToTray"
         '
-        'NsLabel5
+        'lblExceptionsManager
         '
-        Me.NsLabel5.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel5.Location = New System.Drawing.Point(10, 188)
-        Me.NsLabel5.Name = "NsLabel5"
-        Me.NsLabel5.Size = New System.Drawing.Size(250, 20)
-        Me.NsLabel5.TabIndex = 13
-        Me.NsLabel5.Text = "NsLabel5"
-        Me.NsLabel5.Value1 = "Manage "
-        Me.NsLabel5.Value2 = "Process Exceptions"
+        Me.lblExceptionsManager.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblExceptionsManager.Location = New System.Drawing.Point(10, 188)
+        Me.lblExceptionsManager.Name = "lblExceptionsManager"
+        Me.lblExceptionsManager.Size = New System.Drawing.Size(250, 20)
+        Me.lblExceptionsManager.TabIndex = 13
+        Me.lblExceptionsManager.Text = "lblExceptionsManager"
+        Me.lblExceptionsManager.Value1 = "Manage "
+        Me.lblExceptionsManager.Value2 = "Process Exceptions"
         '
-        'NsButton3
+        'btnManageExceptions
         '
-        Me.NsButton3.Location = New System.Drawing.Point(275, 187)
-        Me.NsButton3.Name = "NsButton3"
-        Me.NsButton3.Size = New System.Drawing.Size(56, 22)
-        Me.NsButton3.TabIndex = 14
-        Me.NsButton3.Text = "Open"
+        Me.btnManageExceptions.Location = New System.Drawing.Point(275, 187)
+        Me.btnManageExceptions.Name = "btnManageExceptions"
+        Me.btnManageExceptions.Size = New System.Drawing.Size(56, 22)
+        Me.btnManageExceptions.TabIndex = 14
+        Me.btnManageExceptions.Text = "Open"
         '
-        'TabPage6
+        'tabSpecs
         '
-        Me.TabPage6.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage6.Controls.Add(Me.NsListView2)
-        Me.TabPage6.Controls.Add(Me.NsButton5)
-        Me.TabPage6.Controls.Add(Me.NsButton4)
-        Me.TabPage6.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage6.TabIndex = 5
-        Me.TabPage6.Text = "PC Specs"
+        Me.tabSpecs.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabSpecs.Controls.Add(Me.lvSystemSpecs)
+        Me.tabSpecs.Controls.Add(Me.btnCheckGameBenchmark)
+        Me.tabSpecs.Controls.Add(Me.btnCopySpecs)
+        Me.tabSpecs.Location = New System.Drawing.Point(119, 4)
+        Me.tabSpecs.Name = "tabSpecs"
+        Me.tabSpecs.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabSpecs.Size = New System.Drawing.Size(353, 232)
+        Me.tabSpecs.TabIndex = 5
+        Me.tabSpecs.Text = "PC Specs"
         '
-        'NsListView2
+        'lvSystemSpecs
         '
-        Me.NsListView2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.lvSystemSpecs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsListView2.CheckBoxes = False
-        Me.NsListView2.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
-        Me.NsListView2.Items = New Typhon.NSListView.NSListViewItem(-1) {}
-        Me.NsListView2.Location = New System.Drawing.Point(4, 4)
-        Me.NsListView2.MultiSelect = True
-        Me.NsListView2.Name = "NsListView2"
-        Me.NsListView2.Size = New System.Drawing.Size(345, 192)
-        Me.NsListView2.TabIndex = 0
-        Me.NsListView2.Text = "NsListView2"
+        Me.lvSystemSpecs.CheckBoxes = False
+        Me.lvSystemSpecs.Columns = New Typhon.NSListView.NSListViewColumnHeader(-1) {}
+        Me.lvSystemSpecs.Items = New Typhon.NSListView.NSListViewItem(-1) {}
+        Me.lvSystemSpecs.Location = New System.Drawing.Point(4, 4)
+        Me.lvSystemSpecs.MultiSelect = True
+        Me.lvSystemSpecs.Name = "lvSystemSpecs"
+        Me.lvSystemSpecs.Size = New System.Drawing.Size(345, 192)
+        Me.lvSystemSpecs.TabIndex = 0
+        Me.lvSystemSpecs.Text = "lvSystemSpecs"
         '
-        'NsButton5
+        'btnCheckGameBenchmark
         '
-        Me.NsButton5.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton5.Location = New System.Drawing.Point(143, 201)
-        Me.NsButton5.Name = "NsButton5"
-        Me.NsButton5.Size = New System.Drawing.Size(100, 24)
-        Me.NsButton5.TabIndex = 2
-        Me.NsButton5.Text = "Game Check"
+        Me.btnCheckGameBenchmark.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnCheckGameBenchmark.Location = New System.Drawing.Point(143, 201)
+        Me.btnCheckGameBenchmark.Name = "btnCheckGameBenchmark"
+        Me.btnCheckGameBenchmark.Size = New System.Drawing.Size(100, 24)
+        Me.btnCheckGameBenchmark.TabIndex = 2
+        Me.btnCheckGameBenchmark.Text = "Game Check"
         '
-        'NsButton4
+        'btnCopySpecs
         '
-        Me.NsButton4.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton4.Location = New System.Drawing.Point(249, 201)
-        Me.NsButton4.Name = "NsButton4"
-        Me.NsButton4.Size = New System.Drawing.Size(100, 24)
-        Me.NsButton4.TabIndex = 1
-        Me.NsButton4.Text = "Copy Specs"
+        Me.btnCopySpecs.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnCopySpecs.Location = New System.Drawing.Point(249, 201)
+        Me.btnCopySpecs.Name = "btnCopySpecs"
+        Me.btnCopySpecs.Size = New System.Drawing.Size(100, 24)
+        Me.btnCopySpecs.TabIndex = 1
+        Me.btnCopySpecs.Text = "Copy Specs"
         '
-        'TabPage5
+        'tabAbout
         '
-        Me.TabPage5.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
-        Me.TabPage5.Controls.Add(Me.Label2)
-        Me.TabPage5.Controls.Add(Me.Label1)
-        Me.TabPage5.Controls.Add(Me.PictureBox2)
-        Me.TabPage5.Location = New System.Drawing.Point(119, 4)
-        Me.TabPage5.Name = "TabPage5"
-        Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage5.Size = New System.Drawing.Size(353, 232)
-        Me.TabPage5.TabIndex = 4
-        Me.TabPage5.Text = "About"
+        Me.tabAbout.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabAbout.Controls.Add(Me.lblAboutAppDescription)
+        Me.tabAbout.Controls.Add(Me.lblAboutAppVersion)
+        Me.tabAbout.Controls.Add(Me.picAppLogo)
+        Me.tabAbout.Location = New System.Drawing.Point(119, 4)
+        Me.tabAbout.Name = "tabAbout"
+        Me.tabAbout.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabAbout.Size = New System.Drawing.Size(353, 232)
+        Me.tabAbout.TabIndex = 4
+        Me.tabAbout.Text = "About"
         '
-        'Label2
+        'lblAboutAppDescription
         '
-        Me.Label2.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.ForeColor = System.Drawing.Color.LightGray
-        Me.Label2.Location = New System.Drawing.Point(12, 101)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(329, 126)
-        Me.Label2.TabIndex = 6
-        Me.Label2.Text = resources.GetString("Label2.Text")
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.TopCenter
+        Me.lblAboutAppDescription.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAboutAppDescription.ForeColor = System.Drawing.Color.LightGray
+        Me.lblAboutAppDescription.Location = New System.Drawing.Point(12, 101)
+        Me.lblAboutAppDescription.Name = "lblAboutAppDescription"
+        Me.lblAboutAppDescription.Size = New System.Drawing.Size(329, 126)
+        Me.lblAboutAppDescription.TabIndex = 6
+        Me.lblAboutAppDescription.Text = resources.GetString("Label2.Text")
+        Me.lblAboutAppDescription.TextAlign = System.Drawing.ContentAlignment.TopCenter
         '
-        'Label1
+        'lblAboutAppVersion
         '
-        Me.Label1.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.ForeColor = System.Drawing.Color.White
-        Me.Label1.Location = New System.Drawing.Point(109, 82)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(142, 13)
-        Me.Label1.TabIndex = 5
-        Me.Label1.Text = "v1.0-0"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.lblAboutAppVersion.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAboutAppVersion.ForeColor = System.Drawing.Color.White
+        Me.lblAboutAppVersion.Location = New System.Drawing.Point(109, 82)
+        Me.lblAboutAppVersion.Name = "lblAboutAppVersion"
+        Me.lblAboutAppVersion.Size = New System.Drawing.Size(142, 13)
+        Me.lblAboutAppVersion.TabIndex = 5
+        Me.lblAboutAppVersion.Text = "v1.0-0"
+        Me.lblAboutAppVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'PictureBox2
+        'picAppLogo
         '
-        Me.PictureBox2.Anchor = System.Windows.Forms.AnchorStyles.Right
-        Me.PictureBox2.Image = Global.Typhon.My.Resources.Resources.typhon
-        Me.PictureBox2.Location = New System.Drawing.Point(112, 9)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(139, 70)
-        Me.PictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.PictureBox2.TabIndex = 4
-        Me.PictureBox2.TabStop = False
+        Me.picAppLogo.Anchor = System.Windows.Forms.AnchorStyles.Right
+        Me.picAppLogo.Image = Global.Typhon.My.Resources.Resources.typhon
+        Me.picAppLogo.Location = New System.Drawing.Point(112, 9)
+        Me.picAppLogo.Name = "picAppLogo"
+        Me.picAppLogo.Size = New System.Drawing.Size(139, 70)
+        Me.picAppLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.picAppLogo.TabIndex = 4
+        Me.picAppLogo.TabStop = False
         '
-        'NsButton2
+        'btnProcesses
         '
-        Me.NsButton2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton2.Location = New System.Drawing.Point(388, 286)
-        Me.NsButton2.Name = "NsButton2"
-        Me.NsButton2.Size = New System.Drawing.Size(100, 23)
-        Me.NsButton2.TabIndex = 5
-        Me.NsButton2.Text = "KillProcesses();"
+        Me.btnProcesses.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnProcesses.Location = New System.Drawing.Point(388, 286)
+        Me.btnProcesses.Name = "btnProcesses"
+        Me.btnProcesses.Size = New System.Drawing.Size(100, 23)
+        Me.btnProcesses.TabIndex = 5
+        Me.btnProcesses.Text = "Processes"
         '
-        'NsLabel3
+        'lblStatusMessage
         '
-        Me.NsLabel3.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.lblStatusMessage.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsLabel3.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NsLabel3.Location = New System.Drawing.Point(4, 286)
-        Me.NsLabel3.Name = "NsLabel3"
-        Me.NsLabel3.Size = New System.Drawing.Size(272, 23)
-        Me.NsLabel3.TabIndex = 4
-        Me.NsLabel3.Text = "NsLabel3"
-        Me.NsLabel3.Value1 = ""
-        Me.NsLabel3.Value2 = ""
+        Me.lblStatusMessage.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblStatusMessage.Location = New System.Drawing.Point(4, 286)
+        Me.lblStatusMessage.Name = "lblStatusMessage"
+        Me.lblStatusMessage.Size = New System.Drawing.Size(272, 23)
+        Me.lblStatusMessage.TabIndex = 4
+        Me.lblStatusMessage.Text = "lblStatusMessage"
+        Me.lblStatusMessage.Value1 = ""
+        Me.lblStatusMessage.Value2 = ""
         '
-        'NsButton1
+        'btnFreeRAM
         '
-        Me.NsButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsButton1.Location = New System.Drawing.Point(282, 286)
-        Me.NsButton1.Name = "NsButton1"
-        Me.NsButton1.Size = New System.Drawing.Size(100, 23)
-        Me.NsButton1.TabIndex = 3
-        Me.NsButton1.Text = "FreeRAM();"
+        Me.btnFreeRAM.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnFreeRAM.Location = New System.Drawing.Point(282, 286)
+        Me.btnFreeRAM.Name = "btnFreeRAM"
+        Me.btnFreeRAM.Size = New System.Drawing.Size(100, 23)
+        Me.btnFreeRAM.TabIndex = 3
+        Me.btnFreeRAM.Text = "Free RAM"
         '
-        'NsControlButton2
+        'btnControlMinimize
         '
-        Me.NsControlButton2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsControlButton2.ControlButton = Typhon.NSControlButton.Button.Minimize
-        Me.NsControlButton2.Location = New System.Drawing.Point(458, 5)
-        Me.NsControlButton2.Margin = New System.Windows.Forms.Padding(0)
-        Me.NsControlButton2.MaximumSize = New System.Drawing.Size(18, 20)
-        Me.NsControlButton2.MinimumSize = New System.Drawing.Size(18, 20)
-        Me.NsControlButton2.Name = "NsControlButton2"
-        Me.NsControlButton2.Size = New System.Drawing.Size(18, 20)
-        Me.NsControlButton2.TabIndex = 1
-        Me.NsControlButton2.Text = "NsControlButton2"
+        Me.btnControlMinimize.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnControlMinimize.ControlButton = Typhon.NSControlButton.Button.Minimize
+        Me.btnControlMinimize.Location = New System.Drawing.Point(458, 5)
+        Me.btnControlMinimize.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnControlMinimize.MaximumSize = New System.Drawing.Size(18, 20)
+        Me.btnControlMinimize.MinimumSize = New System.Drawing.Size(18, 20)
+        Me.btnControlMinimize.Name = "btnControlMinimize"
+        Me.btnControlMinimize.Size = New System.Drawing.Size(18, 20)
+        Me.btnControlMinimize.TabIndex = 1
+        Me.btnControlMinimize.Text = "btnControlMinimize"
         '
-        'NsControlButton1
+        'btnControlClose
         '
-        Me.NsControlButton1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.NsControlButton1.ControlButton = Typhon.NSControlButton.Button.Close
-        Me.NsControlButton1.Location = New System.Drawing.Point(476, 5)
-        Me.NsControlButton1.Margin = New System.Windows.Forms.Padding(0)
-        Me.NsControlButton1.MaximumSize = New System.Drawing.Size(18, 20)
-        Me.NsControlButton1.MinimumSize = New System.Drawing.Size(18, 20)
-        Me.NsControlButton1.Name = "NsControlButton1"
-        Me.NsControlButton1.Size = New System.Drawing.Size(18, 20)
-        Me.NsControlButton1.TabIndex = 0
-        Me.NsControlButton1.Text = "NsControlButton1"
+        Me.btnControlClose.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnControlClose.ControlButton = Typhon.NSControlButton.Button.Close
+        Me.btnControlClose.Location = New System.Drawing.Point(476, 5)
+        Me.btnControlClose.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnControlClose.MaximumSize = New System.Drawing.Size(18, 20)
+        Me.btnControlClose.MinimumSize = New System.Drawing.Size(18, 20)
+        Me.btnControlClose.Name = "btnControlClose"
+        Me.btnControlClose.Size = New System.Drawing.Size(18, 20)
+        Me.btnControlClose.TabIndex = 0
+        Me.btnControlClose.Text = "btnControlClose"
         '
-        'notifIcon
+        'notifTrayIcon
         '
-        Me.notifIcon.ContextMenuStrip = Me.NsContextMenu1
-        Me.notifIcon.Text = "Typhon PC Booster"
+        Me.notifTrayIcon.ContextMenuStrip = Me.ctxTrayMenu
+        Me.notifTrayIcon.Text = "Typhon PC Booster"
         '
-        'NsContextMenu1
+        'ctxTrayMenu
         '
-        Me.NsContextMenu1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
-        Me.NsContextMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenTyphonToolStripMenuItem, Me.ExitToolStripMenuItem})
-        Me.NsContextMenu1.Name = "NsContextMenu1"
-        Me.NsContextMenu1.Size = New System.Drawing.Size(147, 48)
+        Me.ctxTrayMenu.ForeColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.ctxTrayMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.menuOpenTyphon, Me.menuExitTyphon})
+        Me.ctxTrayMenu.Name = "ctxTrayMenu"
+        Me.ctxTrayMenu.Size = New System.Drawing.Size(147, 48)
         '
-        'OpenTyphonToolStripMenuItem
+        'menuOpenTyphon
         '
-        Me.OpenTyphonToolStripMenuItem.Image = Global.Typhon.My.Resources.Resources.typhon_ico
-        Me.OpenTyphonToolStripMenuItem.Name = "OpenTyphonToolStripMenuItem"
-        Me.OpenTyphonToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
-        Me.OpenTyphonToolStripMenuItem.Text = "Open Typhon"
+        Me.menuOpenTyphon.Image = Global.Typhon.My.Resources.Resources.typhon_ico
+        Me.menuOpenTyphon.Name = "menuOpenTyphon"
+        Me.menuOpenTyphon.Size = New System.Drawing.Size(146, 22)
+        Me.menuOpenTyphon.Text = "Open Typhon"
         '
-        'ExitToolStripMenuItem
+        'menuExitTyphon
         '
-        Me.ExitToolStripMenuItem.Image = Global.Typhon.My.Resources.Resources.icons8_poison_18
-        Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(146, 22)
-        Me.ExitToolStripMenuItem.Text = "Exit"
+        Me.menuExitTyphon.Image = Global.Typhon.My.Resources.Resources.icons8_poison_18
+        Me.menuExitTyphon.Name = "menuExitTyphon"
+        Me.menuExitTyphon.Size = New System.Drawing.Size(146, 22)
+        Me.menuExitTyphon.Text = "Exit"
         '
         'WinMain
         '
@@ -704,73 +703,73 @@ Partial Class WinMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(500, 321)
         Me.ControlBox = False
-        Me.Controls.Add(Me.NsTheme1)
+        Me.Controls.Add(Me.themeContainer)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "WinMain"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Typhon: PC Booster"
-        Me.NsTheme1.ResumeLayout(False)
-        Me.NsTabControl1.ResumeLayout(False)
-        Me.TabPage1.ResumeLayout(False)
-        Me.NsGroupBox1.ResumeLayout(False)
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabPage4.ResumeLayout(False)
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabPage2.ResumeLayout(False)
-        Me.NsGroupBox2.ResumeLayout(False)
-        Me.TabPage6.ResumeLayout(False)
-        Me.TabPage5.ResumeLayout(False)
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.NsContextMenu1.ResumeLayout(False)
+        Me.themeContainer.ResumeLayout(False)
+        Me.tabMain.ResumeLayout(False)
+        Me.tabOverview.ResumeLayout(False)
+        Me.gbRAMOverview.ResumeLayout(False)
+        CType(Me.picMemoryIcon, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tabPerformance.ResumeLayout(False)
+        CType(Me.chartPerformance, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tabSettings.ResumeLayout(False)
+        Me.gbAutomationSettings.ResumeLayout(False)
+        Me.tabSpecs.ResumeLayout(False)
+        Me.tabAbout.ResumeLayout(False)
+        CType(Me.picAppLogo, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ctxTrayMenu.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents NsTheme1 As Typhon.NSTheme
-    Friend WithEvents NsControlButton1 As Typhon.NSControlButton
-    Friend WithEvents NsControlButton2 As Typhon.NSControlButton
-    Friend WithEvents NsGroupBox1 As Typhon.NSGroupBox
-    Friend WithEvents NsGroupBox2 As Typhon.NSGroupBox
-    Friend WithEvents NsLabel1 As Typhon.NSLabel
-    Friend WithEvents realTimer As System.Windows.Forms.Timer
-    Friend WithEvents NsLabel2 As Typhon.NSLabel
-    Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
-    Friend WithEvents NsProgressBar1 As Typhon.NSProgressBar
-    Friend WithEvents NsButton1 As Typhon.NSButton
-    Friend WithEvents NsLabel3 As Typhon.NSLabel
-    Friend WithEvents cooldownTimer As System.Windows.Forms.Timer
-    Friend WithEvents NsButton2 As Typhon.NSButton
-    Friend WithEvents notifIcon As System.Windows.Forms.NotifyIcon
-    Friend WithEvents NsContextMenu1 As Typhon.NSContextMenu
-    Friend WithEvents OpenTyphonToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ExitToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents NsTabControl1 As Typhon.NSTabControl
-    Friend WithEvents TabPage1 As System.Windows.Forms.TabPage
-    Friend WithEvents TabPage2 As System.Windows.Forms.TabPage
-    Friend WithEvents NsComboBox1 As Typhon.NSComboBox
-    Friend WithEvents NsLabel4 As Typhon.NSLabel
-    Friend WithEvents NsButton3 As Typhon.NSButton
-    Friend WithEvents NsLabel5 As Typhon.NSLabel
-    Friend WithEvents NsLabel6 As Typhon.NSLabel
-    Friend WithEvents NsOnOffBox2 As Typhon.NSOnOffBox
-    Friend WithEvents TabPage3 As System.Windows.Forms.TabPage
-    Friend WithEvents TabPageSpaceLens As System.Windows.Forms.TabPage
-    Friend WithEvents TabPage4 As System.Windows.Forms.TabPage
-    Friend WithEvents Chart1 As System.Windows.Forms.DataVisualization.Charting.Chart
-    Friend WithEvents graphTimer As System.Windows.Forms.Timer
-    Friend WithEvents NsLabel7 As Typhon.NSLabel
-    Friend WithEvents TabPage5 As System.Windows.Forms.TabPage
-    Friend WithEvents TabPage6 As System.Windows.Forms.TabPage
-    Friend WithEvents NsListView2 As Typhon.NSListView
-    Friend WithEvents NsButton4 As Typhon.NSButton
-    Friend WithEvents NsButton5 As Typhon.NSButton
-    Friend WithEvents NsOnOffBox3 As Typhon.NSOnOffBox
-    Friend WithEvents NsOnOffBox4 As Typhon.NSOnOffBox
-    Friend WithEvents NsOnOffBox6 As Typhon.NSOnOffBox
-    Friend WithEvents NsLabel9 As Typhon.NSLabel
-    Friend WithEvents NsLabel11 As Typhon.NSLabel
-    Friend WithEvents NsLabel12 As Typhon.NSLabel
-    Friend WithEvents PictureBox2 As PictureBox
-    Friend WithEvents Label1 As Label
-    Friend WithEvents Label2 As Label
+    Friend WithEvents themeContainer As Typhon.NSTheme
+    Friend WithEvents btnControlClose As Typhon.NSControlButton
+    Friend WithEvents btnControlMinimize As Typhon.NSControlButton
+    Friend WithEvents gbRAMOverview As Typhon.NSGroupBox
+    Friend WithEvents gbAutomationSettings As Typhon.NSGroupBox
+    Friend WithEvents lblProcessCount As Typhon.NSLabel
+    Friend WithEvents timerRealtimeRAM As System.Windows.Forms.Timer
+    Friend WithEvents lblRAMUsage As Typhon.NSLabel
+    Friend WithEvents picMemoryIcon As System.Windows.Forms.PictureBox
+    Friend WithEvents pbRAMUsage As Typhon.NSProgressBar
+    Friend WithEvents btnFreeRAM As Typhon.NSButton
+    Friend WithEvents lblStatusMessage As Typhon.NSLabel
+    Friend WithEvents timerNotificationCooldown As System.Windows.Forms.Timer
+    Friend WithEvents btnProcesses As Typhon.NSButton
+    Friend WithEvents notifTrayIcon As System.Windows.Forms.NotifyIcon
+    Friend WithEvents ctxTrayMenu As Typhon.NSContextMenu
+    Friend WithEvents menuOpenTyphon As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents menuExitTyphon As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tabMain As Typhon.NSTabControl
+    Friend WithEvents tabOverview As System.Windows.Forms.TabPage
+    Friend WithEvents tabSettings As System.Windows.Forms.TabPage
+    Friend WithEvents cboAutoFreeRAM As Typhon.NSComboBox
+    Friend WithEvents lblAutoOptimizeRAM As Typhon.NSLabel
+    Friend WithEvents btnManageExceptions As Typhon.NSButton
+    Friend WithEvents lblExceptionsManager As Typhon.NSLabel
+    Friend WithEvents lblAutoStartOnBoot As Typhon.NSLabel
+    Friend WithEvents toggleAutoStartOnBoot As Typhon.NSOnOffBox
+    Friend WithEvents tabCleaner As System.Windows.Forms.TabPage
+    Friend WithEvents tabSpaceLens As System.Windows.Forms.TabPage
+    Friend WithEvents tabPerformance As System.Windows.Forms.TabPage
+    Friend WithEvents chartPerformance As System.Windows.Forms.DataVisualization.Charting.Chart
+    Friend WithEvents timerGraph As System.Windows.Forms.Timer
+    Friend WithEvents lblLivePerformanceStats As Typhon.NSLabel
+    Friend WithEvents tabAbout As System.Windows.Forms.TabPage
+    Friend WithEvents tabSpecs As System.Windows.Forms.TabPage
+    Friend WithEvents lvSystemSpecs As Typhon.NSListView
+    Friend WithEvents btnCopySpecs As Typhon.NSButton
+    Friend WithEvents btnCheckGameBenchmark As Typhon.NSButton
+    Friend WithEvents toggleMinimizeToTray As Typhon.NSOnOffBox
+    Friend WithEvents toggleCloseToTray As Typhon.NSOnOffBox
+    Friend WithEvents toggleStartMinimizedOnBoot As Typhon.NSOnOffBox
+    Friend WithEvents lblCloseToTray As Typhon.NSLabel
+    Friend WithEvents lblStartMinimizedOnBoot As Typhon.NSLabel
+    Friend WithEvents lblMinimizeToTray As Typhon.NSLabel
+    Friend WithEvents picAppLogo As PictureBox
+    Friend WithEvents lblAboutAppVersion As Label
+    Friend WithEvents lblAboutAppDescription As Label
 End Class

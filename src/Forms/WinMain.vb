@@ -28,12 +28,12 @@ Public Class WinMain
     ''' <param name="title">Prefix title tag.</param>
     ''' <param name="message">Notification description text.</param>
     Public Sub ShowNotification(title As String, message As String)
-        NsLabel3.Value1 = title
-        NsLabel3.Value2 = Space(1) & message
-        cooldownTimer.Start()
+        lblStatusMessage.Value1 = title
+        lblStatusMessage.Value2 = Space(1) & message
+        timerNotificationCooldown.Start()
 
-        If notifIcon.Visible Then
-            notifIcon.ShowBalloonTip(3000, "Typhon PC Booster", title & Space(1) & message, ToolTipIcon.Info)
+        If notifTrayIcon.Visible Then
+            notifTrayIcon.ShowBalloonTip(3000, "Typhon PC Booster", title & Space(1) & message, ToolTipIcon.Info)
         End If
     End Sub
 
@@ -50,7 +50,7 @@ Public Class WinMain
         Dim ramSize As String = _func.GetTotalRAM()
 
         ' Uppercase computer name in brackets
-        NsGroupBox1.Title = "[" & Environment.MachineName.ToUpper() & "]"
+        gbRAMOverview.Title = "[" & Environment.MachineName.ToUpper() & "]"
 
         ' Subtitle: OS, CPU, RAM without waiting for WMI GPU query
         Dim subTitleParts As New List(Of String)()
@@ -58,7 +58,7 @@ Public Class WinMain
         If Not String.IsNullOrEmpty(infoProcessor) Then subTitleParts.Add(infoProcessor)
         If Not String.IsNullOrEmpty(ramSize) Then subTitleParts.Add(ramSize)
 
-        NsGroupBox1.SubTitle = String.Join(vbNewLine, subTitleParts.ToArray())
+        gbRAMOverview.SubTitle = String.Join(vbNewLine, subTitleParts.ToArray())
 
         ' Asynchronously resolve GPU name in background to prevent startup freeze
         Task.Run(Sub()
@@ -71,7 +71,7 @@ Public Class WinMain
                                                 If Not String.IsNullOrEmpty(infoProcessor) Then updatedParts.Add(infoProcessor)
                                                 updatedParts.Add(gpuName)
                                                 If Not String.IsNullOrEmpty(ramSize) Then updatedParts.Add(ramSize)
-                                                NsGroupBox1.SubTitle = String.Join(vbNewLine, updatedParts.ToArray())
+                                                gbRAMOverview.SubTitle = String.Join(vbNewLine, updatedParts.ToArray())
                                             End If
                                         End Sub)
                      End If
@@ -79,11 +79,11 @@ Public Class WinMain
 
         ' Dynamic version from assembly build properties: v<Major>.<Minor>-<Build>
         Dim ver As Version = My.Application.Info.Version
-        Label1.Text = "v" & ver.Major & "." & ver.Minor & "-" & ver.Build
+        lblAboutAppVersion.Text = "v" & ver.Major & "." & ver.Minor & "-" & ver.Build
 
         RefreshSpecsList()
 
-        realTimer.Enabled = True
+        timerRealtimeRAM.Enabled = True
 
         My.Settings.Reload()
 
@@ -95,28 +95,28 @@ Public Class WinMain
             My.Settings.Save()
         End If
 
-        If My.Settings.AutoFreeRAMMode >= 0 AndAlso My.Settings.AutoFreeRAMMode < NsComboBox1.Items.Count Then
-            NsComboBox1.SelectedIndex = My.Settings.AutoFreeRAMMode
+        If My.Settings.AutoFreeRAMMode >= 0 AndAlso My.Settings.AutoFreeRAMMode < cboAutoFreeRAM.Items.Count Then
+            cboAutoFreeRAM.SelectedIndex = My.Settings.AutoFreeRAMMode
         Else
-            NsComboBox1.SelectedIndex = 0
+            cboAutoFreeRAM.SelectedIndex = 0
         End If
 
         If My.Settings.AutoStartOnBoot Then
             SetBootAutostart(True)
         End If
-        NsOnOffBox2.Checked = My.Settings.AutoStartOnBoot
-        NsOnOffBox3.Checked = My.Settings.MinimizeToTray
-        NsOnOffBox4.Checked = My.Settings.CloseToTray
-        NsOnOffBox6.Checked = My.Settings.StartMinimizedOnBoot
+        toggleAutoStartOnBoot.Checked = My.Settings.AutoStartOnBoot
+        toggleMinimizeToTray.Checked = My.Settings.MinimizeToTray
+        toggleCloseToTray.Checked = My.Settings.CloseToTray
+        toggleStartMinimizedOnBoot.Checked = My.Settings.StartMinimizedOnBoot
 
         If Me.Icon IsNot Nothing Then
-            notifIcon.Icon = Me.Icon
+            notifTrayIcon.Icon = Me.Icon
         End If
 
         If Environment.GetCommandLineArgs().Contains("/minimized", StringComparer.OrdinalIgnoreCase) OrElse (My.Settings.StartMinimizedOnBoot AndAlso My.Settings.AutoStartOnBoot) Then
             Me.WindowState = FormWindowState.Minimized
             Me.Hide()
-            notifIcon.Visible = True
+            notifTrayIcon.Visible = True
         End If
 
         init = False
@@ -149,10 +149,10 @@ Public Class WinMain
     ''' Timer tick event handler updating active process counts and RAM usage indicators in real-time.
     ''' Triggers automatic memory optimization based on dropdown selection.
     ''' </summary>
-    Private Sub realTimer_Tick(sender As System.Object, e As System.EventArgs) Handles realTimer.Tick
-        NsLabel1.Value2 = Space(1) & _proc.GetTotalProcesses
-        NsLabel2.Value2 = Space(1) & _proc.GetRAMUsage
-        NsProgressBar1.Value = _proc.GetRAMPercentage
+    Private Sub timerRealtimeRAM_Tick(sender As System.Object, e As System.EventArgs) Handles timerRealtimeRAM.Tick
+        lblProcessCount.Value2 = Space(1) & _proc.GetTotalProcesses
+        lblRAMUsage.Value2 = Space(1) & _proc.GetRAMUsage
+        pbRAMUsage.Value = _proc.GetRAMPercentage
 
         Dim mode As Integer = My.Settings.AutoFreeRAMMode
         If mode > 0 Then
@@ -189,10 +189,10 @@ Public Class WinMain
     ''' <summary>
     ''' Click event handler triggering memory working set release for all processes asynchronously.
     ''' </summary>
-    Private Async Sub NsButton1_Click(sender As System.Object, e As System.EventArgs) Handles NsButton1.Click
+    Private Async Sub btnFreeRAM_Click(sender As System.Object, e As System.EventArgs) Handles btnFreeRAM.Click
         If _isFreeingMemory Then Return
         _isFreeingMemory = True
-        NsButton1.Enabled = False
+        btnFreeRAM.Enabled = False
         ShowNotification("RAM:", "Optimizing system memory...")
 
         Dim res As proc.FreeMemoryResult = Await _proc.FreeProcessesAsync()
@@ -203,23 +203,23 @@ Public Class WinMain
             ShowNotification("RAM:", "Trimmed working sets for " & res.ProcessCount & " processes")
         End If
 
-        NsButton1.Enabled = True
+        btnFreeRAM.Enabled = True
         _isFreeingMemory = False
     End Sub
 
     ''' <summary>
     ''' Timer tick event handler clearing status notification text after cooldown.
     ''' </summary>
-    Private Sub cooldownTimer_Tick(sender As System.Object, e As System.EventArgs) Handles cooldownTimer.Tick
-        NsLabel3.Value1 = ""
-        NsLabel3.Value2 = ""
-        cooldownTimer.Stop()
+    Private Sub timerNotificationCooldown_Tick(sender As System.Object, e As System.EventArgs) Handles timerNotificationCooldown.Tick
+        lblStatusMessage.Value1 = ""
+        lblStatusMessage.Value2 = ""
+        timerNotificationCooldown.Stop()
     End Sub
 
     ''' <summary>
     ''' Click event handler opening the WinKill process manager window.
     ''' </summary>
-    Private Sub NsButton2_Click(sender As System.Object, e As System.EventArgs) Handles NsButton2.Click
+    Private Sub btnProcesses_Click(sender As System.Object, e As System.EventArgs) Handles btnProcesses.Click
         Using dlg As New WinKill()
             dlg.ShowDialog(Me)
         End Using
@@ -228,7 +228,7 @@ Public Class WinMain
     ''' <summary>
     ''' Click event handler opening the WinExceptions window.
     ''' </summary>
-    Private Sub NsButton3_Click(sender As System.Object, e As System.EventArgs) Handles NsButton3.Click
+    Private Sub btnManageExceptions_Click(sender As System.Object, e As System.EventArgs) Handles btnManageExceptions.Click
         Using frm As New WinExceptions()
             frm.ShowDialog(Me)
         End Using
@@ -239,16 +239,16 @@ Public Class WinMain
     ''' <summary>
     ''' Timer tick event handler updating the RAM, CPU, and GPU usage chart visualization with smooth 60-point rolling window.
     ''' </summary>
-    Private Sub Timer1_Tick(sender As System.Object, e As System.EventArgs) Handles graphTimer.Tick
+    Private Sub timerGraph_Tick(sender As System.Object, e As System.EventArgs) Handles timerGraph.Tick
         Dim ramPct As Integer = CInt(Val(_proc.GetRAMPercentage()))
         Dim cpuPct As Integer = _proc.GetCPUPercentage()
         Dim gpuPct As Integer = _proc.GetGPUPercentage()
 
         If ramPct > peakRAMPct Then peakRAMPct = ramPct
 
-        Dim s1 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series1")
-        Dim s2 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series2")
-        Dim s3 As System.Windows.Forms.DataVisualization.Charting.Series = Chart1.Series("Series3")
+        Dim s1 As System.Windows.Forms.DataVisualization.Charting.Series = chartPerformance.Series("Series1")
+        Dim s2 As System.Windows.Forms.DataVisualization.Charting.Series = chartPerformance.Series("Series2")
+        Dim s3 As System.Windows.Forms.DataVisualization.Charting.Series = chartPerformance.Series("Series3")
 
         s1.Points.Add(ramPct)
         s2.Points.Add(cpuPct)
@@ -266,26 +266,26 @@ Public Class WinMain
             s3.Points.RemoveAt(0)
         End While
 
-        NsLabel7.Value2 = " RAM: " & ramPct & "% | Peak: " & peakRAMPct & "% | CPU: " & cpuPct & "% | GPU: " & gpuPct & "%"
+        lblLivePerformanceStats.Value2 = " RAM: " & ramPct & "% | Peak: " & peakRAMPct & "% | CPU: " & cpuPct & "% | GPU: " & gpuPct & "%"
     End Sub
 
     Private _isSwitchingTab As Boolean = False
 
-    Private Sub NsTabControl1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles NsTabControl1.SelectedIndexChanged
+    Private Sub tabMain_SelectedIndexChanged(sender As Object, e As EventArgs) Handles tabMain.SelectedIndexChanged
         If _isSwitchingTab Then Return
         _isSwitchingTab = True
         Try
-            If NsTabControl1.SelectedTab Is TabPage3 Then
-                NsTabControl1.SelectedTab = TabPage1
+            If tabMain.SelectedTab Is tabCleaner Then
+                tabMain.SelectedTab = tabOverview
                 Using dlg As New WinCleaner()
                     dlg.ShowDialog(Me)
                 End Using
-            ElseIf NsTabControl1.SelectedTab Is TabPageSpaceLens Then
-                NsTabControl1.SelectedTab = TabPage1
+            ElseIf tabMain.SelectedTab Is tabSpaceLens Then
+                tabMain.SelectedTab = tabOverview
                 Using dlg As New WinSight()
                     dlg.ShowDialog(Me)
                 End Using
-            ElseIf NsTabControl1.SelectedTab Is TabPage6 Then
+            ElseIf tabMain.SelectedTab Is tabSpecs Then
                 RefreshSpecsList()
             End If
         Finally
@@ -296,8 +296,8 @@ Public Class WinMain
     ''' <summary>
     ''' Dropdown selection change event handler saving Auto-Free RAM mode setting.
     ''' </summary>
-    Private Sub NsComboBox1_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles NsComboBox1.SelectedIndexChanged
-        My.Settings.AutoFreeRAMMode = NsComboBox1.SelectedIndex
+    Private Sub cboAutoFreeRAM_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles cboAutoFreeRAM.SelectedIndexChanged
+        My.Settings.AutoFreeRAMMode = cboAutoFreeRAM.SelectedIndex
         autoFreeCounter = 0
         If init = False Then
             My.Settings.Save()
@@ -379,9 +379,9 @@ Public Class WinMain
     ''' <summary>
     ''' Toggle switch event handler saving Auto-Start on Boot user setting and updating Windows startup registry and scheduled task.
     ''' </summary>
-    Private Sub NsOnOffBox2_CheckedChanged(sender As System.Object) Handles NsOnOffBox2.CheckedChanged
-        My.Settings.AutoStartOnBoot = NsOnOffBox2.Checked
-        SetBootAutostart(NsOnOffBox2.Checked)
+    Private Sub toggleAutoStartOnBoot_CheckedChanged(sender As System.Object) Handles toggleAutoStartOnBoot.CheckedChanged
+        My.Settings.AutoStartOnBoot = toggleAutoStartOnBoot.Checked
+        SetBootAutostart(toggleAutoStartOnBoot.Checked)
         If init = False Then
             My.Settings.Save()
         End If
@@ -390,22 +390,22 @@ Public Class WinMain
     ''' <summary>
     ''' Toggle switch event handler saving Minimize to System Tray user setting.
     ''' </summary>
-    Private Sub NsOnOffBox3_CheckedChanged(sender As System.Object) Handles NsOnOffBox3.CheckedChanged
-        My.Settings.MinimizeToTray = NsOnOffBox3.Checked
+    Private Sub toggleMinimizeToTray_CheckedChanged(sender As System.Object) Handles toggleMinimizeToTray.CheckedChanged
+        My.Settings.MinimizeToTray = toggleMinimizeToTray.Checked
         If init = False Then
             My.Settings.Save()
         End If
     End Sub
 
-    Private Sub NsOnOffBox4_CheckedChanged(sender As System.Object) Handles NsOnOffBox4.CheckedChanged
-        My.Settings.CloseToTray = NsOnOffBox4.Checked
+    Private Sub toggleCloseToTray_CheckedChanged(sender As System.Object) Handles toggleCloseToTray.CheckedChanged
+        My.Settings.CloseToTray = toggleCloseToTray.Checked
         If init = False Then
             My.Settings.Save()
         End If
     End Sub
 
-    Private Sub NsOnOffBox6_CheckedChanged(sender As System.Object) Handles NsOnOffBox6.CheckedChanged
-        My.Settings.StartMinimizedOnBoot = NsOnOffBox6.Checked
+    Private Sub toggleStartMinimizedOnBoot_CheckedChanged(sender As System.Object) Handles toggleStartMinimizedOnBoot.CheckedChanged
+        My.Settings.StartMinimizedOnBoot = toggleStartMinimizedOnBoot.Checked
         If init = False Then
             My.Settings.Save()
         End If
@@ -418,7 +418,7 @@ Public Class WinMain
         If e.CloseReason = CloseReason.UserClosing AndAlso My.Settings.CloseToTray Then
             e.Cancel = True
             Me.Hide()
-            notifIcon.Visible = True
+            notifTrayIcon.Visible = True
             ShowNotification("Tray:", "Typhon minimized to system tray")
         End If
     End Sub
@@ -429,20 +429,20 @@ Public Class WinMain
     Private Sub WinMain_Resize(sender As Object, e As EventArgs) Handles Me.Resize
         If My.Settings.MinimizeToTray AndAlso Me.WindowState = FormWindowState.Minimized Then
             Me.Hide()
-            notifIcon.Visible = True
+            notifTrayIcon.Visible = True
         End If
     End Sub
 
-    Private Sub notifIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles notifIcon.MouseDoubleClick
+    Private Sub notifTrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles notifTrayIcon.MouseDoubleClick
         RestoreFromTray()
     End Sub
 
-    Private Sub OpenTyphonToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenTyphonToolStripMenuItem.Click
+    Private Sub menuOpenTyphon_Click(sender As Object, e As EventArgs) Handles menuOpenTyphon.Click
         RestoreFromTray()
     End Sub
 
-    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
-        notifIcon.Visible = False
+    Private Sub menuExitTyphon_Click(sender As Object, e As EventArgs) Handles menuExitTyphon.Click
+        notifTrayIcon.Visible = False
         Application.Exit()
     End Sub
 
@@ -450,17 +450,17 @@ Public Class WinMain
         Me.Show()
         Me.WindowState = FormWindowState.Normal
         Me.Activate()
-        notifIcon.Visible = False
+        notifTrayIcon.Visible = False
     End Sub
 
     ''' <summary>
-    ''' Re-queries system specifications and hardware peripherals and updates NsListView2 asynchronously.
+    ''' Re-queries system specifications and hardware peripherals and updates lvSystemSpecs asynchronously.
     ''' </summary>
     Public Sub RefreshSpecsList(Optional force As Boolean = False)
         If _isSpecsLoading Then Return
         _isSpecsLoading = True
 
-        NsListView2.Columns = New NSListView.NSListViewColumnHeader() {
+        lvSystemSpecs.Columns = New NSListView.NSListViewColumnHeader() {
             New NSListView.NSListViewColumnHeader() With {.Text = "Component", .Width = 110},
             New NSListView.NSListViewColumnHeader() With {.Text = "Details", .Width = 500}
         }
@@ -480,7 +480,7 @@ Public Class WinMain
                      If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
                          Me.BeginInvoke(Sub()
                                             If Not Me.IsDisposed Then
-                                                NsListView2.Items = specItems.ToArray()
+                                                lvSystemSpecs.Items = specItems.ToArray()
                                                 _isSpecsLoading = False
                                             End If
                                         End Sub)
@@ -517,9 +517,9 @@ Public Class WinMain
     ''' <summary>
     ''' Mouse down event handler opening selected storage drive in Windows Explorer.
     ''' </summary>
-    Private Sub NsListView2_MouseDown(sender As Object, e As MouseEventArgs) Handles NsListView2.MouseDown
-        If NsListView2.SelectedItems IsNot Nothing AndAlso NsListView2.SelectedItems.Length > 0 Then
-            Dim selectedItem As NSListView.NSListViewItem = NsListView2.SelectedItems(0)
+    Private Sub lvSystemSpecs_MouseDown(sender As Object, e As MouseEventArgs) Handles lvSystemSpecs.MouseDown
+        If lvSystemSpecs.SelectedItems IsNot Nothing AndAlso lvSystemSpecs.SelectedItems.Length > 0 Then
+            Dim selectedItem As NSListView.NSListViewItem = lvSystemSpecs.SelectedItems(0)
             If TypeOf selectedItem.Tag Is func.SpecItem Then
                 Dim spec As func.SpecItem = DirectCast(selectedItem.Tag, func.SpecItem)
                 If Not String.IsNullOrEmpty(spec.DrivePath) Then
@@ -536,7 +536,7 @@ Public Class WinMain
     ''' <summary>
     ''' Copy system hardware specifications to clipboard.
     ''' </summary>
-    Private Sub NsButton4_Click(sender As System.Object, e As System.EventArgs) Handles NsButton4.Click
+    Private Sub btnCopySpecs_Click(sender As System.Object, e As System.EventArgs) Handles btnCopySpecs.Click
         Try
             Clipboard.SetText(_func.GetFormattedSpecsText())
             ShowNotification("Specs:", "Copied hardware specs to clipboard")
@@ -547,12 +547,31 @@ Public Class WinMain
     ''' <summary>
     ''' Opens PC Game Benchmark website in default browser populated with user PC specs.
     ''' </summary>
-    Private Sub NsButton5_Click(sender As System.Object, e As System.EventArgs) Handles NsButton5.Click
+    Private Sub btnCheckGameBenchmark_Click(sender As System.Object, e As System.EventArgs) Handles btnCheckGameBenchmark.Click
         Try
             Dim url As String = _func.GetGameBenchmarkUrl()
             Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
             ShowNotification("Benchmark:", "Opening PC Game Benchmark in browser")
         Catch ex As Exception
         End Try
+    End Sub
+
+    Private Sub btnControlClose_Click(sender As Object, e As EventArgs) Handles btnControlClose.Click
+        If My.Settings.CloseToTray Then
+            Me.Hide()
+            notifTrayIcon.Visible = True
+            ShowNotification("Tray:", "Typhon minimized to system tray")
+        Else
+            Me.Close()
+        End If
+    End Sub
+
+    Private Sub btnControlMinimize_Click(sender As Object, e As EventArgs) Handles btnControlMinimize.Click
+        If My.Settings.MinimizeToTray Then
+            Me.Hide()
+            notifTrayIcon.Visible = True
+        Else
+            Me.WindowState = FormWindowState.Minimized
+        End If
     End Sub
 End Class

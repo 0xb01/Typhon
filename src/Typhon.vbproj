@@ -175,11 +175,11 @@
       <DependentUpon>WinSight.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DarkMessageBox.vb">
+    <Compile Include="Forms\DialogMessage.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\DarkMessageBox.Designer.vb">
-      <DependentUpon>DarkMessageBox.vb</DependentUpon>
+    <Compile Include="Forms\DialogMessage.Designer.vb">
+      <DependentUpon>DialogMessage.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\SpaceLensTreemap.vb">
@@ -210,8 +210,8 @@
     <Compile Include="Helpers\func.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\DarkMessageBox.resx">
-      <DependentUpon>DarkMessageBox.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\DialogMessage.resx">
+      <DependentUpon>DialogMessage.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinCleaner.resx">
       <DependentUpon>WinCleaner.vb</DependentUpon>

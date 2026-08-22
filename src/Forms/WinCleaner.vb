@@ -21,11 +21,11 @@ Public Class WinCleaner
         Catch ex As Exception
         End Try
 
-        If NsListView1.Columns.Length = 0 Then
-            NsListView1.AddColumn("Filename", 130)
-            NsListView1.AddColumn("Size", 75)
-            NsListView1.AddColumn("Category", 100)
-            NsListView1.AddColumn("Path", 250)
+        If lvCleanItems.Columns.Length = 0 Then
+            lvCleanItems.AddColumn("Filename", 130)
+            lvCleanItems.AddColumn("Size", 75)
+            lvCleanItems.AddColumn("Category", 100)
+            lvCleanItems.AddColumn("Path", 250)
         End If
 
         If TargetDrives Is Nothing OrElse TargetDrives.Count = 0 Then
@@ -112,58 +112,42 @@ Public Class WinCleaner
         config("Windows Update Cache") = chkWinUpdate.Checked
         config("GPU Driver Cache") = chkDriverCache.Checked
         config("Dev Package Caches") = chkPkgCache.Checked
-
         cleaner.SaveConfig(config)
     End Sub
 
     Private Sub OptionCheckbox_CheckedChanged(sender As Object)
-        If Not IsLoadingOptions Then
-            SaveCleanerOptions()
-        End If
-    End Sub
-
-    Private Sub btnSelectDrives_Click(sender As Object, e As EventArgs)
-        Using dlg As New WinDiskSelector()
-            If dlg.ShowDialog(Me) = DialogResult.OK Then
-                TargetDrives = dlg.SelectedDrives
-                Dim drivesStr As String = String.Join(", ", TargetDrives.Select(Function(d) d.TrimEnd("\"c)).ToArray())
-                NsLabelStatus.Value1 = "Drives:"
-                NsLabelStatus.Value2 = " Selected (" & drivesStr & ")"
-            End If
-        End Using
+        If IsLoadingOptions Then Return
+        SaveCleanerOptions()
     End Sub
 
     Private Sub btnScan_Click(sender As Object, e As EventArgs) Handles btnScan.Click
         If IsScanning Then
             CancelScanRequested = True
+            btnScan.Text = "Cancelling..."
             btnScan.Enabled = False
-            NsLabelStatus.Value1 = "Status:"
-            NsLabelStatus.Value2 = " Cancelling scan..."
             Return
         End If
+        If IsCleaning Then Return
 
-        ' Instantly reset UI state before prompting disk selector
-        NsListView1.Clear()
-        CleanerProgressBar.Value = 0
-        CleanerProgressBar.Visible = False
-        NsLabelStatus.Value1 = "Status:"
-        NsLabelStatus.Value2 = " Select target drives to scan..."
+        lvCleanItems.Clear()
+        lblStatus.Value1 = "Scanning:"
+        lblStatus.Value2 = " Select target drives to scan..."
         btnClean.Enabled = False
         ScannedCleanItems.Clear()
         Application.DoEvents()
 
         Using selector As New WinDiskSelector()
             If selector.ShowDialog(Me) <> DialogResult.OK Then
-                NsLabelStatus.Value1 = "Status:"
-                NsLabelStatus.Value2 = " Ready to scan system"
+                lblStatus.Value1 = "Status:"
+                lblStatus.Value2 = " Ready to scan system"
                 Return
             End If
             TargetDrives = selector.SelectedDrives
         End Using
 
         If TargetDrives Is Nothing OrElse TargetDrives.Count = 0 Then
-            NsLabelStatus.Value1 = "Status:"
-            NsLabelStatus.Value2 = " Ready to scan system"
+            lblStatus.Value1 = "Status:"
+            lblStatus.Value2 = " Ready to scan system"
             Return
         End If
 
@@ -173,11 +157,11 @@ Public Class WinCleaner
         CancelScanRequested = False
         btnScan.Text = "Cancel"
 
-        CleanerProgressBar.Value = 0
-        CleanerProgressBar.Visible = True
+        pbCleaningProgress.Value = 0
+        pbCleaningProgress.Visible = True
 
-        NsLabelStatus.Value1 = "Scanning:"
-        NsLabelStatus.Value2 = " Starting scan..."
+        lblStatus.Value1 = "Scanning:"
+        lblStatus.Value2 = " Starting scan..."
         Application.DoEvents()
 
         Dim enabledCategories As Dictionary(Of String, Boolean) = cleaner.LoadConfig()
@@ -188,9 +172,9 @@ Public Class WinCleaner
         ScannedCleanItems = cleaner.ScanDetailedFiles(TargetDrives, enabledCategories,
                                                        Sub(current, total, status)
                                                            Dim pct As Integer = CInt((current / CDbl(total)) * 100)
-                                                           CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
-                                                           NsLabelStatus.Value1 = "Scanning:"
-                                                           NsLabelStatus.Value2 = " " & status
+                                                           pbCleaningProgress.Value = Math.Min(100, Math.Max(0, pct))
+                                                           lblStatus.Value1 = "Scanning:"
+                                                           lblStatus.Value2 = " " & status
                                                            Application.DoEvents()
                                                        End Sub,
                                                        Sub(item)
@@ -211,7 +195,7 @@ Public Class WinCleaner
                                                            realtimeBatch.Add(nsItem)
 
                                                            If realtimeBatch.Count >= 25 Then
-                                                               NsListView1.AddItems(realtimeBatch)
+                                                               lvCleanItems.AddItems(realtimeBatch)
                                                                realtimeBatch.Clear()
                                                                Application.DoEvents()
                                                            End If
@@ -219,25 +203,25 @@ Public Class WinCleaner
                                                        Function() CancelScanRequested)
 
         If realtimeBatch.Count > 0 Then
-            NsListView1.AddItems(realtimeBatch)
+            lvCleanItems.AddItems(realtimeBatch)
             realtimeBatch.Clear()
         End If
 
         IsScanning = False
         btnScan.Text = "Scan"
         btnScan.Enabled = True
-        CleanerProgressBar.Visible = False
+        pbCleaningProgress.Visible = False
 
         Dim finalFormattedSize As String = cleaner.FormatBytes(accumulatedBytes)
         If CancelScanRequested Then
-            NsLabelStatus.Value1 = "Status:"
-            NsLabelStatus.Value2 = " Scan cancelled (" & ScannedCleanItems.Count & " files, " & finalFormattedSize & ")"
+            lblStatus.Value1 = "Status:"
+            lblStatus.Value2 = " Scan cancelled (" & ScannedCleanItems.Count & " files, " & finalFormattedSize & ")"
             btnClean.Enabled = False
         Else
-            CleanerProgressBar.Value = 100
-            NsLabelStatus.Value1 = "Scan Complete:"
-            NsLabelStatus.Value2 = " Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")"
-            btnClean.Enabled = (NsListView1.Items.Length > 0)
+            pbCleaningProgress.Value = 100
+            lblStatus.Value1 = "Scan Complete:"
+            lblStatus.Value2 = " Found " & ScannedCleanItems.Count & " files (" & finalFormattedSize & ")"
+            btnClean.Enabled = (lvCleanItems.Items.Length > 0)
         End If
     End Sub
 
@@ -248,16 +232,16 @@ Public Class WinCleaner
         IsCleaning = True
         btnScan.Enabled = False
         btnClean.Enabled = False
-        CleanerProgressBar.Value = 0
-        CleanerProgressBar.Visible = True
+        pbCleaningProgress.Value = 0
+        pbCleaningProgress.Visible = True
 
         Try
             Application.DoEvents()
 
             ' Build lookup mapping file paths to NSListViewItem objects for live removal
             Dim itemMap As New Dictionary(Of String, NSListViewItem)(StringComparer.OrdinalIgnoreCase)
-            If NsListView1.Items IsNot Nothing Then
-                For Each nsItem As NSListViewItem In NsListView1.Items
+            If lvCleanItems.Items IsNot Nothing Then
+                For Each nsItem As NSListViewItem In lvCleanItems.Items
                     If nsItem.SubItems IsNot Nothing AndAlso nsItem.SubItems.Count >= 3 Then
                         Dim pathStr As String = nsItem.SubItems(2).Text
                         If Not String.IsNullOrEmpty(pathStr) AndAlso Not itemMap.ContainsKey(pathStr) Then
@@ -272,9 +256,9 @@ Public Class WinCleaner
             Dim cleanedCount As Integer = cleaner.CleanDetailedFiles(ScannedCleanItems,
                 Sub(current, total, status)
                     Dim pct As Integer = CInt((current / CDbl(total)) * 100)
-                    CleanerProgressBar.Value = Math.Min(100, Math.Max(0, pct))
-                    NsLabelStatus.Value1 = "Cleaning:"
-                    NsLabelStatus.Value2 = " " & status
+                    pbCleaningProgress.Value = Math.Min(100, Math.Max(0, pct))
+                    lblStatus.Value1 = "Cleaning:"
+                    lblStatus.Value2 = " " & status
                     Application.DoEvents()
                 End Sub,
                 Sub(item, wasCleaned)
@@ -282,7 +266,7 @@ Public Class WinCleaner
                         Dim nsItem As NSListViewItem = itemMap(item.FilePath)
                         removeBatch.Add(nsItem)
                         If removeBatch.Count >= 5 Then
-                            NsListView1.RemoveItems(removeBatch.ToArray())
+                            lvCleanItems.RemoveItems(removeBatch.ToArray())
                             removeBatch.Clear()
                             Application.DoEvents()
                         End If
@@ -290,26 +274,26 @@ Public Class WinCleaner
                 End Sub)
 
             If removeBatch.Count > 0 Then
-                NsListView1.RemoveItems(removeBatch.ToArray())
+                lvCleanItems.RemoveItems(removeBatch.ToArray())
                 removeBatch.Clear()
             End If
 
-            CleanerProgressBar.Value = 100
-            CleanerProgressBar.Visible = False
+            pbCleaningProgress.Value = 100
+            pbCleaningProgress.Visible = False
 
             Dim totalCount As Integer = ScannedCleanItems.Count
-            NsLabelStatus.Value1 = "Clean Complete:"
+            lblStatus.Value1 = "Clean Complete:"
             If cleanedCount >= totalCount Then
-                NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " files"
-                NsListView1.Clear()
+                lblStatus.Value2 = " Cleaned " & cleanedCount & " files"
+                lvCleanItems.Clear()
                 ScannedCleanItems.Clear()
             Else
-                NsLabelStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " in-use)"
+                lblStatus.Value2 = " Cleaned " & cleanedCount & " of " & totalCount & " files (" & (totalCount - cleanedCount) & " in-use)"
             End If
         Finally
             IsCleaning = False
             btnScan.Enabled = True
-            btnClean.Enabled = (NsListView1.Items.Length > 0)
+            btnClean.Enabled = (lvCleanItems.Items.Length > 0)
         End Try
     End Sub
 
@@ -317,18 +301,18 @@ Public Class WinCleaner
         Me.Close()
     End Sub
 
-    Private Sub NsControlButton1_Click(sender As Object, e As EventArgs) Handles NsControlButton1.Click
+    Private Sub btnControlClose_Click(sender As Object, e As EventArgs) Handles btnControlClose.Click
         Me.Close()
     End Sub
 
     Private Sub ctxListView_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ctxListView.Opening
-        If NsListView1.SelectedItems.Length = 0 Then
+        If lvCleanItems.SelectedItems.Length = 0 Then
             e.Cancel = True
             Return
         End If
 
-        If NsListView1.SelectedItems.Length = 1 Then
-            Dim fileName As String = NsListView1.SelectedItems(0).Text
+        If lvCleanItems.SelectedItems.Length = 1 Then
+            Dim fileName As String = lvCleanItems.SelectedItems(0).Text
             tsSearchGoogle.Text = "Search '" & fileName & "' in Google"
         Else
             tsSearchGoogle.Text = "Search selected files in Google"
@@ -336,9 +320,9 @@ Public Class WinCleaner
     End Sub
 
     Private Sub tsCopyPath_Click(sender As Object, e As EventArgs) Handles tsCopyPath.Click
-        If NsListView1.SelectedItems.Length = 0 Then Return
+        If lvCleanItems.SelectedItems.Length = 0 Then Return
         Dim paths As New List(Of String)()
-        For Each item As NSListViewItem In NsListView1.SelectedItems
+        For Each item As NSListViewItem In lvCleanItems.SelectedItems
             Dim filePath As String = If(item.SubItems.Count >= 3, item.SubItems(2).Text, item.Text)
             If Not String.IsNullOrEmpty(filePath) Then paths.Add(filePath)
         Next
@@ -348,8 +332,8 @@ Public Class WinCleaner
     End Sub
 
     Private Sub tsOpenFileLocation_Click(sender As Object, e As EventArgs) Handles tsOpenFileLocation.Click
-        If NsListView1.SelectedItems.Length = 0 Then Return
-        For Each item As NSListViewItem In NsListView1.SelectedItems
+        If lvCleanItems.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In lvCleanItems.SelectedItems
             Dim filePath As String = If(item.SubItems.Count >= 3, item.SubItems(2).Text, item.Text)
             If File.Exists(filePath) Then
                 Process.Start("explorer.exe", "/select,""" & filePath & """")
@@ -360,8 +344,8 @@ Public Class WinCleaner
     End Sub
 
     Private Sub tsSearchGoogle_Click(sender As Object, e As EventArgs) Handles tsSearchGoogle.Click
-        If NsListView1.SelectedItems.Length = 0 Then Return
-        For Each item As NSListViewItem In NsListView1.SelectedItems
+        If lvCleanItems.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In lvCleanItems.SelectedItems
             Dim fileName As String = item.Text
             If Not String.IsNullOrEmpty(fileName) Then
                 Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(fileName)
@@ -371,11 +355,11 @@ Public Class WinCleaner
     End Sub
 
     Private Sub tsSearchVirusTotal_Click(sender As Object, e As EventArgs) Handles tsSearchVirusTotal.Click
-        If NsListView1.SelectedItems.Length = 0 Then Return
-        For Each item As NSListViewItem In NsListView1.SelectedItems
+        If lvCleanItems.SelectedItems.Length = 0 Then Return
+        For Each item As NSListViewItem In lvCleanItems.SelectedItems
             Dim fileName As String = item.Text
             If Not String.IsNullOrEmpty(fileName) Then
-                Dim url As String = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(fileName)
+                Dim url = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(fileName)
                 Process.Start(New ProcessStartInfo(url) With {.UseShellExecute = True})
             End If
         Next

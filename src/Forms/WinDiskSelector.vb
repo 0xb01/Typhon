@@ -25,12 +25,12 @@ Public Class WinDiskSelector
     End Function
 
     Private Sub WinDiskSelector_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        lstDrives.Clear()
+        lvDrives.Clear()
 
-        lstDrives.CheckBoxes = True
-        lstDrives.AddColumn("Drive", 140)
-        lstDrives.AddColumn("Format", 70)
-        lstDrives.AddColumn("Free / Total Space", 145)
+        lvDrives.CheckBoxes = True
+        lvDrives.AddColumn("Drive", 140)
+        lvDrives.AddColumn("Format", 70)
+        lvDrives.AddColumn("Free / Total Space", 145)
 
         Dim driveItems As New List(Of NSListView.NSListViewItem)()
 
@@ -61,21 +61,21 @@ Public Class WinDiskSelector
         Next
 
         If driveItems.Count > 0 Then
-            lstDrives.AddItems(driveItems)
+            lvDrives.AddItems(driveItems)
         End If
     End Sub
 
-    Private Sub btnScanNow_Click(sender As Object, e As EventArgs) Handles btnScanNow.Click
+    Private Sub btnScan_Click(sender As Object, e As EventArgs) Handles btnScan.Click
         SelectedDrives.Clear()
 
-        If lstDrives.CheckedItems IsNot Nothing AndAlso lstDrives.CheckedItems.Count > 0 Then
-            For Each item As NSListView.NSListViewItem In lstDrives.CheckedItems
+        If lvDrives.CheckedItems IsNot Nothing AndAlso lvDrives.CheckedItems.Count > 0 Then
+            For Each item As NSListView.NSListViewItem In lvDrives.CheckedItems
                 If item.Tag IsNot Nothing Then
                     SelectedDrives.Add(item.Tag.ToString())
                 End If
             Next
-        ElseIf lstDrives.SelectedItems IsNot Nothing AndAlso lstDrives.SelectedItems.Count > 0 Then
-            For Each item As NSListView.NSListViewItem In lstDrives.SelectedItems
+        ElseIf lvDrives.SelectedItems IsNot Nothing AndAlso lvDrives.SelectedItems.Count > 0 Then
+            For Each item As NSListView.NSListViewItem In lvDrives.SelectedItems
                 If item.Tag IsNot Nothing Then
                     SelectedDrives.Add(item.Tag.ToString())
                 End If
@@ -83,8 +83,8 @@ Public Class WinDiskSelector
         End If
 
         ' Default to all drives if none explicitly checked/selected
-        If SelectedDrives.Count = 0 AndAlso lstDrives.Items IsNot Nothing Then
-            For Each item As NSListView.NSListViewItem In lstDrives.Items
+        If SelectedDrives.Count = 0 AndAlso lvDrives.Items IsNot Nothing Then
+            For Each item As NSListView.NSListViewItem In lvDrives.Items
                 If item.Tag IsNot Nothing Then
                     SelectedDrives.Add(item.Tag.ToString())
                 End If
@@ -92,6 +92,11 @@ Public Class WinDiskSelector
         End If
 
         Me.DialogResult = DialogResult.OK
+        Me.Close()
+    End Sub
+
+    Private Sub btnControlClose_Click(sender As Object, e As EventArgs) Handles btnControlClose.Click
+        Me.DialogResult = DialogResult.Cancel
         Me.Close()
     End Sub
 

@@ -16,11 +16,13 @@ Public Class WinExceptions
         Await Task.Run(Sub()
                            PopulateRunningProcesses()
                        End Sub)
+
+        If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
         RefreshExceptionsList(True)
     End Sub
 
     ''' <summary>
-    ''' Populates cboProcesses with running non-critical system process executable names.
+    ''' Populates cboRunningProcesses with running non-critical system process executable names.
     ''' </summary>
     Private Sub PopulateRunningProcesses()
         Dim processNames As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
@@ -51,9 +53,9 @@ Public Class WinExceptions
             Dim sortedList = processNames.OrderBy(Function(s) s, StringComparer.OrdinalIgnoreCase).ToList()
             If Me.IsHandleCreated AndAlso Not Me.IsDisposed Then
                 Me.BeginInvoke(Sub()
-                                   cboProcesses.Items.Clear()
+                                   cboRunningProcesses.Items.Clear()
                                    For Each procName As String In sortedList
-                                       cboProcesses.Items.Add(procName)
+                                       cboRunningProcesses.Items.Add(procName)
                                    Next
                                End Sub)
             End If
@@ -79,15 +81,15 @@ Public Class WinExceptions
             Next
         End If
 
-        NsListView1.Items = itemList.ToArray()
+        lvExceptions.Items = itemList.ToArray()
     End Sub
 
     ''' <summary>
     ''' Removes selected process exception(s) from ignore list and persists settings.
     ''' </summary>
-    Private Sub btnRemove_Click(sender As Object, e As EventArgs) Handles btnRemove.Click
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
+    Private Sub btnRemoveException_Click(sender As Object, e As EventArgs) Handles btnRemoveException.Click
+        If lvExceptions.SelectedItems IsNot Nothing AndAlso lvExceptions.SelectedItems.Length > 0 Then
+            For Each item As NSListView.NSListViewItem In lvExceptions.SelectedItems
                 Dim exeName As String = item.Text
                 If WinMain.ProcessIgnoreList.Contains(exeName) Then
                     WinMain.ProcessIgnoreList.Remove(exeName)
@@ -103,10 +105,10 @@ Public Class WinExceptions
     ''' <summary>
     ''' Adds chosen executable from dropdown or typed in custom textbox to exceptions list.
     ''' </summary>
-    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        Dim exeName As String = txtCustomExe.Text.Trim()
-        If String.IsNullOrEmpty(exeName) AndAlso cboProcesses.SelectedItem IsNot Nothing Then
-            exeName = cboProcesses.SelectedItem.ToString().Trim()
+    Private Sub btnAddException_Click(sender As Object, e As EventArgs) Handles btnAddException.Click
+        Dim exeName As String = txtCustomExecutable.Text.Trim()
+        If String.IsNullOrEmpty(exeName) AndAlso cboRunningProcesses.SelectedItem IsNot Nothing Then
+            exeName = cboRunningProcesses.SelectedItem.ToString().Trim()
         End If
 
         If Not String.IsNullOrEmpty(exeName) Then
@@ -118,8 +120,8 @@ Public Class WinExceptions
                 WinMain.ProcessIgnoreList.Add(exeName)
                 My.Settings.IgnoreProcessList = WinMain.ProcessIgnoreList
                 My.Settings.Save()
-                txtCustomExe.Text = ""
-                cboProcesses.SelectedIndex = -1
+                txtCustomExecutable.Text = ""
+                cboRunningProcesses.SelectedIndex = -1
                 RefreshExceptionsList()
             End If
         End If
@@ -128,39 +130,39 @@ Public Class WinExceptions
     ''' <summary>
     ''' When a process is selected in the combobox, populate the custom textbox for editing.
     ''' </summary>
-    Private Sub cboProcesses_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboProcesses.SelectedIndexChanged
-        If cboProcesses.SelectedItem IsNot Nothing Then
-            txtCustomExe.Text = cboProcesses.SelectedItem.ToString()
+    Private Sub cboRunningProcesses_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboRunningProcesses.SelectedIndexChanged
+        If cboRunningProcesses.SelectedItem IsNot Nothing Then
+            txtCustomExecutable.Text = cboRunningProcesses.SelectedItem.ToString()
         End If
     End Sub
 
     ''' <summary>
     ''' Close button event handler.
     ''' </summary>
-    Private Sub NsControlButton1_Click(sender As Object, e As EventArgs) Handles NsControlButton1.Click
+    Private Sub btnControlClose_Click(sender As Object, e As EventArgs) Handles btnControlClose.Click
         Me.Close()
     End Sub
 
-    Private Sub NsContextMenu1_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles NsContextMenu1.Opening
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            Dim selectedExe As String = NsListView1.SelectedItems(0).Text
-            RemoveToolStripMenuItem.Visible = True
-            RemoveToolStripMenuItem.Text = "Remove: " & selectedExe
+    Private Sub ctxExceptionsMenu_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ctxExceptionsMenu.Opening
+        If lvExceptions.SelectedItems IsNot Nothing AndAlso lvExceptions.SelectedItems.Length > 0 Then
+            Dim selectedExe As String = lvExceptions.SelectedItems(0).Text
+            menuRemoveException.Visible = True
+            menuRemoveException.Text = "Remove: " & selectedExe
             ToolStripSeparator1.Visible = True
-            SearchGoogleToolStripMenuItem.Text = "Search in Google: " & selectedExe
-            SearchVirusTotalToolStripMenuItem.Text = "Search in VirusTotal: " & selectedExe
+            menuSearchGoogle.Text = "Search in Google: " & selectedExe
+            menuSearchVirusTotal.Text = "Search in VirusTotal: " & selectedExe
         Else
             e.Cancel = True
         End If
     End Sub
 
-    Private Sub RemoveToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RemoveToolStripMenuItem.Click
-        btnRemove_Click(sender, e)
+    Private Sub menuRemoveException_Click(sender As Object, e As EventArgs) Handles menuRemoveException.Click
+        btnRemoveException_Click(sender, e)
     End Sub
 
-    Private Sub SearchGoogleToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchGoogleToolStripMenuItem.Click
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
+    Private Sub menuSearchGoogle_Click(sender As Object, e As EventArgs) Handles menuSearchGoogle.Click
+        If lvExceptions.SelectedItems IsNot Nothing AndAlso lvExceptions.SelectedItems.Length > 0 Then
+            For Each item As NSListView.NSListViewItem In lvExceptions.SelectedItems
                 Dim exeName As String = item.Text
                 If Not String.IsNullOrEmpty(exeName) Then
                     Dim url As String = "https://www.google.com/search?q=" & Uri.EscapeDataString(exeName)
@@ -170,9 +172,9 @@ Public Class WinExceptions
         End If
     End Sub
 
-    Private Sub SearchVirusTotalToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SearchVirusTotalToolStripMenuItem.Click
-        If NsListView1.SelectedItems IsNot Nothing AndAlso NsListView1.SelectedItems.Length > 0 Then
-            For Each item As NSListView.NSListViewItem In NsListView1.SelectedItems
+    Private Sub menuSearchVirusTotal_Click(sender As Object, e As EventArgs) Handles menuSearchVirusTotal.Click
+        If lvExceptions.SelectedItems IsNot Nothing AndAlso lvExceptions.SelectedItems.Length > 0 Then
+            For Each item As NSListView.NSListViewItem In lvExceptions.SelectedItems
                 Dim exeName As String = item.Text
                 If Not String.IsNullOrEmpty(exeName) Then
                     Dim url As String = "https://www.virustotal.com/gui/search/" & Uri.EscapeDataString(exeName)
