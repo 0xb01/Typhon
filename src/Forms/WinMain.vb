@@ -196,10 +196,9 @@ Public Class WinMain
         ShowNotification("RAM:", "Optimizing system memory...")
 
         Dim res As proc.FreeMemoryResult = Await _proc.FreeProcessesAsync()
-        Dim freedMB As Double = res.ReleasedBytes / (1024.0 * 1024.0)
 
-        If freedMB > 0.5 Then
-            ShowNotification("RAM:", "Released " & freedMB.ToString("N1") & " MB across " & res.ProcessCount & " processes")
+        If res.ReleasedBytes > 1024L * 512L Then
+            ShowNotification("RAM:", "Released " & cleaner.FormatBytes(res.ReleasedBytes) & " across " & res.ProcessCount & " processes")
         Else
             ShowNotification("RAM:", "Trimmed working sets for " & res.ProcessCount & " processes")
         End If
@@ -221,15 +220,16 @@ Public Class WinMain
     ''' Click event handler opening the WinKill process manager window.
     ''' </summary>
     Private Sub NsButton2_Click(sender As System.Object, e As System.EventArgs) Handles NsButton2.Click
-        WinKill.Show()
+        WinKill.Show(Me)
     End Sub
 
     ''' <summary>
     ''' Click event handler opening the WinExceptions window.
     ''' </summary>
     Private Sub NsButton3_Click(sender As System.Object, e As System.EventArgs) Handles NsButton3.Click
-        Dim frm As New WinExceptions()
-        frm.ShowDialog()
+        Using frm As New WinExceptions()
+            frm.ShowDialog(Me)
+        End Using
     End Sub
 
     Private peakRAMPct As Integer = 0

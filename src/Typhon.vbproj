@@ -175,6 +175,9 @@
       <DependentUpon>WinSight.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\DarkMessageBox.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\SpaceLensTreemap.vb">
       <SubType>Component</SubType>
     </Compile>

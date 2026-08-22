@@ -69,6 +69,10 @@ MustInherit Class ThemeContainer154
                 ParentForm.FormBorderStyle = _BorderStyle
                 ParentForm.TransparencyKey = _TransparencyKey
                 ParentForm.StartPosition = _StartPosition
+
+                If Not DesignMode Then
+                    AddHandler ParentForm.Load, AddressOf ParentForm_Load
+                End If
             End If
 
             Parent.BackColor = BackColor
@@ -77,6 +81,53 @@ MustInherit Class ThemeContainer154
         OnCreation()
         DoneCreation = True
         InvalidateTimer()
+    End Sub
+
+    Private Sub CenterForm()
+        If ParentForm Is Nothing Then Return
+
+        Dim scr As Screen
+        If ParentForm.Owner IsNot Nothing Then
+            scr = Screen.FromControl(ParentForm.Owner)
+        Else
+            scr = Screen.FromPoint(Cursor.Position)
+            If scr Is Nothing Then scr = Screen.PrimaryScreen
+        End If
+
+        Dim wa As Rectangle = scr.WorkingArea
+
+        If _StartPosition = FormStartPosition.CenterParent OrElse ParentForm.StartPosition = FormStartPosition.CenterParent Then
+            If ParentForm.Owner IsNot Nothing Then
+                Dim ob As Rectangle = ParentForm.Owner.Bounds
+                Dim x As Integer = ob.Left + (ob.Width - ParentForm.Width) \ 2
+                Dim y As Integer = ob.Top + (ob.Height - ParentForm.Height) \ 2
+
+                ' Ensure child form does not overflow screen working area
+                If x + ParentForm.Width > wa.Right Then x = wa.Right - ParentForm.Width
+                If y + ParentForm.Height > wa.Bottom Then y = wa.Bottom - ParentForm.Height
+                If x < wa.Left Then x = wa.Left
+                If y < wa.Top Then y = wa.Top
+
+                ParentForm.Location = New Point(x, y)
+                Return
+            End If
+        End If
+
+        ' Default or CenterScreen
+        Dim cx As Integer = wa.Left + (wa.Width - ParentForm.Width) \ 2
+        Dim cy As Integer = wa.Top + (wa.Height - ParentForm.Height) \ 2
+
+        If cx + ParentForm.Width > wa.Right Then cx = wa.Right - ParentForm.Width
+        If cy + ParentForm.Height > wa.Bottom Then cy = wa.Bottom - ParentForm.Height
+        If cx < wa.Left Then cx = wa.Left
+        If cy < wa.Top Then cy = wa.Top
+
+        ParentForm.Location = New Point(cx, cy)
+    End Sub
+
+    Private Sub ParentForm_Load(ByVal sender As Object, ByVal e As EventArgs)
+        If _ControlMode OrElse ParentForm Is Nothing Then Return
+        CenterForm()
     End Sub
 
 #End Region
@@ -451,6 +502,9 @@ MustInherit Class ThemeContainer154
 
             If _IsParentForm AndAlso Not _ControlMode Then
                 ParentForm.StartPosition = value
+                If ParentForm.IsHandleCreated AndAlso Not DesignMode Then
+                    CenterForm()
+                End If
             End If
         End Set
     End Property

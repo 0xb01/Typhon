@@ -322,15 +322,33 @@ Public Class proc
     End Function
 
     ''' <summary>
+    ''' Checks if a process filename matches any entry in the ignore list with case-insensitivity and extension flexibility.
+    ''' </summary>
+    Public Shared Function IsProcessIgnored(fileName As String, ignoreList As StringCollection) As Boolean
+        If ignoreList Is Nothing OrElse String.IsNullOrEmpty(fileName) Then Return False
+        Dim nameWithoutExt As String = Path.GetFileNameWithoutExtension(fileName)
+        For Each item As String In ignoreList
+            If Not String.IsNullOrEmpty(item) Then
+                If item.Equals(fileName, StringComparison.OrdinalIgnoreCase) OrElse
+                   item.Equals(nameWithoutExt, StringComparison.OrdinalIgnoreCase) OrElse
+                   fileName.Equals(item & ".exe", StringComparison.OrdinalIgnoreCase) Then
+                    Return True
+                End If
+            End If
+        Next
+        Return False
+    End Function
+
+    ''' <summary>
     ''' Internal helper returning list of active non-system killable background processes.
     ''' </summary>
     Private Function GetKillableProcessItems(Optional ignoreList As StringCollection = Nothing) As List(Of Process)
         Dim result As New List(Of Process)()
-        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
-
         Dim currentProcess As Process = Process.GetCurrentProcess()
         Dim selfPath As String = ProcessHandle(currentProcess)
         currentProcess.Dispose()
+
+        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
 
         Dim procs() As Process = Process.GetProcesses()
         For Each procItem As Process In procs
@@ -341,7 +359,7 @@ Public Class proc
                         Dim dirName As String = Path.GetDirectoryName(targetPath)
                         If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
                             Dim fileName As String = Path.GetFileName(targetPath)
-                            If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
+                            If Not IsProcessIgnored(fileName, ignoreList) Then
                                 result.Add(procItem)
                                 Continue For
                             End If
@@ -380,20 +398,24 @@ Public Class proc
     End Function
 
     ''' <summary>
-    ''' Safe process termination helper attempting graceful window close before forced kill.
+    ''' Safe process termination helper attempting graceful window close before forced kill. Returns true if process exited.
     ''' </summary>
-    Public Shared Sub SafeKillProcess(procItem As Process)
-        If procItem Is Nothing Then Return
+    Public Shared Function SafeKillProcess(procItem As Process) As Boolean
+        If procItem Is Nothing Then Return False
         Try
+            If procItem.HasExited Then Return True
             If procItem.CloseMainWindow() Then
-                If procItem.WaitForExit(1000) Then
-                    Return
+                If procItem.WaitForExit(500) Then
+                    Return True
                 End If
             End If
             procItem.Kill()
+            procItem.WaitForExit(500)
+            Return procItem.HasExited
         Catch ex As Exception
+            Return False
         End Try
-    End Sub
+    End Function
 
     Public Class ProcessInstanceItem
         Property ProcessId As Integer = 0
@@ -401,6 +423,8 @@ Public Class proc
         Property MemoryBytes As Long = 0L
         Property FullPath As String = ""
         Property Checked As Boolean = True
+        Property IsIgnored As Boolean = False
+        Property IsSelf As Boolean = False
     End Class
 
     Public Class ProcessGroupItem
@@ -408,6 +432,8 @@ Public Class proc
         Property Instances As New List(Of ProcessInstanceItem)()
         Property IsExpanded As Boolean = False
         Property Checked As Boolean = True
+        Property IsIgnored As Boolean = False
+        Property IsSelf As Boolean = False
 
         Public ReadOnly Property TotalBytes As Long
             Get
@@ -442,31 +468,43 @@ Public Class proc
             Try
                 If Not IsCriticalProcess(procItem) Then
                     Dim targetPath As String = ProcessHandle(procItem)
-                    If Not String.IsNullOrEmpty(targetPath) AndAlso Not targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) Then
+                    If Not String.IsNullOrEmpty(targetPath) Then
                         Dim dirName As String = Path.GetDirectoryName(targetPath)
                         If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) = -1 Then
                             Dim fileName As String = Path.GetFileName(targetPath)
-                            If ignoreList Is Nothing OrElse Not ignoreList.Contains(fileName) Then
-                                Dim memBytes As Long = 0L
-                                Try
-                                    memBytes = procItem.WorkingSet64
-                                Catch ex As Exception
-                                End Try
+                            Dim isSelf As Boolean = targetPath.Equals(selfPath, StringComparison.OrdinalIgnoreCase) OrElse
+                                                   fileName.Equals("Typhon.exe", StringComparison.OrdinalIgnoreCase)
+                            Dim isIgnored As Boolean = isSelf OrElse IsProcessIgnored(fileName, ignoreList)
 
-                                Dim grp As ProcessGroupItem = Nothing
-                                If Not groups.TryGetValue(fileName, grp) Then
-                                    grp = New ProcessGroupItem() With {.ProcessName = fileName}
-                                    groups(fileName) = grp
-                                End If
+                            Dim memBytes As Long = 0L
+                            Try
+                                memBytes = procItem.WorkingSet64
+                            Catch ex As Exception
+                            End Try
 
-                                grp.Instances.Add(New ProcessInstanceItem() With {
-                                    .ProcessId = procItem.Id,
+                            Dim grp As ProcessGroupItem = Nothing
+                            If Not groups.TryGetValue(fileName, grp) Then
+                                grp = New ProcessGroupItem() With {
                                     .ProcessName = fileName,
-                                    .MemoryBytes = memBytes,
-                                    .FullPath = targetPath,
-                                    .Checked = True
-                                })
+                                    .IsIgnored = isIgnored,
+                                    .IsSelf = isSelf,
+                                    .Checked = If(isIgnored OrElse isSelf, False, True)
+                                }
+                                groups(fileName) = grp
+                            Else
+                                If isSelf Then grp.IsSelf = True
+                                If isIgnored Then grp.IsIgnored = True
                             End If
+
+                            grp.Instances.Add(New ProcessInstanceItem() With {
+                                .ProcessId = procItem.Id,
+                                .ProcessName = fileName,
+                                .MemoryBytes = memBytes,
+                                .FullPath = targetPath,
+                                .IsIgnored = isIgnored,
+                                .IsSelf = isSelf,
+                                .Checked = If(isIgnored OrElse isSelf, False, True)
+                            })
                         End If
                     End If
                 End If
@@ -597,16 +635,46 @@ Public Class proc
         Return killedCount
     End Function
 
+    Private Shared _defaultProcessIcon As Image = Nothing
+
+    ''' <summary>
+    ''' Standard fallback icon for processes and executables when no file icon is available.
+    ''' </summary>
+    Public Shared ReadOnly Property DefaultProcessIcon As Image
+        Get
+            If _defaultProcessIcon Is Nothing Then
+                Try
+                    _defaultProcessIcon = SystemIcons.Application.ToBitmap()
+                Catch ex As Exception
+                    Dim bmp As New Bitmap(16, 16)
+                    Using g As Graphics = Graphics.FromImage(bmp)
+                        g.Clear(Color.Transparent)
+                        Using p As New Pen(Color.FromArgb(140, 140, 140))
+                            g.DrawRectangle(p, 1, 1, 13, 13)
+                            g.DrawLine(p, 1, 5, 14, 5)
+                        End Using
+                    End Using
+                    _defaultProcessIcon = bmp
+                End Try
+            End If
+            Return _defaultProcessIcon
+        End Get
+    End Property
+
     Private Shared _iconCache As New Dictionary(Of String, Image)(StringComparer.OrdinalIgnoreCase)
 
     ''' <summary>
-    ''' Extracts executable file icon with internal dictionary caching.
+    ''' Extracts executable file icon with internal dictionary caching and default icon fallback.
     ''' </summary>
-    Public Shared Function GetProcessIcon(fullPath As String) As Image
-        If String.IsNullOrEmpty(fullPath) Then Return Nothing
+    Public Shared Function GetProcessIcon(fullPath As String, Optional fallbackToDefault As Boolean = True) As Image
+        If String.IsNullOrEmpty(fullPath) Then
+            Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
+        End If
 
         If _iconCache.ContainsKey(fullPath) Then
-            Return _iconCache(fullPath)
+            Dim cached As Image = _iconCache(fullPath)
+            If cached IsNot Nothing Then Return cached
+            Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
         End If
 
         Try
@@ -623,19 +691,23 @@ Public Class proc
         End Try
 
         _iconCache(fullPath) = Nothing
-        Return Nothing
+        Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
     End Function
 
     Private Shared _exeIconCache As New Dictionary(Of String, Image)(StringComparer.OrdinalIgnoreCase)
 
     ''' <summary>
-    ''' Resolves icon for executable name by matching active processes or standard system executable paths.
+    ''' Resolves icon for executable name by matching active processes or standard system executable paths with fallback.
     ''' </summary>
-    Public Shared Function GetExeIcon(exeName As String) As Image
-        If String.IsNullOrEmpty(exeName) Then Return Nothing
+    Public Shared Function GetExeIcon(exeName As String, Optional fallbackToDefault As Boolean = True) As Image
+        If String.IsNullOrEmpty(exeName) Then
+            Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
+        End If
 
         If _exeIconCache.ContainsKey(exeName) Then
-            Return _exeIconCache(exeName)
+            Dim cached As Image = _exeIconCache(exeName)
+            If cached IsNot Nothing Then Return cached
+            Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
         End If
 
         Try
@@ -646,7 +718,7 @@ Public Class proc
                     Dim targetPath As String = ProcessHandle(p)
                     p.Dispose()
                     If Not String.IsNullOrEmpty(targetPath) AndAlso File.Exists(targetPath) Then
-                        Dim img As Image = GetProcessIcon(targetPath)
+                        Dim img As Image = GetProcessIcon(targetPath, False)
                         If img IsNot Nothing Then
                             _exeIconCache(exeName) = img
                             Return img
@@ -659,7 +731,7 @@ Public Class proc
 
             Dim sysPath As String = Path.Combine(Environment.SystemDirectory, exeName)
             If File.Exists(sysPath) Then
-                Dim img As Image = GetProcessIcon(sysPath)
+                Dim img As Image = GetProcessIcon(sysPath, False)
                 If img IsNot Nothing Then
                     _exeIconCache(exeName) = img
                     Return img
@@ -668,7 +740,7 @@ Public Class proc
 
             Dim winPath As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), exeName)
             If File.Exists(winPath) Then
-                Dim img As Image = GetProcessIcon(winPath)
+                Dim img As Image = GetProcessIcon(winPath, False)
                 If img IsNot Nothing Then
                     _exeIconCache(exeName) = img
                     Return img
@@ -678,6 +750,6 @@ Public Class proc
         End Try
 
         _exeIconCache(exeName) = Nothing
-        Return Nothing
+        Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
     End Function
 End Class
