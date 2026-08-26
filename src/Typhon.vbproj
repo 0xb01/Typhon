@@ -208,6 +208,21 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Helpers\func.vb" />
+    <Compile Include="Helpers\gaming.vb" />
+    <Compile Include="Forms\WinGameBoost.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinGameBoost.Designer.vb">
+      <DependentUpon>WinGameBoost.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinHUD.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WinHUD.Designer.vb">
+      <DependentUpon>WinHUD.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\DialogMessage.resx">
@@ -221,6 +236,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinExceptions.resx">
       <DependentUpon>WinExceptions.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WinGameBoost.resx">
+      <DependentUpon>WinGameBoost.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WinHUD.resx">
+      <DependentUpon>WinHUD.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\WinKill.resx">
       <DependentUpon>WinKill.vb</DependentUpon>

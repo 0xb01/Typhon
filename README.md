@@ -4,24 +4,17 @@
 Typhon is a simple Windows application made in VB.NET. It helps you boost your PC performance by freeing up memory (RAM), closing unnecessary background programs, cleaning temporary junk files, viewing detailed hardware specs, and testing game compatibility.
 
 ## How it helps the PC and the user
-- **Frees up RAM:** Clears unused memory so your computer runs faster.
+- **Frees up RAM & Standby List:** Trims working sets and purges Windows Standby Cache to eliminate micro-stuttering.
+- **Game Booster Engine:** 1-click real-time game mode with 0.5ms timer resolution, Ultimate Power Plan, CPU priority/affinity, and background app throttling.
+- **Game Library Hub:** Discovers installed Steam, Epic Games, and GOG titles with 1-click "Boost & Launch".
+- **Mini In-Game HUD:** Floating draggable overlay displaying real-time FPS, CPU, GPU, RAM, and timer resolution.
+- **Low-Latency Network Tweaks:** Toggles TCP NoDelay (Nagle's algorithm) and disables multimedia network throttling for lowest multiplayer ping.
 - **Closes background apps:** Helps you find and close heavy programs that slow down your system.
-- **Cleans junk files:** Removes temporary files and log files to free up disk space.
+- **Cleans junk files:** Removes temporary files, crash dumps, and shader caches to free up disk space.
+- **Visualizes disk usage:** Typhon Sight interactive treemap to locate large files and reclaim storage.
 - **Monitors PC usage:** Shows live graphs for CPU, RAM, and GPU usage.
 - **Views PC Specs & Peripherals:** Displays your hardware details, plugged-in devices, and lets you open drives directly in File Explorer.
 - **Checks Game Performance:** One-click check to see if your PC can run games on PC Game Benchmark.
-
-## Freeing RAM process
-When you click **FreeRAM();** or when **Auto FreeRAM();** runs:
-1. Typhon scans active programs running on your PC.
-2. It calls Windows system functions (`SetProcessWorkingSetSize`) to trim unused memory from those programs.
-3. The freed memory is returned back to your system instantly.
-
-## Killing process process
-When you open **KillProcesses();**:
-1. Typhon scans running background programs and groups them together by name.
-2. It excludes important Windows system files (like `C:\Windows\System32`) and your saved ignore list so Windows stays safe.
-3. You select the programs you want to close and click **KillProcesses();** to stop them.
 
 ## File structure
 ```
@@ -30,15 +23,23 @@ Typhon/
 └── src/                    # Source code folder
     ├── App.config          # App settings configuration
     ├── Controls/
-    │   └── theme.vb        # Custom dark UI controls and styling
+    │   ├── theme.vb        # Custom dark UI controls and styling
+    │   └── SpaceLensTreemap.vb # Interactive disk treemap visualizer
     ├── Forms/
-    │   ├── WinMain.vb      # Main window (RAM, Graph, Settings, Specs, About)
+    │   ├── WinMain.vb      # Main window (RAM, Graph, Gaming, Settings, Specs, About)
+    │   ├── WinGameBoost.vb # Real-time Game Booster & Library window
+    │   ├── WinHUD.vb       # Floating in-game performance HUD overlay
     │   ├── WinKill.vb      # Process killer window
     │   ├── WinCleaner.vb   # System junk cleaner window
-    │   └── WinExceptions.vb# Ignored processes window
+    │   ├── WinSight.vb     # Typhon Sight disk visualizer window
+    │   ├── WinDiskSelector.vb # Storage drive selection dialog
+    │   ├── WinExceptions.vb# Ignored processes window
+    │   └── DialogMessage.vb# Custom styled dark message dialog
     └── Helpers/
-        ├── proc.vb         # RAM and process management code
-        ├── cleaner.vb      # Junk file cleaner code
+        ├── proc.vb         # RAM, Standby purge, timer resolution, and process management
+        ├── gaming.vb       # Power schemes, network tweaks, game scanner, and boost engine
+        ├── cleaner.vb      # Junk file & cache cleaner code
+        ├── DiskTreeScanner.vb # Async multi-threaded storage scanner
         └── func.vb         # System specs, peripherals, and benchmark logic
 ```
 

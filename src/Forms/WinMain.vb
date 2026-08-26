@@ -197,8 +197,12 @@ Public Class WinMain
 
         Dim res As proc.FreeMemoryResult = Await _proc.FreeProcessesAsync()
 
-        If res.ReleasedBytes > 1024L * 512L Then
-            ShowNotification("RAM:", "Released " & cleaner.FormatBytes(res.ReleasedBytes) & " across " & res.ProcessCount & " processes")
+        If res.TotalFreedBytes > 1024L * 512L Then
+            Dim extraInfo As String = ""
+            If res.StandbyPurgedBytes > 0 Then
+                extraInfo = " (incl. " & cleaner.FormatBytes(res.StandbyPurgedBytes) & " standby)"
+            End If
+            ShowNotification("RAM:", "Freed " & cleaner.FormatBytes(res.TotalFreedBytes) & extraInfo & " across " & res.ProcessCount & " processes")
         Else
             ShowNotification("RAM:", "Trimmed working sets for " & res.ProcessCount & " processes")
         End If
@@ -283,6 +287,11 @@ Public Class WinMain
             ElseIf tabMain.SelectedTab Is tabSpaceLens Then
                 tabMain.SelectedTab = tabOverview
                 Using dlg As New WinSight()
+                    dlg.ShowDialog(Me)
+                End Using
+            ElseIf tabMain.SelectedTab Is tabGameBoost Then
+                tabMain.SelectedTab = tabOverview
+                Using dlg As New WinGameBoost()
                     dlg.ShowDialog(Me)
                 End Using
             ElseIf tabMain.SelectedTab Is tabSpecs Then

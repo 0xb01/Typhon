@@ -45,6 +45,109 @@ Public Class proc
         ByRef lpUserTime As System.Runtime.InteropServices.ComTypes.FILETIME) As Boolean
     End Function
 
+    <DllImport("advapi32.dll", SetLastError:=True)> _
+    Private Shared Function OpenProcessToken( _
+        ByVal ProcessHandle As IntPtr, _
+        ByVal DesiredAccess As UInteger, _
+        ByRef TokenHandle As IntPtr) As Boolean
+    End Function
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure LUID
+        Public LowPart As UInteger
+        Public HighPart As Integer
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential, Pack:=1)> _
+    Private Structure LUID_AND_ATTRIBUTES
+        Public Luid As LUID
+        Public Attributes As UInteger
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential, Pack:=1)> _
+    Private Structure TOKEN_PRIVILEGES
+        Public PrivilegeCount As UInteger
+        Public Privilege As LUID_AND_ATTRIBUTES
+    End Structure
+
+    <DllImport("advapi32.dll", SetLastError:=True, CharSet:=CharSet.Auto)> _
+    Private Shared Function LookupPrivilegeValue( _
+        ByVal lpSystemName As String, _
+        ByVal lpName As String, _
+        ByRef lpLuid As LUID) As Boolean
+    End Function
+
+    <DllImport("advapi32.dll", SetLastError:=True)> _
+    Private Shared Function AdjustTokenPrivileges( _
+        ByVal TokenHandle As IntPtr, _
+        ByVal DisableAllPrivileges As Boolean, _
+        ByRef NewState As TOKEN_PRIVILEGES, _
+        ByVal BufferLength As UInteger, _
+        ByVal PreviousState As IntPtr, _
+        ByVal ReturnLength As IntPtr) As Boolean
+    End Function
+
+    Private Const TOKEN_ADJUST_PRIVILEGES As UInteger = &H20
+    Private Const TOKEN_QUERY As UInteger = &H8
+    Private Const SE_PRIVILEGE_ENABLED As UInteger = &H2
+
+    <DllImport("ntdll.dll", SetLastError:=True)> _
+    Private Shared Function NtSetSystemInformation( _
+        ByVal SystemInformationClass As Integer, _
+        ByVal SystemInformation As IntPtr, _
+        ByVal SystemInformationLength As Integer) As Integer
+    End Function
+
+    Private Const SystemMemoryListInformation As Integer = 80
+    Private Const MemoryPurgeStandbyList As Integer = 4
+    Private Const MemoryEmptyWorkingSets As Integer = 2
+
+    <DllImport("winmm.dll", EntryPoint:="timeBeginPeriod")> _
+    Public Shared Function TimeBeginPeriod(ByVal uMilliseconds As UInteger) As UInteger
+    End Function
+
+    <DllImport("winmm.dll", EntryPoint:="timeEndPeriod")> _
+    Public Shared Function TimeEndPeriod(ByVal uMilliseconds As UInteger) As UInteger
+    End Function
+
+    <DllImport("ntdll.dll", SetLastError:=True)> _
+    Public Shared Function NtSetTimerResolution( _
+        ByVal DesiredResolution As UInteger, _
+        ByVal SetResolution As Boolean, _
+        ByRef CurrentResolution As UInteger) As Integer
+    End Function
+
+    <DllImport("ntdll.dll", SetLastError:=True)> _
+    Public Shared Function NtQueryTimerResolution( _
+        ByRef MinimumResolution As UInteger, _
+        ByRef MaximumResolution As UInteger, _
+        ByRef CurrentResolution As UInteger) As Integer
+    End Function
+
+    <DllImport("ntdll.dll", SetLastError:=True)> _
+    Public Shared Function NtSetInformationProcess( _
+        ByVal ProcessHandle As IntPtr, _
+        ByVal ProcessInformationClass As Integer, _
+        ByRef ProcessInformation As Integer, _
+        ByVal ProcessInformationLength As Integer) As Integer
+    End Function
+
+    Private Const ProcessIoPriority As Integer = 33
+    Private Const PROCESS_SET_INFORMATION As UInteger = &H200
+
+    <DllImport("kernel32.dll", SetLastError:=True)> _
+    Public Shared Function SetProcessAffinityMask( _
+        ByVal hProcess As IntPtr, _
+        ByVal dwProcessAffinityMask As IntPtr) As Boolean
+    End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)> _
+    Public Shared Function GetProcessAffinityMask( _
+        ByVal hProcess As IntPtr, _
+        ByRef lpProcessAffinityMask As IntPtr, _
+        ByRef lpSystemAffinityMask As IntPtr) As Boolean
+    End Function
+
     Private Shared _prevIdleTime As Long = 0
     Private Shared _prevKernelTime As Long = 0
     Private Shared _prevUserTime As Long = 0
@@ -283,10 +386,75 @@ Public Class proc
     Public Class FreeMemoryResult
         Property ProcessCount As Integer = 0
         Property ReleasedBytes As Long = 0L
+        Property StandbyPurgedBytes As Long = 0L
+
+        Public ReadOnly Property TotalFreedBytes As Long
+            Get
+                Return ReleasedBytes + StandbyPurgedBytes
+            End Get
+        End Property
     End Class
 
     ''' <summary>
-    ''' Forces memory working set trimming on all accessible processes to release unallocated RAM and measure released bytes.
+    ''' Enables an NT security privilege on the current process token (e.g. SeProfileSingleProcessPrivilege).
+    ''' </summary>
+    Public Shared Function EnablePrivilege(privilegeName As String) As Boolean
+        Try
+            Dim hToken As IntPtr = IntPtr.Zero
+            If OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, hToken) Then
+                Try
+                    Dim luid As New LUID()
+                    If LookupPrivilegeValue(Nothing, privilegeName, luid) Then
+                        Dim tp As New TOKEN_PRIVILEGES()
+                        tp.PrivilegeCount = 1
+                        tp.Privilege = New LUID_AND_ATTRIBUTES() With {
+                            .Luid = luid,
+                            .Attributes = SE_PRIVILEGE_ENABLED
+                        }
+                        Return AdjustTokenPrivileges(hToken, False, tp, CUInt(Marshal.SizeOf(tp)), IntPtr.Zero, IntPtr.Zero)
+                    End If
+                Finally
+                    CloseHandle(hToken)
+                End Try
+            End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
+
+    ''' <summary>
+    ''' Purges Windows Standby Memory Cache and flushes system modified page lists via native NtSetSystemInformation API.
+    ''' </summary>
+    Public Shared Function PurgeStandbyList() As Long
+        Dim beforeAvailable As ULong = My.Computer.Info.AvailablePhysicalMemory
+        Try
+            EnablePrivilege("SeProfileSingleProcessPrivilege")
+            EnablePrivilege("SeIncreaseQuotaPrivilege")
+
+            Dim pCommand As IntPtr = Marshal.AllocHGlobal(4)
+            Try
+                ' 1. Purge Standby List
+                Marshal.WriteInt32(pCommand, MemoryPurgeStandbyList)
+                NtSetSystemInformation(SystemMemoryListInformation, pCommand, 4)
+
+                ' 2. Empty System Working Sets
+                Marshal.WriteInt32(pCommand, MemoryEmptyWorkingSets)
+                NtSetSystemInformation(SystemMemoryListInformation, pCommand, 4)
+            Finally
+                Marshal.FreeHGlobal(pCommand)
+            End Try
+        Catch ex As Exception
+        End Try
+
+        Dim afterAvailable As ULong = My.Computer.Info.AvailablePhysicalMemory
+        If afterAvailable > beforeAvailable Then
+            Return CLng(afterAvailable - beforeAvailable)
+        End If
+        Return 0L
+    End Function
+
+    ''' <summary>
+    ''' Forces memory working set trimming on all accessible processes AND purges kernel standby memory cache to release maximum RAM.
     ''' </summary>
     Function FreeProcesses() As FreeMemoryResult
         Dim res As New FreeMemoryResult()
@@ -306,10 +474,13 @@ Public Class proc
             End Try
         Next
 
-        Dim afterAvailable As ULong = My.Computer.Info.AvailablePhysicalMemory
-        If afterAvailable > beforeAvailable Then
-            res.ReleasedBytes = CLng(afterAvailable - beforeAvailable)
+        Dim afterTrimming As ULong = My.Computer.Info.AvailablePhysicalMemory
+        If afterTrimming > beforeAvailable Then
+            res.ReleasedBytes = CLng(afterTrimming - beforeAvailable)
         End If
+
+        ' Purge Windows Standby List Cache
+        res.StandbyPurgedBytes = PurgeStandbyList()
 
         Return res
     End Function
@@ -751,5 +922,177 @@ Public Class proc
 
         _exeIconCache(exeName) = Nothing
         Return If(fallbackToDefault, DefaultProcessIcon, Nothing)
+    End Function
+
+    Private Shared _isHighResTimerActive As Boolean = False
+
+    ''' <summary>
+    ''' Configures Windows timer resolution (0.5ms vs 15.6ms default) for lower input latency and frame time stability.
+    ''' </summary>
+    Public Shared Function SetHighResolutionTimer(enable As Boolean) As Double
+        Try
+            If enable Then
+                TimeBeginPeriod(1)
+                Dim currentRes As UInteger = 0
+                NtSetTimerResolution(5000, True, currentRes) ' 5000 in 100ns units = 0.5 ms
+                _isHighResTimerActive = True
+            Else
+                TimeEndPeriod(1)
+                Dim currentRes As UInteger = 0
+                NtSetTimerResolution(156250, False, currentRes) ' 15.625 ms default
+                _isHighResTimerActive = False
+            End If
+        Catch ex As Exception
+        End Try
+        Return GetCurrentTimerResolution()
+    End Function
+
+    ''' <summary>
+    ''' Queries the current system timer resolution in milliseconds.
+    ''' </summary>
+    Public Shared Function GetCurrentTimerResolution() As Double
+        Try
+            Dim minRes As UInteger = 0, maxRes As UInteger = 0, curRes As UInteger = 0
+            If NtQueryTimerResolution(minRes, maxRes, curRes) = 0 Then
+                Return Math.Round(curRes / 10000.0, 2) ' 100ns units to ms
+            End If
+        Catch ex As Exception
+        End Try
+        Return If(_isHighResTimerActive, 0.5, 15.6)
+    End Function
+
+    ''' <summary>
+    ''' Sets CPU priority class for a target process by PID.
+    ''' </summary>
+    Public Shared Function SetProcessCpuPriority(processId As Integer, priority As ProcessPriorityClass) As Boolean
+        Try
+            Using p As Process = Process.GetProcessById(processId)
+                p.PriorityClass = priority
+                Return True
+            End Using
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Sets I/O priority for target process (0=Very Low, 1=Low, 2=Normal, 3=High).
+    ''' </summary>
+    Public Shared Function SetProcessIoPriority(processId As Integer, ioPriority As Integer) As Boolean
+        Try
+            Dim hProc As IntPtr = OpenProcess(PROCESS_SET_INFORMATION, False, CUInt(processId))
+            If hProc <> IntPtr.Zero Then
+                Try
+                    Return (NtSetInformationProcess(hProc, ProcessIoPriority, ioPriority, 4) = 0)
+                Finally
+                    CloseHandle(hProc)
+                End Try
+            End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
+
+    ''' <summary>
+    ''' Sets CPU core affinity bitmask for a target process.
+    ''' </summary>
+    Public Shared Function SetProcessAffinity(processId As Integer, affinityMask As Long) As Boolean
+        Try
+            Dim hProc As IntPtr = OpenProcess(PROCESS_SET_INFORMATION, False, CUInt(processId))
+            If hProc <> IntPtr.Zero Then
+                Try
+                    Return SetProcessAffinityMask(hProc, New IntPtr(affinityMask))
+                Finally
+                    CloseHandle(hProc)
+                End Try
+            End If
+        Catch ex As Exception
+        End Try
+        Return False
+    End Function
+
+    ''' <summary>
+    ''' Calculates performance affinity mask favoring physical / P-cores.
+    ''' </summary>
+    Public Shared Function GetPerformanceAffinityMask() As Long
+        Dim coreCount As Integer = Environment.ProcessorCount
+        If coreCount <= 1 Then Return 1L
+        Dim mask As Long = 0L
+        For i As Integer = 0 To Math.Min(63, coreCount - 1)
+            mask = mask Or (1L << i)
+        Next
+        Return mask
+    End Function
+
+    Private Shared _throttledProcesses As New Dictionary(Of Integer, ProcessPriorityClass)()
+
+    ''' <summary>
+    ''' Throttles background non-game processes to BelowNormal priority and Low I/O to maximize CPU for games.
+    ''' </summary>
+    Public Shared Function ThrottleBackgroundProcesses(Optional ignoreList As StringCollection = Nothing) As Integer
+        Dim count As Integer = 0
+        Dim currentProcess As Process = Process.GetCurrentProcess()
+        Dim selfPath As String = ProcessHandle(currentProcess)
+        Dim selfId As Integer = currentProcess.Id
+        currentProcess.Dispose()
+
+        Dim exclusions As String() = {Environment.SystemDirectory.ToLower(), Path.GetDirectoryName(Environment.SystemDirectory).ToLower()}
+
+        For Each p As Process In Process.GetProcesses()
+            Try
+                If p.Id = selfId OrElse IsCriticalProcess(p) Then
+                    p.Dispose()
+                    Continue For
+                End If
+
+                Dim targetPath As String = ProcessHandle(p)
+                If String.IsNullOrEmpty(targetPath) Then
+                    p.Dispose()
+                    Continue For
+                End If
+
+                Dim dirName As String = Path.GetDirectoryName(targetPath)
+                If Not String.IsNullOrEmpty(dirName) AndAlso Array.IndexOf(exclusions, dirName.ToLower()) <> -1 Then
+                    p.Dispose()
+                    Continue For
+                End If
+
+                Dim fileName As String = Path.GetFileName(targetPath)
+                If IsProcessIgnored(fileName, ignoreList) Then
+                    p.Dispose()
+                    Continue For
+                End If
+
+                If Not _throttledProcesses.ContainsKey(p.Id) Then
+                    _throttledProcesses(p.Id) = p.PriorityClass
+                    p.PriorityClass = ProcessPriorityClass.BelowNormal
+                    SetProcessIoPriority(p.Id, 1) ' Low I/O
+                    count += 1
+                End If
+            Catch ex As Exception
+            Finally
+                p.Dispose()
+            End Try
+        Next
+        Return count
+    End Function
+
+    ''' <summary>
+    ''' Restores original CPU priorities and I/O priorities for previously throttled background processes.
+    ''' </summary>
+    Public Shared Function RestoreBackgroundProcesses() As Integer
+        Dim count As Integer = 0
+        For Each kvp In _throttledProcesses
+            Try
+                Using p As Process = Process.GetProcessById(kvp.Key)
+                    p.PriorityClass = kvp.Value
+                    SetProcessIoPriority(p.Id, 2) ' Normal I/O
+                    count += 1
+                End Using
+            Catch ex As Exception
+            End Try
+        Next
+        _throttledProcesses.Clear()
+        Return count
     End Function
 End Class

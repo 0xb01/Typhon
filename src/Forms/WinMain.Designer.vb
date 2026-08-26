@@ -44,6 +44,7 @@ Partial Class WinMain
         Me.chartPerformance = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.tabCleaner = New System.Windows.Forms.TabPage()
         Me.tabSpaceLens = New System.Windows.Forms.TabPage()
+        Me.tabGameBoost = New System.Windows.Forms.TabPage()
         Me.tabSettings = New System.Windows.Forms.TabPage()
         Me.gbAutomationSettings = New Typhon.NSGroupBox()
         Me.lblAutoOptimizeRAM = New Typhon.NSLabel()
@@ -142,6 +143,7 @@ Partial Class WinMain
         Me.tabMain.Controls.Add(Me.tabPerformance)
         Me.tabMain.Controls.Add(Me.tabCleaner)
         Me.tabMain.Controls.Add(Me.tabSpaceLens)
+        Me.tabMain.Controls.Add(Me.tabGameBoost)
         Me.tabMain.Controls.Add(Me.tabSettings)
         Me.tabMain.Controls.Add(Me.tabSpecs)
         Me.tabMain.Controls.Add(Me.tabAbout)
@@ -354,6 +356,16 @@ Partial Class WinMain
         Me.tabSpaceLens.Size = New System.Drawing.Size(353, 232)
         Me.tabSpaceLens.TabIndex = 6
         Me.tabSpaceLens.Text = "Sight"
+        '
+        'tabGameBoost
+        '
+        Me.tabGameBoost.BackColor = System.Drawing.Color.FromArgb(CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer), CType(CType(50, Byte), Integer))
+        Me.tabGameBoost.Location = New System.Drawing.Point(119, 4)
+        Me.tabGameBoost.Name = "tabGameBoost"
+        Me.tabGameBoost.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabGameBoost.Size = New System.Drawing.Size(353, 232)
+        Me.tabGameBoost.TabIndex = 7
+        Me.tabGameBoost.Text = "Gaming"
         '
         'tabSettings
         '
@@ -754,6 +766,7 @@ Partial Class WinMain
     Friend WithEvents toggleAutoStartOnBoot As Typhon.NSOnOffBox
     Friend WithEvents tabCleaner As System.Windows.Forms.TabPage
     Friend WithEvents tabSpaceLens As System.Windows.Forms.TabPage
+    Friend WithEvents tabGameBoost As System.Windows.Forms.TabPage
     Friend WithEvents tabPerformance As System.Windows.Forms.TabPage
     Friend WithEvents chartPerformance As System.Windows.Forms.DataVisualization.Charting.Chart
     Friend WithEvents timerGraph As System.Windows.Forms.Timer
