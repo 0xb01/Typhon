@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -85,7 +86,6 @@ public static class MemoryOptimizer
 
     private const int SystemMemoryListInformation = 80;
     private const int MemoryPurgeStandbyList = 4;
-    private const int MemoryEmptyWorkingSets = 2;
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -121,6 +121,51 @@ public static class MemoryOptimizer
         IntPtr SystemInformation,
         int SystemInformationLength);
 
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    // Critical processes and IDE/developer tools that must NEVER be trimmed to avoid freezing
+    private static readonly HashSet<string> ExcludedProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // Visual Studio and developer toolchain (prevents IDE hard page fault lockup)
+        "devenv",
+        "vbcscompiler",
+        "msbuild",
+        "vshost32",
+        "vshost",
+        "perfwatson2",
+        "dotnet",
+        "code",
+        "rider64",
+        "idea64",
+        "studio64",
+        "git",
+
+        // Windows Shell and core services
+        "explorer",
+        "dwm",
+        "csrss",
+        "smss",
+        "lsass",
+        "services",
+        "svchost",
+        "winlogon",
+        "wininit",
+        "fontdrvhost",
+        "audiodg",
+        "taskhostw",
+        "sihost",
+        "ctfmon",
+        "searchhost",
+        "startmenuexperiencehost",
+        "shellexperiencehost",
+        "system",
+        "idle"
+    };
+
     public static MemoryInfo GetMemoryInfo()
     {
         var mem = new MEMORYSTATUSEX();
@@ -136,7 +181,6 @@ public static class MemoryOptimizer
             }
             catch
             {
-                // Ignore process enum error
             }
 
             return new MemoryInfo(total, avail, used, mem.dwMemoryLoad, procCount);
@@ -175,12 +219,15 @@ public static class MemoryOptimizer
         }
         catch
         {
-            // Ignore privilege error
         }
         return false;
     }
 
-    public static void PurgeStandbyAndSystemWorkingSets()
+    /// <summary>
+    /// Purges Windows Standby Cache to free inactive cached memory without touching active working sets.
+    /// Note: Does NOT call MemoryEmptyWorkingSets (command 2), which forces active apps to page-fault and freeze.
+    /// </summary>
+    public static void PurgeStandbyMemory()
     {
         try
         {
@@ -190,12 +237,8 @@ public static class MemoryOptimizer
             IntPtr pCommand = Marshal.AllocHGlobal(4);
             try
             {
-                // Purge Standby List Cache
+                // Purge Standby List Cache only (safe, frees gigabytes without freezing running apps)
                 Marshal.WriteInt32(pCommand, MemoryPurgeStandbyList);
-                NtSetSystemInformation(SystemMemoryListInformation, pCommand, 4);
-
-                // Empty System Working Sets
-                Marshal.WriteInt32(pCommand, MemoryEmptyWorkingSets);
                 NtSetSystemInformation(SystemMemoryListInformation, pCommand, 4);
             }
             finally
@@ -205,7 +248,6 @@ public static class MemoryOptimizer
         }
         catch
         {
-            // Non-elevated / security restrictions handled gracefully
         }
     }
 
@@ -216,6 +258,21 @@ public static class MemoryOptimizer
 
         int trimmedCount = 0;
         IntPtr minusOne = new IntPtr(-1);
+        int selfPid = Environment.ProcessId;
+
+        // Detect active foreground window to avoid freezing what the user is actively using
+        uint foregroundPid = 0;
+        try
+        {
+            IntPtr fgHwnd = GetForegroundWindow();
+            if (fgHwnd != IntPtr.Zero)
+            {
+                GetWindowThreadProcessId(fgHwnd, out foregroundPid);
+            }
+        }
+        catch
+        {
+        }
 
         Process[] processes;
         try
@@ -231,6 +288,22 @@ public static class MemoryOptimizer
         {
             try
             {
+                // 1. Skip self
+                if (proc.Id == selfPid) continue;
+
+                // 2. Skip active foreground application (prevents UI freeze on active work)
+                if (foregroundPid > 0 && proc.Id == (int)foregroundPid) continue;
+
+                // 3. Skip Visual Studio / IDE / compiler / critical processes
+                string name = proc.ProcessName;
+                if (ExcludedProcesses.Contains(name) ||
+                    name.StartsWith("ServiceHub", StringComparison.OrdinalIgnoreCase) ||
+                    name.StartsWith("Microsoft.ServiceHub", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                // 4. Safely trim memory for background processes
                 bool trimmed = false;
                 try
                 {
@@ -239,7 +312,6 @@ public static class MemoryOptimizer
                 }
                 catch
                 {
-                    // Fallback to EmptyWorkingSet
                     try
                     {
                         if (EmptyWorkingSet(proc.Handle))
@@ -247,7 +319,6 @@ public static class MemoryOptimizer
                     }
                     catch
                     {
-                        // Access denied on privileged process
                     }
                 }
 
@@ -256,7 +327,6 @@ public static class MemoryOptimizer
             }
             catch
             {
-                // Ignore process handle access exceptions
             }
             finally
             {
@@ -270,11 +340,10 @@ public static class MemoryOptimizer
             }
         }
 
-        // Purge Standby and System Working Sets
-        PurgeStandbyAndSystemWorkingSets();
+        // Purge Windows Standby List Cache (frees standby memory without flushing active working sets)
+        PurgeStandbyMemory();
 
-        // Allow memory manager brief settle time
-        System.Threading.Thread.Sleep(50);
+        System.Threading.Thread.Sleep(40);
 
         MemoryInfo after = GetMemoryInfo();
         long freedBytes = 0;

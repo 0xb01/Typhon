@@ -9,6 +9,13 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>typhon_ico.ico</ApplicationIcon>
     <StartupObject>Typhon.Lite.App</StartupObject>
+    <Authors>0xb1</Authors>
+    <Title>Typhon Lite</Title>
+    <Product>Typhon Lite</Product>
+    <PackageProjectUrl>https://banikaz.online/</PackageProjectUrl>
+    <PackageIcon>typhon_ico.png</PackageIcon>
+    <RepositoryUrl>https://github.com/0xb01/Typhon</RepositoryUrl>
+    <Version>1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +25,13 @@
   <ItemGroup>
     <Resource Include="typhon_ico.ico" />
     <Resource Include="typhon_ico.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="typhon_ico.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

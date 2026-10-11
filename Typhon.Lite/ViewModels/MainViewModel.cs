@@ -16,6 +16,7 @@ public class RelayCommand : ICommand
 {
     private readonly Action<object?> _execute;
     private readonly Func<object?, bool>? _canExecute;
+    private EventHandler? _internalCanExecuteChanged;
 
     public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
     {
@@ -30,8 +31,29 @@ public class RelayCommand : ICommand
 
     public event EventHandler? CanExecuteChanged
     {
-        add => CommandManager.RequerySuggested += value;
-        remove => CommandManager.RequerySuggested -= value;
+        add
+        {
+            _internalCanExecuteChanged += value;
+            CommandManager.RequerySuggested += value;
+        }
+        remove
+        {
+            _internalCanExecuteChanged -= value;
+            CommandManager.RequerySuggested -= value;
+        }
+    }
+
+    public void RaiseCanExecuteChanged()
+    {
+        var app = System.Windows.Application.Current;
+        if (app?.Dispatcher != null && !app.Dispatcher.CheckAccess())
+        {
+            app.Dispatcher.InvokeAsync(RaiseCanExecuteChanged);
+            return;
+        }
+
+        _internalCanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        CommandManager.InvalidateRequerySuggested();
     }
 
     public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
@@ -60,6 +82,7 @@ public class MainViewModel : INotifyPropertyChanged
     private int _autoFreeCountdown = 30;
     private string _autoFreeStatusText = "30s";
     private bool _isTopmost = false;
+    private bool _isAboutVisible = false;
     private Geometry? _silhouetteGeometry;
     private Geometry? _silhouetteStrokeGeometry;
 
@@ -120,6 +143,7 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 OnPropertyChanged(nameof(CanFreeMemory));
                 OnPropertyChanged(nameof(FreeButtonText));
+                FreeMemoryCommand?.RaiseCanExecuteChanged();
             }
         }
     }
@@ -191,13 +215,23 @@ public class MainViewModel : INotifyPropertyChanged
         private set => SetField(ref _silhouetteStrokeGeometry, value);
     }
 
-    public ICommand FreeMemoryCommand { get; }
+    public bool IsAboutVisible
+    {
+        get => _isAboutVisible;
+        set => SetField(ref _isAboutVisible, value);
+    }
+
+    public RelayCommand FreeMemoryCommand { get; }
     public ICommand ToggleTopmostCommand { get; }
+    public ICommand ToggleAboutCommand { get; }
+    public ICommand CloseAboutCommand { get; }
 
     public MainViewModel()
     {
         FreeMemoryCommand = new RelayCommand(async () => await ExecuteFreeMemoryAsync(), () => CanFreeMemory);
         ToggleTopmostCommand = new RelayCommand(() => IsTopmost = !IsTopmost);
+        ToggleAboutCommand = new RelayCommand(() => IsAboutVisible = !IsAboutVisible);
+        CloseAboutCommand = new RelayCommand(() => IsAboutVisible = false);
 
         // Load saved settings from AppData\Local\Banisk\TyphonLite.json
         var settings = SettingsService.Load();
@@ -296,7 +330,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void UpdateHistory()
     {
-        _history.Add(MemoryPercentage);
+        double exactLoad = TotalMemoryGB > 0 ? (UsedMemoryGB / TotalMemoryGB * 100.0) : (double)MemoryPercentage;
+        _history.Add(exactLoad);
         if (_history.Count > MaxHistoryPoints)
         {
             _history.RemoveAt(0);
@@ -388,7 +423,7 @@ public class MainViewModel : INotifyPropertyChanged
             string freedMsg;
             if (result.FreedBytes > 0)
             {
-                freedMsg = $"Freed {result.FormatFreed()} ({result.TrimmedProcesses} processes)";
+                freedMsg = $"Freed {result.FormatFreed()} (from {result.TrimmedProcesses} processes)";
             }
             else
             {
@@ -404,15 +439,20 @@ public class MainViewModel : INotifyPropertyChanged
                 AutoFreeStatusText = "30s";
             }
 
+            // Keep button disabled briefly to show result, then clear upon re-enabling
+            await Task.Delay(2500);
+
             return result;
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error: {ex.Message}";
+            await Task.Delay(2500);
             return null;
         }
         finally
         {
+            StatusMessage = string.Empty;
             IsFreeing = false;
         }
     }

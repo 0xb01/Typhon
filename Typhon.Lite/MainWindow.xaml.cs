@@ -66,6 +66,17 @@ public partial class MainWindow : FluentWindow
             Visibility = Visibility.Hidden;
             ShowInTaskbar = false;
         }
+
+        Loaded += (s, e) =>
+        {
+            WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic);
+        };
+    }
+
+    protected override void OnActivated(EventArgs e)
+    {
+        base.OnActivated(e);
+        WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic);
     }
 
     protected override void OnStateChanged(EventArgs e)
@@ -83,6 +94,7 @@ public partial class MainWindow : FluentWindow
         Show();
         WindowState = WindowState.Normal;
         ShowInTaskbar = true;
+        WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic);
         Activate();
         Focus();
     }

@@ -11,8 +11,8 @@ namespace Typhon.Lite.Services;
 
 public class TrayService : IDisposable
 {
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern bool DestroyIcon(IntPtr handle);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool DestroyIcon(IntPtr hIcon);
 
     private readonly NotifyIcon _notifyIcon;
     private readonly Action _onFreeMemory;
@@ -20,7 +20,7 @@ public class TrayService : IDisposable
     private readonly Action _onExitApp;
 
     private DispatcherTimer? _clickTimer;
-    private Icon? _currentIcon;
+    private IntPtr _currentHIcon = IntPtr.Zero;
     private bool _isDisposed;
 
     public TrayService(Action onFreeMemory, Action onRestoreWindow, Action onExitApp)
@@ -84,18 +84,27 @@ public class TrayService : IDisposable
 
         try
         {
-            Icon newIcon = CreateGraphIcon(history, loadPercent);
-            Icon? oldIcon = _currentIcon;
+            double exactPercent = totalGB > 0 ? (usedGB / totalGB * 100.0) : (double)loadPercent;
+            IntPtr newHIcon = CreateGraphIconHandle(history, exactPercent);
+            if (newHIcon == IntPtr.Zero) return;
+
+            Icon newIcon = Icon.FromHandle(newHIcon);
+
+            IntPtr oldHIcon = _currentHIcon;
+            _currentHIcon = newHIcon;
 
             _notifyIcon.Icon = newIcon;
-            _currentIcon = newIcon;
 
-            oldIcon?.Dispose();
+            // Safely clean up previous icon handle now that new icon is applied
+            if (oldHIcon != IntPtr.Zero)
+            {
+                DestroyIcon(oldHIcon);
+            }
 
-            string tooltip = $"Typhon: {usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)\n1-Click: Free | 2-Click: Open";
+            string tooltip = $"Typhon: {usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)";
             if (tooltip.Length >= 64)
             {
-                tooltip = $"Typhon: {usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)";
+                tooltip = $"{usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)";
             }
             _notifyIcon.Text = tooltip;
         }
@@ -116,73 +125,73 @@ public class TrayService : IDisposable
         }
     }
 
-    private static Icon CreateGraphIcon(IReadOnlyList<double> history, uint currentPercent)
+    /// <summary>
+    /// Generates a crisp pixel-perfect 16x16 scrolling memory graph for the Windows system tray.
+    /// Updates dynamically every second with scrolling historical columns and live head indicator.
+    /// </summary>
+    private static IntPtr CreateGraphIconHandle(IReadOnlyList<double> history, double currentPercent)
     {
-        const int size = 32;
+        const int size = 16;
         using var bitmap = new Bitmap(size, size, PixelFormat.Format32bppPArgb);
         using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
+        g.SmoothingMode = SmoothingMode.None;
 
-        // Dark background with slate/zinc tone
-        using (var bgBrush = new SolidBrush(Color.FromArgb(250, 15, 23, 42)))
+        // Dark slate background
+        using (var bgBrush = new SolidBrush(Color.FromArgb(255, 10, 15, 26)))
         {
             g.FillRectangle(bgBrush, 0, 0, size, size);
         }
 
-        // Draw subtle accent border
-        using (var borderPen = new Pen(Color.FromArgb(100, 56, 189, 248), 1f))
+        // 1px border
+        using (var borderPen = new Pen(Color.FromArgb(255, 30, 41, 59), 1f))
         {
             g.DrawRectangle(borderPen, 0, 0, size - 1, size - 1);
         }
 
         int count = history.Count;
-        if (count >= 2)
+        int colCount = 12; // 12 historical columns (x: 2..13)
+        int startIndex = Math.Max(0, count - colCount);
+
+        for (int i = 0; i < colCount; i++)
         {
-            int displayCount = Math.Min(count, 14);
-            var points = new PointF[displayCount + 2];
-            float stepX = (float)(size - 4) / (displayCount - 1);
+            int histIndex = startIndex + i;
+            double val = histIndex < count ? history[histIndex] : currentPercent;
+            val = Math.Clamp(val, 0.0, 100.0);
 
-            int startIndex = count - displayCount;
-            for (int i = 0; i < displayCount; i++)
+            // Bar height: 1 to 11 pixels (y: 13 down to 3)
+            int barHeight = Math.Max(1, (int)Math.Round((val / 100.0) * 10.0) + 1);
+            int x = 2 + i;
+            int topY = 13 - barHeight + 1;
+
+            // Draw vertical column with gradient and highlighted tip
+            for (int y = 13; y >= topY; y--)
             {
-                double val = Math.Clamp(history[startIndex + i], 0.0, 100.0);
-                float y = (size - 3) - (float)(val / 100.0 * (size - 7)) - 1;
-                points[i] = new PointF(2 + i * stepX, y);
-            }
+                float ratio = (float)(13 - y) / Math.Max(1, barHeight);
+                Color col;
+                if (y == topY)
+                {
+                    // Top ridge pixel: live sample on right is bright white; history is neon cyan
+                    col = (i == colCount - 1)
+                        ? Color.FromArgb(255, 255, 255, 255)
+                        : Color.FromArgb(255, 56, 189, 248);
+                }
+                else
+                {
+                    // Gradient body: emerald green to deep teal
+                    int r = (int)(5 * (1 - ratio) + 0 * ratio);
+                    int gVal = (int)(140 * (1 - ratio) + 230 * ratio);
+                    int b = (int)(110 * (1 - ratio) + 250 * ratio);
+                    col = Color.FromArgb(255, Math.Clamp(r, 0, 255), Math.Clamp(gVal, 0, 255), Math.Clamp(b, 0, 255));
+                }
 
-            // Close polygon at the bottom
-            points[displayCount] = new PointF(size - 2, size - 2);
-            points[displayCount + 1] = new PointF(2, size - 2);
-
-            // Glowing area fill
-            using (var fillBrush = new LinearGradientBrush(
-                new PointF(0, 0),
-                new PointF(0, size),
-                Color.FromArgb(220, 0, 229, 255),
-                Color.FromArgb(90, 16, 185, 129)))
-            {
-                g.FillPolygon(fillBrush, points);
-            }
-
-            // Ridge line
-            var linePoints = new PointF[displayCount];
-            Array.Copy(points, linePoints, displayCount);
-            using (var pen = new Pen(Color.FromArgb(255, 125, 211, 252), 1.6f))
-            {
-                g.DrawLines(pen, linePoints);
+                bitmap.SetPixel(x, y, col);
             }
         }
-        else
-        {
-            float barH = (float)(currentPercent / 100.0 * (size - 6));
-            using var fill = new SolidBrush(Color.FromArgb(0, 229, 255));
-            g.FillRectangle(fill, 4, size - 3 - barH, size - 8, barH);
-        }
 
-        IntPtr hIcon = bitmap.GetHicon();
-        Icon icon = (Icon)Icon.FromHandle(hIcon).Clone();
-        DestroyIcon(hIcon);
-        return icon;
+        // Live heartbeat status dot at top right
+        bitmap.SetPixel(14, 1, Color.FromArgb(255, 52, 211, 153));
+
+        return bitmap.GetHicon();
     }
 
     public void Dispose()
@@ -192,6 +201,11 @@ public class TrayService : IDisposable
         _clickTimer?.Stop();
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
-        _currentIcon?.Dispose();
+
+        if (_currentHIcon != IntPtr.Zero)
+        {
+            DestroyIcon(_currentHIcon);
+            _currentHIcon = IntPtr.Zero;
+        }
     }
 }
