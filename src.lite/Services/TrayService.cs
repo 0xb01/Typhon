@@ -101,10 +101,10 @@ public class TrayService : IDisposable
                 DestroyIcon(oldHIcon);
             }
 
-            string tooltip = $"Typhon: {usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)";
+            string tooltip = $"Typhon: {usedGB:F1} GB/{totalGB:F1} GB ({loadPercent}%)";
             if (tooltip.Length >= 64)
             {
-                tooltip = $"{usedGB:F1}/{totalGB:F1}GB ({loadPercent}%)";
+                tooltip = $"{usedGB:F1} GB/{totalGB:F1} GB ({loadPercent}%)";
             }
             _notifyIcon.Text = tooltip;
         }

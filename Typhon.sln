@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.9.12105.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Typhon", "src\Typhon.vbproj", "{85BDA6BE-7794-4391-91D9-C71461330A91}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Typhon", "src.full\Typhon.vbproj", "{85BDA6BE-7794-4391-91D9-C71461330A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Typhon.Lite", "Typhon.Lite\Typhon.Lite.csproj", "{D9AA2BAB-1F85-424C-83BB-D3CF14F43BC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Typhon.Lite", "src.lite\Typhon.Lite.csproj", "{D9AA2BAB-1F85-424C-83BB-D3CF14F43BC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

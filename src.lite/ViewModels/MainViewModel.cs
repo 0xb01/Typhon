@@ -67,7 +67,7 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly List<double> _history = new();
     private const int MaxHistoryPoints = 35;
     private const double VirtualWidth = 400.0;
-    private const double VirtualHeight = 180.0;
+    private const double VirtualHeight = 200.0;
 
     private double _usedMemoryGB;
     private double _totalMemoryGB;
@@ -220,6 +220,8 @@ public class MainViewModel : INotifyPropertyChanged
         set => SetField(ref _isAboutVisible, value);
     }
 
+    public string AppVersion { get; }
+
     public RelayCommand FreeMemoryCommand { get; }
     public ICommand ToggleTopmostCommand { get; }
     public ICommand ToggleAboutCommand { get; }
@@ -227,6 +229,9 @@ public class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel()
     {
+        var ver = typeof(MainViewModel).Assembly.GetName().Version;
+        AppVersion = ver != null ? $"v{ver.Major}.{ver.Minor}-{ver.Build}" : "v1.1";
+
         FreeMemoryCommand = new RelayCommand(async () => await ExecuteFreeMemoryAsync(), () => CanFreeMemory);
         ToggleTopmostCommand = new RelayCommand(() => IsTopmost = !IsTopmost);
         ToggleAboutCommand = new RelayCommand(() => IsAboutVisible = !IsAboutVisible);
@@ -321,7 +326,7 @@ public class MainViewModel : INotifyPropertyChanged
         var info = MemoryOptimizer.GetMemoryInfo();
         UsedMemoryGB = info.UsedGB;
         TotalMemoryGB = info.TotalGB;
-        MemoryUsageFormatted = $"{info.UsedGB:F1} / {info.TotalGB:F1} GB";
+        MemoryUsageFormatted = $"{info.UsedGB:F1} GB / {info.TotalGB:F1} GB";
         MemoryPercentage = info.LoadPercentage;
         MemoryPercentageFormatted = $"{info.LoadPercentage}%";
         ProcessCount = info.ProcessCount;
@@ -347,11 +352,13 @@ public class MainViewModel : INotifyPropertyChanged
         int count = _history.Count;
         double stepX = VirtualWidth / (count - 1);
 
+        double maxWaveHeight = VirtualHeight - 20.0;
+
         var points = new Point[count];
         for (int i = 0; i < count; i++)
         {
             double pct = Math.Clamp(_history[i], 0.0, 100.0);
-            double y = VirtualHeight - (pct / 100.0 * (VirtualHeight * 0.72)) - 10.0;
+            double y = VirtualHeight - (pct / 100.0 * maxWaveHeight) - 6.0;
             points[i] = new Point(i * stepX, y);
         }
 
@@ -415,18 +422,29 @@ public class MainViewModel : INotifyPropertyChanged
 
         try
         {
-            var result = await MemoryOptimizer.FreeMemoryAsync();
+            var freeTask = MemoryOptimizer.FreeMemoryAsync();
+            var completedTask = await Task.WhenAny(freeTask, Task.Delay(5000));
+            FreeMemoryResult? result = null;
+            if (completedTask == freeTask)
+            {
+                result = await freeTask;
+            }
+
             RefreshMemoryInfo();
             UpdateHistory();
 
             string freedMsg;
-            if (result.FreedBytes > 0)
+            if (result != null && result.FreedBytes > 0)
             {
                 freedMsg = $"Freed {result.FormatFreed()} (from {result.TrimmedProcesses} processes)";
             }
-            else
+            else if (result != null)
             {
                 freedMsg = $"Optimized ({result.TrimmedProcesses} processes checked)";
+            }
+            else
+            {
+                freedMsg = "Memory optimized";
             }
 
             StatusMessage = freedMsg;

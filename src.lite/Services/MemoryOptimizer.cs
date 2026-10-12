@@ -127,6 +127,11 @@ public static class MemoryOptimizer
     [DllImport("user32.dll")]
     private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
+    private const uint PROCESS_SET_QUOTA = 0x0100;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
     // Critical processes and IDE/developer tools that must NEVER be trimmed to avoid freezing
     private static readonly HashSet<string> ExcludedProcesses = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -251,6 +256,52 @@ public static class MemoryOptimizer
         }
     }
 
+    private static bool ShouldSkipProcess(Process proc, int selfPid, uint foregroundPid)
+    {
+        int id;
+        string name;
+        try
+        {
+            id = proc.Id;
+            if (id == selfPid || id <= 4) return true;
+            if (foregroundPid > 0 && id == (int)foregroundPid) return true;
+            name = proc.ProcessName;
+        }
+        catch
+        {
+            return true;
+        }
+
+        if (ExcludedProcesses.Contains(name)) return true;
+
+        // Skip Visual Studio / IDE / debugger / compiler child tools
+        if (name.Contains("VisualStudio", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("ServiceHub", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("LivePreview", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("DevHub", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Roslyn", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("MSBuild", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("msvs", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("vsdebug", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("vshost", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("VBCS", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("PerfWatson", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Copilot", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("AppVShNotify", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("StandardCollector", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("ScriptedSandbox", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("conhost", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("WmiPrvSE", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("OmniSharp", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Rider", StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("JetBrains", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public static FreeMemoryResult FreeMemory()
     {
         var sw = Stopwatch.StartNew();
@@ -288,37 +339,27 @@ public static class MemoryOptimizer
         {
             try
             {
-                // 1. Skip self
-                if (proc.Id == selfPid) continue;
-
-                // 2. Skip active foreground application (prevents UI freeze on active work)
-                if (foregroundPid > 0 && proc.Id == (int)foregroundPid) continue;
-
-                // 3. Skip Visual Studio / IDE / compiler / critical processes
-                string name = proc.ProcessName;
-                if (ExcludedProcesses.Contains(name) ||
-                    name.StartsWith("ServiceHub", StringComparison.OrdinalIgnoreCase) ||
-                    name.StartsWith("Microsoft.ServiceHub", StringComparison.OrdinalIgnoreCase))
-                {
+                if (ShouldSkipProcess(proc, selfPid, foregroundPid))
                     continue;
-                }
 
-                // 4. Safely trim memory for background processes
+                // 4. Safely trim memory for background processes using safe PROCESS_SET_QUOTA handle
                 bool trimmed = false;
-                try
-                {
-                    if (SetProcessWorkingSetSize(proc.Handle, minusOne, minusOne))
-                        trimmed = true;
-                }
-                catch
+                IntPtr hProcess = OpenProcess(PROCESS_SET_QUOTA, false, proc.Id);
+                if (hProcess != IntPtr.Zero)
                 {
                     try
                     {
-                        if (EmptyWorkingSet(proc.Handle))
+                        if (SetProcessWorkingSetSize(hProcess, minusOne, minusOne))
+                            trimmed = true;
+                        else if (EmptyWorkingSet(hProcess))
                             trimmed = true;
                     }
                     catch
                     {
+                    }
+                    finally
+                    {
+                        CloseHandle(hProcess);
                     }
                 }
 

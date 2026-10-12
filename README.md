@@ -20,14 +20,14 @@ Typhon is a simple Windows application made in VB.NET. It helps you boost your P
 ```
 Typhon/
 ├── Typhon.sln              # Visual Studio solution file
-├── Typhon.Lite/            # Simplified WPF Fluent edition (.NET 8)
+├── src.lite/               # Simplified WPF Fluent edition (.NET 8)
 │   ├── App.xaml            # WPF-UI Fluent theme configuration
 │   ├── MainWindow.xaml     # Compact widget with blurred silhouette graph
 │   ├── Services/
 │   │   └── MemoryOptimizer.cs # Standby purge & working set trimmer
 │   └── ViewModels/
 │       └── MainViewModel.cs   # Live RAM monitor, auto-free 30s timer, curve geometry
-└── src/                    # Full Classic WinForms edition
+└── src.full/               # Full Classic WinForms edition
     ├── App.config          # App settings configuration
     ├── Controls/
     │   ├── theme.vb        # Custom dark UI controls and styling

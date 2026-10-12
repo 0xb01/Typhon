@@ -17,19 +17,33 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
+    - name: Restore Dependencies
+      run: dotnet restore Typhon.sln
+
     - name: Rebuild Solution (Release)
       run: msbuild Typhon.sln /t:Rebuild /p:Configuration=Release /p:Platform="x86"
+
+    - name: Publish Typhon Lite
+      run: dotnet publish src.lite/Typhon.Lite.csproj /p:PublishProfile=FolderProfile
 
     - name: Prepare Binaries
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Path ./publish -Force
-        Copy-Item ./src/bin/Release/Typhon.exe ./publish/Typhon.exe
-        if (Test-Path ./src/bin/Release/Typhon.exe.config) {
-          Copy-Item ./src/bin/Release/Typhon.exe.config ./publish/Typhon.exe.config
+        Copy-Item ./src.full/bin/Release/Typhon.exe ./publish/Typhon.exe
+        if (Test-Path ./src.full/bin/Release/Typhon.exe.config) {
+          Copy-Item ./src.full/bin/Release/Typhon.exe.config ./publish/Typhon.exe.config
+        }
+        if (Test-Path ./src.lite/bin/Release/net8.0-windows/publish/TyphonLite/Typhon.Lite.exe) {
+          Copy-Item ./src.lite/bin/Release/net8.0-windows/publish/TyphonLite/Typhon.Lite.exe ./publish/Typhon.Lite.exe
         }
 
     - name: Upload Build Artifact

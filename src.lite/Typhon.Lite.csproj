@@ -9,13 +9,19 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>typhon_ico.ico</ApplicationIcon>
     <StartupObject>Typhon.Lite.App</StartupObject>
-    <Authors>0xb1</Authors>
+    <Authors>0xb01</Authors>
+    <Company>0xb01</Company>
     <Title>Typhon Lite</Title>
     <Product>Typhon Lite</Product>
+    <Description>PC performance booster</Description>
+    <Copyright>Copyright © 0xb01 2023</Copyright>
     <PackageProjectUrl>https://banikaz.online/</PackageProjectUrl>
     <PackageIcon>typhon_ico.png</PackageIcon>
     <RepositoryUrl>https://github.com/0xb01/Typhon</RepositoryUrl>
-    <Version>1.2</Version>
+    <Deterministic>false</Deterministic>
+    <AssemblyVersion>1.1.*</AssemblyVersion>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
 
   <ItemGroup>
