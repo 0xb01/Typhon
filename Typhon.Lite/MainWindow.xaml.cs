@@ -44,13 +44,6 @@ public partial class MainWindow : FluentWindow
             _trayService.UpdateTrayIcon(history, used, total, load);
         };
 
-        ViewModel.MemoryFreedNotification += (title, message) =>
-        {
-            if (WindowState == WindowState.Minimized || !IsVisible)
-            {
-                _trayService.ShowNotification(title, message);
-            }
-        };
 
         InitializeComponent();
 

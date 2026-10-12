@@ -88,7 +88,6 @@ public class MainViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event Action<IReadOnlyList<double>, double, double, uint>? TelemetryUpdated;
-    public event Action<string, string>? MemoryFreedNotification;
 
     public IReadOnlyList<double> History => _history;
 
@@ -431,7 +430,6 @@ public class MainViewModel : INotifyPropertyChanged
             }
 
             StatusMessage = freedMsg;
-            MemoryFreedNotification?.Invoke("Typhon Lite", freedMsg);
 
             if (!isAuto && IsAutoFreeEnabled)
             {
