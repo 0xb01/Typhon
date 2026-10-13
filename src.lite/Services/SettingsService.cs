@@ -68,9 +68,18 @@ public static class SettingsService
             if (enable)
             {
                 string? exePath = Environment.ProcessPath;
-                if (string.IsNullOrEmpty(exePath))
+                if (string.IsNullOrEmpty(exePath) || Path.GetFileNameWithoutExtension(exePath).Equals("dotnet", StringComparison.OrdinalIgnoreCase))
                 {
                     exePath = Process.GetCurrentProcess().MainModule?.FileName;
+                }
+
+                if (!string.IsNullOrEmpty(exePath) && Path.GetFileNameWithoutExtension(exePath).Equals("dotnet", StringComparison.OrdinalIgnoreCase))
+                {
+                    string candidate = Path.Combine(AppContext.BaseDirectory, "Typhon.Lite.exe");
+                    if (File.Exists(candidate))
+                    {
+                        exePath = candidate;
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(exePath))

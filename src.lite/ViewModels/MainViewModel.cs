@@ -241,6 +241,10 @@ public class MainViewModel : INotifyPropertyChanged
         var settings = SettingsService.Load();
         _isAutoFreeEnabled = settings.AutoFree30s;
         _runOnStartup = settings.RunOnStartup;
+        if (_runOnStartup)
+        {
+            SettingsService.SetStartupRegistration(true);
+        }
 
         // Initial memory read
         RefreshMemoryInfo();

@@ -52,8 +52,9 @@ public partial class MainWindow : FluentWindow
 
         // Check if launched with --minimized startup argument
         string[] args = Environment.GetCommandLineArgs();
-        if (args.Any(a => string.Equals(a, "--minimized", StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(a, "-minimized", StringComparison.OrdinalIgnoreCase)))
+        bool startMinimized = args.Any(a => string.Equals(a, "--minimized", StringComparison.OrdinalIgnoreCase) ||
+                                           string.Equals(a, "-minimized", StringComparison.OrdinalIgnoreCase));
+        if (startMinimized)
         {
             WindowState = WindowState.Minimized;
             Visibility = Visibility.Hidden;
@@ -63,6 +64,11 @@ public partial class MainWindow : FluentWindow
         Loaded += (s, e) =>
         {
             WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic);
+            if (startMinimized)
+            {
+                Hide();
+                ShowInTaskbar = false;
+            }
         };
     }
 

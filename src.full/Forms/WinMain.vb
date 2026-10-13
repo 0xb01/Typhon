@@ -336,9 +336,10 @@ Public Class WinMain
             ' 2. Manage Scheduled Task for elevated startup (since requireAdministrator apps are blocked by Windows in HKCU Run at logon)
             Dim execExe As String = Application.ExecutablePath
             If enable Then
+                Dim q As String = Chr(34)
                 Dim psi As New ProcessStartInfo()
                 psi.FileName = "schtasks.exe"
-                psi.Arguments = "/Create /TN ""TyphonAutoStart"" /TR """"" & execExe & """ /minimized"" /SC ONLOGON /RL HIGHEST /F"
+                psi.Arguments = "/Create /TN " & q & "TyphonAutoStart" & q & " /TR " & q & "\" & q & execExe & "\" & q & " /minimized" & q & " /SC ONLOGON /RL HIGHEST /F"
                 psi.UseShellExecute = False
                 psi.CreateNoWindow = True
                 Using p As Process = Process.Start(psi)
