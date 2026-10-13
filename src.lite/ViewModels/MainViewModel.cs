@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -229,8 +230,19 @@ public class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel()
     {
-        var ver = typeof(MainViewModel).Assembly.GetName().Version;
-        AppVersion = ver != null ? $"v{ver.Major}.{ver.Minor}-{ver.Build}" : "v1.1";
+        var infoVer = typeof(MainViewModel).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+        if (!string.IsNullOrWhiteSpace(infoVer))
+        {
+            var cleanVer = infoVer.Split('+')[0];
+            AppVersion = $"v{cleanVer}";
+        }
+        else
+        {
+            var ver = typeof(MainViewModel).Assembly.GetName().Version;
+            AppVersion = ver != null ? $"v{ver.Major}.{ver.Minor}" : "v1.2";
+        }
 
         FreeMemoryCommand = new RelayCommand(async () => await ExecuteFreeMemoryAsync(), () => CanFreeMemory);
         ToggleTopmostCommand = new RelayCommand(() => IsTopmost = !IsTopmost);

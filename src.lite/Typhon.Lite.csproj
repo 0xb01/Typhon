@@ -18,10 +18,7 @@
     <PackageProjectUrl>https://banikaz.online/</PackageProjectUrl>
     <PackageIcon>typhon_ico.png</PackageIcon>
     <RepositoryUrl>https://github.com/0xb01/Typhon</RepositoryUrl>
-    <Deterministic>false</Deterministic>
-    <AssemblyVersion>1.1.*</AssemblyVersion>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <Version>1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
